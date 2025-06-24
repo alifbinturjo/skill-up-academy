@@ -1,17 +1,317 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Instructors</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr" crossorigin="anonymous">
-    <link rel="stylesheet" href="../style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Instructors</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="../style.css">
 </head>
 <body>
 
+<nav class="navbar navbar-expand-lg navbar-blur sticky-top shadow-sm">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="#">XYZ</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+      aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav ms-auto">
+        <li class="nav-item">
+          <a class="nav-link" href="#">Instructors</a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
 
+<div class="container-fluid mt-3 mb-5 px-3">
+  <div class="row justify-content-center">
+    <div class="col-12">
+      <div class="card bg-transparent shadow-lg border-0">
+        <div class="card-body">
+          <h2 class="text-center mb-4">Instructor</h2>
 
-    
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js" integrity="sha384-ndDqU0Gzau9qJ1lfW4pNLlhNTkCfHzAVBReH9diLvGRem5+R9g2FzA8ZGN954O5Q" crossorigin="anonymous"></script>
+          <h5 class="mb-3">Login</h5>
+          <div class="row g-3 mb-4">
+            <div class="col-md-6">
+              <label for="username" class="form-label small">Username <span class="text-danger">*</span></label>
+              <input type="text" class="form-control form-control-sm bg-transparent border border-dark" id="username" required>
+            </div>
+            <div class="col-md-6">
+              <label for="password" class="form-label small">Password <span class="text-danger">*</span></label>
+              <input type="password" class="form-control form-control-sm bg-transparent border border-dark" id="password" required>
+            </div>
+          </div>
+
+          <hr>
+
+          <h5 class="mb-3">Details</h5>
+          <div class="row g-3 mb-3">
+            <div class="col-12">
+              <label for="name" class="form-label small">Name</label>
+              <input type="text" class="form-control form-control-sm bg-transparent border border-dark" id="name">
+            </div>
+            <div class="col-md-6">
+              <label for="email" class="form-label small">Email</label>
+              <input type="email" class="form-control form-control-sm bg-transparent border border-dark" id="email">
+            </div>
+            <div class="col-md-6">
+              <label for="contact" class="form-label small">Contact No</label>
+              <input type="tel" class="form-control form-control-sm bg-transparent border border-dark" id="contact">
+            </div>
+            <div class="col-md-6">
+              <label for="department" class="form-label small">Department</label>
+              <select class="form-select form-select-sm bg-transparent border border-dark text-dark" id="department">
+                <option selected disabled>Select Department</option>
+                <option value="cse">Computer Science</option>
+                <option value="eee">Electrical Engineering</option>
+                <option value="civil">Civil Engineering</option>
+                <option value="microbiology">Microbiology</option>
+                <option value="math">Mathematics</option>
+                <option value="physics">Physics</option>
+                <option value="english">English Literature</option>
+                <option value="media">Media & Journalism</option>
+                <option value="bba">BBA</option>
+              </select>
+            </div>
+            <div class="col-md-6">
+              <label for="title" class="form-label small">Title</label>
+              <select class="form-select form-select-sm bg-transparent border border-dark text-dark" id="title">
+                <option selected disabled>Select Title</option>
+                <option value="junior">Junior Instructor</option>
+                <option value="instructor">Instructor</option>
+                <option value="senior">Senior Instructor</option>
+              </select>
+              
+            
+            </div>
+          </div>
+
+           <div class="text-center mt-3">
+            <button class="btn btn-primary btn-sm">Add Instructor</button>
+          </div>
+
+          <!-- Filter Card -->
+          <div class="card bg-transparent shadow-lg border-0 mt-4">
+            <div class="card-body bg-transparent p-4">
+              <h4 class="mb-4 text-center">Filter & Sort Instructors</h4>
+              <div class="row g-3 align-items-center">
+                <div class="col-md-4">
+                  <label for="filter-department" class="form-label small">Department</label>
+                  <select class="form-select form-select-sm bg-transparent border border-dark text-dark" id="filter-department">
+                    <option value="" selected>All Departments</option>
+                    <option value="cse">Computer Science</option>
+                    <option value="eee">Electrical Engineering</option>
+                    <option value="civil">Civil Engineering</option>
+                    <option value="microbiology">Microbiology</option>
+                    <option value="math">Mathematics</option>
+                    <option value="physics">Physics</option>
+                    <option value="english">English Literature</option>
+                    <option value="media">Media & Journalism</option>
+                    <option value="bba">BBA</option>
+                  </select>
+                </div>
+                <div class="col-md-4">
+                  <label for="filter-title" class="form-label small">Title</label>
+                  <select class="form-select form-select-sm bg-transparent border border-dark text-dark" id="filter-title">
+                    <option value="" selected>All Titles</option>
+                    <option value="junior">Junior Instructor</option>
+                    <option value="instructor">Instructor</option>
+                    <option value="senior">Senior Instructor</option>
+                  </select>
+                </div>
+                <div class="col-md-4">
+                  <label for="sort-option" class="form-label small">Sort By</label>
+                  <select class="form-select form-select-sm bg-transparent border border-dark text-dark" id="sort-option">
+                    <option value="name-asc" selected>Name (A-Z)</option>
+                    <option value="name-desc">Name (Z-A)</option>
+                    <option value="department-asc">Department (A-Z)</option>
+                    <option value="department-desc">Department (Z-A)</option>
+                    <option value="title-asc">Title (A-Z)</option>
+                    <option value="title-desc">Title (Z-A)</option>
+                  </select>
+                </div>
+              </div>
+              <div class="text-center mt-3">
+                <button class="btn btn-primary btn-sm">Apply</button>
+                <button class="btn btn-secondary btn-sm">Reset</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Table -->
+          <div class="card bg-transparent shadow-lg border-0 mt-4">
+            <div class="card-body bg-transparent">
+              <h4 class="mb-4 text-center">List of Instructors</h4>
+              <div class="table-responsive">
+                <table class="table table-bordered table-hover align-middle text-center border-dark mb-0">
+                  <thead class="bg-transparent text-dark">
+                    <tr>
+                      <th class="bg-transparent">Name</th>
+                      <th class="bg-transparent">Department</th>
+                      <th class="bg-transparent">Title</th>
+                      <th class="bg-transparent">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr class="bg-transparent">
+                      <td class="bg-transparent">John Doe</td>
+                      <td class="bg-transparent">Computer Science</td>
+                      <td class="bg-transparent">Instructor</td>
+                      <td class="bg-transparent">
+                        <button class="btn btn-sm btn-warning me-2" data-bs-toggle="modal" data-bs-target="#editModal">Edit</button>
+                        <button class="btn btn-sm btn-info" data-bs-toggle="modal" data-bs-target="#contactModal">Contact</button>
+                      </td>
+                    </tr>
+                    <tr class="bg-transparent">
+                      <td class="bg-transparent">Jane Smith</td>
+                      <td class="bg-transparent">Mathematics</td>
+                      <td class="bg-transparent">Senior Instructor</td>
+                      <td class="bg-transparent">
+                        <button class="btn btn-sm btn-warning me-2" data-bs-toggle="modal" data-bs-target="#editModal2">Edit</button>
+                        <button class="btn btn-sm btn-info" data-bs-toggle="modal" data-bs-target="#contactModal2">Contact</button>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <!-- Modals -->
+          <!-- Edit Modal 1 -->
+          <div class="modal fade" id="editModal" tabindex="-1">
+            <div class="modal-dialog">
+              <div class="modal-content border border-dark">
+                <div class="modal-header border-0">
+                  <h5 class="modal-title">Edit Instructor</h5>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                  <form>
+                    
+                    <div class="mb-3">
+                      <label class="form-label">Department</label>
+                      <select class="form-select border-dark">
+                        <option value="cse" selected>Computer Science</option>
+                        <option value="eee">Electrical Engineering</option>
+                        <option value="civil">Civil Engineering</option>
+                        <option value="microbiology">Microbiology</option>
+                        <option value="math">Mathematics</option>
+                        <option value="physics">Physics</option>
+                        <option value="english">English Literature</option>
+                        <option value="media">Media & Journalism</option>
+                        <option value="bba">BBA</option>
+                        <option value="other">Other</option>
+                      </select>
+                    </div>
+                    <div class="mb-3">
+                      <label class="form-label">Title</label>
+                      <select class="form-select border-dark">
+                        <option>Junior Instructor</option>
+                        <option selected>Instructor</option>
+                        <option>Senior Instructor</option>
+                      </select>
+                    </div>
+                    <div class="text-end">
+                      <button type="submit" class="btn btn-success btn-sm">Save Changes</button>
+                      <button type="button" class="btn btn-danger btn-sm">Remove</button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Contact Modal 1 -->
+          <div class="modal fade" id="contactModal" tabindex="-1">
+            <div class="modal-dialog">
+              <div class="modal-content border border-dark">
+                <div class="modal-header border-0">
+                  <h5 class="modal-title">Contact Information</h5>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                  <p><strong>Email:</strong> johndoe@example.com</p>
+                  <p><strong>Contact No:</strong> 0123456789</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Edit Modal 2 -->
+          <div class="modal fade" id="editModal2" tabindex="-1">
+            <div class="modal-dialog">
+              <div class="modal-content border border-dark">
+                <div class="modal-header border-0">
+                  <h5 class="modal-title">Edit Instructor</h5>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                  <form>
+                    <div class="mb-3">
+                      <label class="form-label">Name</label>
+                      <input type="text" class="form-control border-dark" value="Jane Smith">
+                    </div>
+                    <div class="mb-3">
+                      <label class="form-label">Department</label>
+                      <select class="form-select border-dark">
+                        <option value="math" selected>Mathematics</option>
+                        <option value="physics">Physics</option>
+                        <option value="chemistry">Chemistry</option>
+                        <option value="cse">Computer Science</option>
+                        <option value="eee">Electrical Engineering</option>
+                        <option value="civil">Civil Engineering</option>
+                        <option value="microbiology">Microbiology</option>
+                        <option value="english">English Literature</option>
+                        <option value="media">Media & Journalism</option>
+                        <option value="bba">BBA</option>
+                        <option value="other">Other</option>
+                      </select>
+                    </div>
+                    <div class="mb-3">
+                      <label class="form-label">Title</label>
+                      <select class="form-select border-dark">
+                        <option>Junior Instructor</option>
+                        <option>Instructor</option>
+                        <option selected>Senior Instructor</option>
+                      </select>
+                    </div>
+                    <div class="text-end">
+                      <button type="submit" class="btn btn-success btn-sm">Save Changes</button>
+                      <button type="button" class="btn btn-danger btn-sm">Remove</button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Contact Modal 2 -->
+          <div class="modal fade" id="contactModal2" tabindex="-1">
+            <div class="modal-dialog">
+              <div class="modal-content border border-dark">
+                <div class="modal-header border-0">
+                  <h5 class="modal-title">Contact Information</h5>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                  <p><strong>Email:</strong> janesmith@example.com</p>
+                  <p><strong>Contact No:</strong> 01987654321</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Bootstrap Bundle JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

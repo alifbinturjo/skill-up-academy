@@ -195,40 +195,102 @@
             </div>
           </div>
 
-          <!-- Edit Modal 1 -->
-          <div class="modal fade" id="editModal" tabindex="-1">
-            <div class="modal-dialog">
-              <div class="modal-content border border-dark">
-                <div class="modal-header border-0">
-                  <h5 class="modal-title">Edit Admin</h5>
-                  <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body">
-                  <form>
-                    
-                  
-                    <div class="mb-3">
-                      <label class="form-label">Level</label>
-                      <select class="form-select border-dark">
-                        <option>1</option>
-                        <option selected>2</option>
-                        <option>3</option>
-                        <option>4</option>
-                      </select>
-                    </div>
-                  <div class="d-flex justify-content-between">
-  <button type="button" class="btn btn-danger btn-sm" onclick="showToast('Item removed!', 'danger')">Remove</button>
-  <button type="submit" class="btn btn-success btn-sm" onclick="showToast('Changes saved successfully!', 'success')">Save Changes</button>
+        <!-- Edit Modal 1 -->
+<div class="modal fade" id="editModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content border border-dark">
+      <div class="modal-header border-0">
+        <h5 class="modal-title">Edit Instructor</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <form>
+          <div class="mb-3">
+            <label class="form-label">Department</label>
+            <select class="form-select border-dark">
+              <option value="cse" selected>Computer Science</option>
+              <option value="eee">Electrical Engineering</option>
+              <option value="civil">Civil Engineering</option>
+              <option value="microbiology">Microbiology</option>
+              <option value="math">Mathematics</option>
+              <option value="physics">Physics</option>
+              <option value="english">English Literature</option>
+              <option value="media">Media & Journalism</option>
+              <option value="bba">BBA</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Title</label>
+            <select class="form-select border-dark">
+              <option>Junior Instructor</option>
+              <option selected>Instructor</option>
+              <option>Senior Instructor</option>
+            </select>
+          </div>
+          <div class="d-flex justify-content-between">
+            <button type="button" class="btn btn-danger btn-sm" onclick="showToast('Item removed!', 'danger')">Remove</button>
+            <button type="button" class="btn btn-success btn-sm" onclick="showToast('Changes saved successfully!', 'success')">Save Changes</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
 </div>
 
+<!-- Edit Modal 2 -->
+<div class="modal fade" id="editModal2" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content border border-dark">
+      <div class="modal-header border-0">
+        <h5 class="modal-title">Edit Instructor</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <form>
+          <div class="mb-3">
+            <label class="form-label">Name</label>
+            <input type="text" class="form-control border-dark" value="Jane Smith">
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Department</label>
+            <select class="form-select border-dark">
+              <option value="math" selected>Mathematics</option>
+              <option value="physics">Physics</option>
+              <option value="chemistry">Chemistry</option>
+              <option value="cse">Computer Science</option>
+              <option value="eee">Electrical Engineering</option>
+              <option value="civil">Civil Engineering</option>
+              <option value="microbiology">Microbiology</option>
+              <option value="english">English Literature</option>
+              <option value="media">Media & Journalism</option>
+              <option value="bba">BBA</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Title</label>
+            <select class="form-select border-dark">
+              <option>Junior Instructor</option>
+              <option>Instructor</option>
+              <option selected>Senior Instructor</option>
+            </select>
+          </div>
+          <div class="d-flex justify-content-between">
+            <button type="button" class="btn btn-danger btn-sm" onclick="showToast('Item removed!', 'danger')">Remove</button>
+            <button type="button" class="btn btn-success btn-sm" onclick="showToast('Changes saved successfully!', 'success')">Save Changes</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
 
-<!-- Toast Container centered bottom -->
+<!-- Toast for Edit/Remove -->
 <div class="position-fixed bottom-0 start-50 translate-middle-x p-3 mb-3" style="z-index: 11;">
   <div id="actionToast" class="toast align-items-center text-white border-0" role="alert" aria-live="assertive" aria-atomic="true">
     <div class="d-flex">
-      <div class="toast-body" id="toastMessage">
-        <!-- Message will be inserted here -->
-      </div>
+      <div class="toast-body" id="toastMessage"></div>
     </div>
   </div>
 </div>
@@ -240,25 +302,17 @@
 
     toastMsg.textContent = message;
 
-    // Reset classes and add new bg class based on type
-    toastEl.className = 'toast align-items-center text-white border-0'; // reset
-    if (type === 'success') {
-      toastEl.classList.add('bg-success');
-    } else if (type === 'danger') {
-      toastEl.classList.add('bg-danger');
-    } else {
-      toastEl.classList.add('bg-primary');
-    }
+    toastEl.className = 'toast align-items-center text-white border-0'; // Reset classes
+    toastEl.classList.add(
+      type === 'danger' ? 'bg-danger' :
+      type === 'success' ? 'bg-success' :
+      'bg-primary'
+    );
 
     const toast = new bootstrap.Toast(toastEl, { delay: 2000 });
     toast.show();
   }
 </script>
-                  </form>
-                </div>
-              </div>
-            </div>
-          </div>
 
           <!-- Contact Modal 1 -->
           <div class="modal fade" id="contactModal" tabindex="-1">
@@ -271,73 +325,6 @@
                 <div class="modal-body">
                   <p><strong>Email:</strong> johndoe@example.com</p>
                   <p><strong>Contact No:</strong> 0123456789</p>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Edit Modal 2 -->
-          <div class="modal fade" id="editModal2" tabindex="-1">
-            <div class="modal-dialog">
-              <div class="modal-content border border-dark">
-                <div class="modal-header border-0">
-                  <h5 class="modal-title">Edit Instructor</h5>
-                  <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body">
-                  <form>
-                    <div class="mb-3">
-                      <label class="form-label">Name</label>
-                      <input type="text" class="form-control border-dark" value="Jane Smith">
-                    </div>
-                   
-                    <div class="mb-3">
-                      <label class="form-label">Level</label>
-                      <select class="form-select border-dark">
-                        <option  selected >1</option>
-                        <option>2</option>
-                        <option>3</option>
-                         <option>2</option>
-                      </select>
-                    </div>
-                    <div class="text-end">
-  <button type="submit" class="btn btn-success btn-sm" onclick="showToast('Changes saved successfully!', 'success')">Save Changes</button>
-  <button type="button" class="btn btn-danger btn-sm" onclick="showToast('Item removed!', 'danger')">Remove</button>
-</div>
-
-<!-- Toast Container centered bottom -->
-<div class="position-fixed bottom-0 start-50 translate-middle-x p-3 mb-3" style="z-index: 11;">
-  <div id="actionToast" class="toast align-items-center text-white border-0" role="alert" aria-live="assertive" aria-atomic="true">
-    <div class="d-flex">
-      <div class="toast-body" id="toastMessage">
-        <!-- Message will be inserted here -->
-      </div>
-    </div>
-  </div>
-</div>
-
-<script>
-  function showToast(message, type) {
-    const toastEl = document.getElementById('actionToast');
-    const toastMsg = document.getElementById('toastMessage');
-
-    toastMsg.textContent = message;
-
-    // Reset classes and add new bg class based on type
-    toastEl.className = 'toast align-items-center text-white border-0'; // reset
-    if (type === 'success') {
-      toastEl.classList.add('bg-success');
-    } else if (type === 'danger') {
-      toastEl.classList.add('bg-danger');
-    } else {
-      toastEl.classList.add('bg-primary');
-    }
-
-    const toast = new bootstrap.Toast(toastEl, { delay: 2000 });
-    toast.show();
-  }
-</script>
-                  </form>
                 </div>
               </div>
             </div>

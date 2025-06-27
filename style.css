@@ -6,7 +6,6 @@ body {
   background-color: rgba(255, 255, 255, 0.1);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
-<<<<<<< HEAD
 }
 
 .card-h {
@@ -21,6 +20,4 @@ body {
 .divider {
   border-top: 1px solid #000000;
   margin: 1rem 0;
-=======
->>>>>>> 400123a8e7dfe5810c272cc0c85e0e842c39ec9d
 }

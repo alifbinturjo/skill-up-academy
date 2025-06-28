@@ -1,26 +1,24 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login | SkillUp Academy</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr" crossorigin="anonymous">
-    <link rel="stylesheet" href="../style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login | SkillUp Academy</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
 </head>
-<body>
-
- 
-  
-
+<body style="zoom: 100%;"> <!-- 100% zoom for PC -->
 
   <div class="container vh-100 d-flex flex-column justify-content-center align-items-center">
     <div class="text-center mb-4">
-      <h2 class="fw-bold">Welcome Back</h2>
+      <h2 class="fw-bold display-3">Welcome Back</h2> <!-- Bigger title -->
     </div>
 
-    <div class="card p-4 shadow" style="max-width: 400px; width: 100%;">
-      
-      <!-- Alert Box (hidden by default) -->
+    
+       <div class="card p-4 shadow custom-card-height custom-card-padding" style="max-width: 600px; width: 100%; min-height: 400px;"> <!-- Bigger card -->
+
+
+      <!-- Modern Bootstrap Alert Box -->
       <div id="loginAlert" class="alert d-none" role="alert"></div>
 
       <form id="loginForm">
@@ -43,7 +41,7 @@
       </form>
 
       <div class="text-center mt-3">
-        <small>Don't have an account? <a href="registration.html">Sign Up</a></small>
+        <small>Don't have an account? <a href="registration.html">Sign Up</a></small> <!-- Sign Up link -->
       </div>
     </div>
   </div>
@@ -64,7 +62,7 @@
       }
     });
 
-    // Regex check for password
+    // Password validation regex
     function isPasswordValid(password) {
       const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
       return regex.test(password);
@@ -101,10 +99,11 @@
       window.location.href = "forgot-password.html";
     };
   </script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js" integrity="sha384-ndDqU0Gzau9qJ1lfW4pNLlhNTkCfHzAVBReH9diLvGRem5+R9g2FzA8ZGN954O5Q" crossorigin="anonymous"></script>
-</body>
 
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
+</body>
 </html>
+
 
 
 

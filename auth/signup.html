@@ -9,9 +9,142 @@
 </head>
 <body>
 
+ 
+
+
+  <div class="container vh-100 d-flex flex-column justify-content-center align-items-center">
+    <div class="text-center mb-4">
+      <h2 class="fw-bold">Create Your Account</h2>
+    </div>
+
+    <div class="card p-4 shadow" style="max-width: 550px; width: 100%;">
+      <!-- Bootstrap Alert -->
+      <div id="registerAlert" class="alert d-none" role="alert"></div>
+
+      <form id="registerForm">
+        <div class="row">
+          <div class="col-md-6 mb-3">
+            <label for="firstName" class="form-label fw-semibold">First Name</label>
+            <input type="text" class="form-control" id="firstName" placeholder="John" required>
+          </div>
+          <div class="col-md-6 mb-3">
+            <label for="lastName" class="form-label fw-semibold">Last Name</label>
+            <input type="text" class="form-control" id="lastName" placeholder="Doe" required>
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <label for="email" class="form-label fw-semibold">Email</label>
+          <input type="email" class="form-control" id="email" placeholder="example@email.com" required>
+        </div>
+
+        <div class="mb-3 position-relative">
+          <label for="password" class="form-label fw-semibold">Password</label>
+          <input type="password" class="form-control" id="password" placeholder="Create a password" required>
+          <i class="bi bi-eye-slash position-absolute end-0 pe-3" id="togglePassword" style="top: 60%; transform: translateY(-50%); cursor: pointer;"></i>
+        </div>
+
+        <div class="mb-3">
+          <label for="confirmPassword" class="form-label fw-semibold">Confirm Password</label>
+          <input type="password" class="form-control" id="confirmPassword" placeholder="Re-enter password" required>
+        </div>
+
+        <div class="mb-3">
+          <label for="dob" class="form-label fw-semibold">Date of Birth</label>
+          <input type="date" class="form-control" id="dob" required>
+        </div>
+
+        <div class="mb-3">
+          <label for="contact" class="form-label fw-semibold">Contact Number</label>
+          <div class="input-group">
+            <span class="input-group-text">+880</span>
+            <input type="tel" class="form-control" id="contact" placeholder="1XXXXXXXXX" pattern="[1][0-9]{9}" required>
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label fw-semibold">Gender</label><br>
+          <div class="form-check form-check-inline">
+            <input class="form-check-input" type="radio" name="gender" id="genderMale" value="Male" required>
+            <label class="form-check-label" for="genderMale">Male</label>
+          </div>
+          <div class="form-check form-check-inline">
+            <input class="form-check-input" type="radio" name="gender" id="genderFemale" value="Female" required>
+            <label class="form-check-label" for="genderFemale">Female</label>
+          </div>
+        </div>
+
+        <button type="submit" class="btn btn-dark w-100">Register</button>
+      </form>
+
+      <div class="text-center mt-3">
+        <small>Already have an account? <a href="login.html">Login</a></small>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Toggle password view
+    document.getElementById("togglePassword").addEventListener("click", function () {
+      const passwordField = document.getElementById("password");
+      const icon = this;
+      if (passwordField.type === "password") {
+        passwordField.type = "text";
+        icon.classList.remove("bi-eye-slash");
+        icon.classList.add("bi-eye");
+      } else {
+        passwordField.type = "password";
+        icon.classList.remove("bi-eye");
+        icon.classList.add("bi-eye-slash");
+      }
+    });
+
+    // Password validation regex
+    function isPasswordValid(password) {
+      const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+      return regex.test(password);
+    }
+
+    // Show bootstrap alert
+    function showAlert(message, type) {
+      const alertBox = document.getElementById("registerAlert");
+      alertBox.textContent = message;
+      alertBox.className = `alert alert-${type} mt-2`;
+      alertBox.classList.remove("d-none");
+      setTimeout(() => alertBox.classList.add("d-none"), 3000);
+    }
+
+    // Form submission
+    document.getElementById("registerForm").addEventListener("submit", function (e) {
+      e.preventDefault();
+
+      const password = document.getElementById("password").value;
+      const confirmPassword = document.getElementById("confirmPassword").value;
+      const contact = document.getElementById("contact").value;
+
+      if (!isPasswordValid(password)) {
+        showAlert("❌ Password must include uppercase, lowercase, number, special character, and be at least 8 characters long.", "danger");
+        return;
+      }
+
+      if (password !== confirmPassword) {
+        showAlert("❌ Passwords do not match.", "danger");
+        return;
+      }
+
+      if (!/^1[0-9]{9}$/.test(contact)) {
+        showAlert("❌ Invalid BD contact number. It must be 11 digits starting with 1.", "danger");
+        return;
+      }
+
+      showAlert("✅ Registration Successful!", "success");
+    });
+  </script>
+ <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js" integrity="sha384-ndDqU0Gzau9qJ1lfW4pNLlhNTkCfHzAVBReH9diLvGRem5+R9g2FzA8ZGN954O5Q" crossorigin="anonymous"></script>
+</body>
+</html>
 
 
     
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js" integrity="sha384-ndDqU0Gzau9qJ1lfW4pNLlhNTkCfHzAVBReH9diLvGRem5+R9g2FzA8ZGN954O5Q" crossorigin="anonymous"></script>
-</body>
-</html>
+   
+

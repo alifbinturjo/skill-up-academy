@@ -8,6 +8,10 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr" crossorigin="anonymous">
     <link rel="stylesheet" href="style.css">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+
 </head>
 
 <body>
@@ -24,25 +28,26 @@
 
     <!-- Profile Section -->
     <div class="container mt-5">
-        <div class="row align-items-center">
+        <div class="row">
             <!-- Profile Image and Basic Info -->
             <div class="col-md-4 text-center mb-4">
-                <img src="../Images/John Doe.jpeg" class="rounded-circle shadow-sm" alt="Instructor Photo">
+                <img src="image-assets/Instructors/John Doe.webp" class="rounded-circle shadow-sm"
+                    alt="Instructor Photo">
                 <h4 class="mt-3">John Doe</h4>
                 <p class="text-muted">Senior Web Development Instructor</p>
                 <span class="badge bg-primary">Web Development</span>
             </div>
 
             <!-- Bio and Info -->
-            <div class="col-md-8">
-                <h5>About</h5>
+            <div class="col-md-8 mt-4">
+                <h5>Bio</h5>
                 <p>
                     John Doe is a seasoned full-stack web developer with over 10 years of experience. He specializes
                     in modern web technologies including HTML, CSS, JavaScript, React, Node.js, and MongoDB. John is
                     passionate about teaching and mentoring the next generation of developers through hands-on
                     projects and interactive learning.
                 </p>
-                <hr>
+                <hr class="divider my-2">
                 <h5>Skills</h5>
                 <ul class="list-inline">
                     <li class="list-inline-item badge bg-dark text-light p-2 m-1">JavaScript</li>
@@ -51,33 +56,36 @@
                     <li class="list-inline-item badge bg-dark text-light p-2 m-1">MongoDB</li>
                     <li class="list-inline-item badge bg-dark text-light p-2 m-1">HTML & CSS</li>
                 </ul>
-            </div>
-        </div>
+                <hr class="divider my-2">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h5>Contacts</h5>
+                        <div class="d-flex gap-4 mt-3">
+                            <a href="#" class="text-decoration-none">
+                                <i class="fas fa-envelope fa-2x text-muted"></i>
+                            </a>
+                            <a href="#" class="text-decoration-none">
+                                <i class="fab fa-linkedin fa-2x text-muted"></i>
+                            </a>
+                            <a href="#" class="text-decoration-none">
+                                <i class="fab fa-facebook fa-2x text-muted"></i>
 
-        <!-- Courses by Instructor -->
-        <div class="mt-5">
-            <h4>Courses by John Doe</h4>
-            <div class="row mt-3">
-                <div class="col-md-6 mb-4">
-                    <div class="card h-100 shadow-sm border-1 p-4 bg-transparent">
-                        <div class="card-body">
-                            <h5 class="card-title">Complete Web Development Bootcamp</h5>
-                            <div class="d-flex justify-content-between mb-2">
-                                <span class="badge bg-primary">Web Development</span>
-                                <span class="text-muted">8 Weeks</span>
-                            </div>
-                            <p class="card-text">Learn HTML, CSS, JavaScript, React, Node.js, and MongoDB in this comprehensive course.</p>
-                            <div class="d-flex justify-content-between align-items-center">
-                                <a href="fullstackwebdev.html" class="btn btn-sm btn-outline-dark">View Details</a>
-                                <button class="btn btn-sm btn-success">Buy Now ($199)</button>
-                            </div>
+                            </a>
                         </div>
                     </div>
-                </div>
+                    <div class="col-md-6 mt-4">
+                        <div class="container-fluid">
+                            <a href="..\admin\instructors.html" class="btn btn-lg btn-outline-dark">Edit Profile</a>
+                        </div>
+                    </div>
 
-                <!-- Add more courses as needed -->
+
+                </div>
+                
+
             </div>
         </div>
+
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"

@@ -12,7 +12,7 @@
 
 <nav class="navbar navbar-expand-lg navbar-blur sticky-top shadow-sm">
   <div class="container-fluid">
-    <a class="navbar-brand" href="#">SkillUp Academy</a>
+    <a class="navbar-brand fw-bold" href="">SkillUp Academy</a>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
       aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
@@ -21,16 +21,25 @@
     <div class="collapse navbar-collapse" id="navbarNav">
       <ul class="navbar-nav ms-auto">
         <li class="nav-item">
-          <a class="nav-link" href="dashboard.html">Dashboard</a>
+          <a class="nav-link active" href="">Dashboard</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="">Courses</a>
+          <a class="nav-link" href="courses.html">Courses</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="">Announcements</a>
+          <a class="nav-link" href="instructors.html">Instructors</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="">Profile</a>
+          <a class="nav-link" href="admins.html">Admins</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="admins.html">Students</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="notice.html">Notices</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="profile.html">Profile</a>
         </li>
         <li class="nav-item">
           <a class="nav-link" href="">Logout</a>
@@ -55,13 +64,13 @@
                         <p class="lead fs-4">Type: Admin</p>
                     </div>
                     <div class="col-md-3">
+                        <p class="lead fs-4">Level: 1</p>
+                    </div>
+                    <div class="col-md-3">
                         <p class="lead fs-4">Status: Normal</p>
                     </div>
                     <div class="col-md-3">
-                        <p class="lead fs-4">Credit: 11</p>
-                    </div>
-                    <div class="col-md-3">
-                        <a href="" class="btn btn-outline-light">Go to profile</a>
+                        <a href="profile.html" class="btn btn-outline-light">Go to profile</a>
                     </div>
                 </div>
             </div>
@@ -71,22 +80,63 @@
 
     <div class="row mt-5">
         <div class="col-md-6">
-            <div class="card h-100 shadow border-0 p-4 bg-success text-center text-light">
-                <p class="fs-3 lead">Courses</p>
-                <p class="fs-4 lead">Current courses: 12</p>
-                <p class="fs-4 lead">Past courses: 1</p>
-                <a href="" class="btn btn-outline-light">View</a>
+            <div class="card h-100 card-h shadow-sm border-0 p-4 bg-success text-center text-light">
+                <p class="fs-3 lead"><strong>Courses</strong></p>
+                <p class="fs-4 lead">Offered: 12</p>
+                <p class="fs-4 lead">Ongoing: 1</p>
+                <div class="text-center mt-5">
+                  <a href="courses.html" class="btn btn-outline-light w-50">View</a>
+                </div>
             </div>
         </div>
         <div class="col-md-6">
-            <div class="card h-100 shadow border-0 p-4 bg-info text-center">
-                <p class="fs-3 lead">Announcements</p>
-                <p class="fs-4 lead">Platform: 1</p>
-                <p class="fs-4 lead">Courses: 1</p>
-                <a href="" class="btn btn-outline-dark">View</a>
+            <div class="card h-100 card-h shadow-sm border-0 p-4 bg-info text-center">
+                <p class="fs-3 lead"><strong>Notices</strong></p>
+                <p class="fs-4 lead">Posted: 1</p>
+                <div class="text-center mt-5">
+                  <a href="notice.html" class="mt-5 btn btn-outline-dark w-50">View</a>
+                </div>
             </div>
         </div>
+        
     </div>
+
+    <div class="row mt-3">
+        
+        <div class="col-md-4">
+            <div class="card h-100 card-h shadow-sm border-0 p-4 bg-info text-center text-dark">
+                <p class="fs-3 lead"><strong>Instructors</strong></p>
+                <p class="fs-4 lead">Junior instructor: 12</p>
+                <p class="fs-4 lead">Instructor: 2</p>
+                <p class="fs-4 lead">Senior instructor: 1</p>
+                <div class="text-center">
+                  <a href="instructors.html" class="btn btn-outline-dark w-50">View</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card h-100 card-h shadow-sm border-0 p-4 bg-success text-center text-light">
+                <p class="fs-3 lead"><strong>Admins</strong></p>
+                <p class="fs-4 lead">L1: 1</p>
+                <p class="fs-4 lead">L2: 2</p>
+                <div class="text-center mt-2">
+                  <a href="admins.html" class="mt-5 btn btn-outline-light w-50">View</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card h-100 card-h shadow-sm border-0 p-4 bg-secondary text-center text-light">
+                <p class="fs-3 lead"><strong>Students</strong></p>
+                <p class="fs-4 lead">Total: 12</p>
+                <p class="fs-4 lead">Warned: 1</p>
+                <div class="text-center mt-5">
+                  <a href="students.html" class="btn btn-outline-light w-50">View</a>
+                </div>
+            </div>
+        </div>
+        
+    </div>
+
 </div>
 
 

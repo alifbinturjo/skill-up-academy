@@ -16,19 +16,23 @@
       aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
+    
     <div class="collapse navbar-collapse" id="navbarNav">
       <ul class="navbar-nav ms-auto">
-                <li class="nav-item">
-  <a class="nav-link" href="#">Instructors</a>
-</li>
         <li class="nav-item">
           <a class="nav-link" href="#">Admins</a>
         </li>
-
+        <li class="nav-item">
+          <a class="nav-link" href="#">Instructors</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#">Notifications</a>
+        </li>
       </ul>
     </div>
   </div>
 </nav>
+
 
 <div class="container-fluid mt-3 mb-5 px-3">
   <div class="row justify-content-center">
@@ -37,46 +41,38 @@
         <div class="card-body">
           <h2 class="text-center mb-4">Admins</h2>
 
-          <h5 class="mb-3">Login</h5>
+          <h5 class="mb-3">Create Admin's Profile</h5>
+          
+          <!-- Email and Level on the same line -->
           <div class="row g-3 mb-4">
             <div class="col-md-6">
-              <label for="username" class="form-label small">Username <span class="text-danger">*</span></label>
-              <input type="text" class="form-control form-control-sm bg-transparent border border-dark" id="username" required>
+              <label for="email" class="form-label small">Email <span class="text-danger">*</span></label>
+              <input type="email" class="form-control form-control-sm bg-transparent border border-dark" id="email" required>
             </div>
             <div class="col-md-6">
-              <label for="password" class="form-label small">Password <span class="text-danger">*</span></label>
-              <input type="password" class="form-control form-control-sm bg-transparent border border-dark" id="password" required>
-            </div>
-          </div>
-
-          <hr>
-
-          <h5 class="mb-3">Details</h5>
-          <div class="row g-3 mb-3">
-            <div class="col-12">
-              <label for="name" class="form-label small">Name</label>
-              <input type="text" class="form-control form-control-sm bg-transparent border border-dark" id="name">
-            </div>
-            <div class="col-md-6">
-              <label for="email" class="form-label small">Email</label>
-              <input type="email" class="form-control form-control-sm bg-transparent border border-dark" id="email">
-            </div>
-            <div class="col-md-6">
-              <label for="contact" class="form-label small">Contact No</label>
-              <input type="tel" class="form-control form-control-sm bg-transparent border border-dark" id="contact">
-            </div>
-             <div class="col-12">
-              <label for="department" class="form-label small">Level</label>
-              <select class="form-select form-select-sm bg-transparent border border-dark text-dark" id="department">
+              <label for="level" class="form-label small">Level <span class="text-danger">*</span></label>
+              <select class="form-select form-select-sm bg-transparent border border-dark text-dark" id="level">
                 <option selected disabled>Select Level</option>
                 <option value="one">1</option>
                 <option value="two">2</option>
                 <option value="three">3</option>
-                  <option value="four">4</option>
+                <option value="four">4</option>
               </select>
-              <div class="text-center mt-3">
-  <button onclick="showDanger()" class="btn btn-primary btn-sm">Add Admin</button>
+            </div>
+          </div>
+
+          <!-- Add Admin Button -->
+          <div class="text-center mt-2">
+            <button onclick="showDanger()" class="btn btn-primary btn-sm">Add Admin</button>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
+
+
             </div> 
             </div>
           </div>
@@ -106,7 +102,8 @@
 
         
 <h4 class="mb-4 text-center">Filter & Sort Admins</h4>
-<div class="row g-3 align-items-center mb-4">
+
+<div class="row g-3 px-2 mb-3">
   <div class="col-md-4">
     <label for="filter-name" class="form-label small">Name</label>
     <input type="text" class="form-control form-control-sm bg-transparent border border-dark text-dark" id="filter-name" placeholder="Enter name">
@@ -125,7 +122,7 @@
     <label for="sort-option" class="form-label small">Sort By</label>
     <select class="form-select form-select-sm bg-transparent border border-dark text-dark" id="sort-option">
       <option value="Select" selected>Select</option>
-      <option value="name-asc">Name(A-Z)</option>
+      <option value="name-asc">Name (A-Z)</option>
       <option value="name-desc">Name (Z-A)</option>
       <option value="level-asc">Level (1-10)</option>
       <option value="level-desc">Level (10-1)</option>

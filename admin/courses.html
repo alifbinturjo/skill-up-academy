@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Admins</title>
+  <title>Courses</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="../style.css">
 </head>
@@ -11,28 +11,50 @@
 
 <nav class="navbar navbar-expand-lg navbar-blur sticky-top shadow-sm">
   <div class="container-fluid">
-    <a class="navbar-brand" href="#">XYZ</a>
+    <a class="navbar-brand fw-bold" href="">SkillUp Academy</a>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
       aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
-    
+  
     <div class="collapse navbar-collapse" id="navbarNav">
       <ul class="navbar-nav ms-auto">
-        <li class="nav-item"><a class="nav-link" href="#">Admins</a></li>
-        <li class="nav-item"><a class="nav-link" href="#">Instructors</a></li>
-        <li class="nav-item"><a class="nav-link" href="#">Notifications</a></li>
+        <li class="nav-item">
+          <a class="nav-link " href="dashboard.html">Dashboard</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link active " href="">Courses</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link " href="instructors.html">Instructors</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link  " href="admins.html">Admins</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="students.html">Students</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="notice.html">Notices</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="profile.html">Profile</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="">Logout</a>
+        </li>
       </ul>
     </div>
   </div>
 </nav>
 
+
 <div class="container-fluid mt-3 mb-5 px-3">
   <div class="row justify-content-center">
     <div class="col-12">
-      <div class="card bg-transparent shadow-lg border-0">
+      <div class="card bg-transparent card-h shadow-lg border-0">
         <div class="card-body">
-          <h2 class="text-center mb-4">Course</h2>
+          <p class="text-center fs-1 mb-4">Course</p>
 
           <h5 class="mb-3">Create Course</h5>
           <div class="row g-3 mb-3">
@@ -124,24 +146,27 @@
   <div class="card-body bg-transparent">
     <h4 class="mb-4 text-center">List of Courses</h4>
     <div class="table-responsive">
-      <table class="table table-bordered table-hover align-middle border-dark mb-0">
-        <thead class="bg-transparent text-dark text-center">
+      <table class="table table-hover align-middle mb-0">
+        <thead class="bg-transparent text-dark text-start">
           <tr>
-            <th class="bg-transparent text-start ps-4">Course Title</th>
-            <th class="bg-transparent text-end pe-4">Edit</th>
+            <th class="bg-transparent ps-4">Course</th>
           </tr>
         </thead>
         <tbody>
           <tr class="bg-transparent text-dark">
-            <td class="bg-transparent text-start ps-4">Web Dev Basics</td>
-            <td class="bg-transparent text-end pe-4">
-              <button class="btn btn-sm btn-warning" data-bs-toggle="modal" data-bs-target="#editModal1">Edit</button>
+            <td class="bg-transparent">
+              <div class="d-flex justify-content-between align-items-center px-3 py-2 border border-dark rounded">
+                <span class="ps-2">Web Dev Basics</span>
+                <button class="btn btn-sm btn-warning" data-bs-toggle="modal" data-bs-target="#editModal1">Edit</button>
+              </div>
             </td>
           </tr>
           <tr class="bg-transparent text-dark">
-            <td class="bg-transparent text-start ps-4">Advanced Math</td>
-            <td class="bg-transparent text-end pe-4">
-              <button class="btn btn-sm btn-warning" data-bs-toggle="modal" data-bs-target="#editModal2">Edit</button>
+            <td class="bg-transparent">
+              <div class="d-flex justify-content-between align-items-center px-3 py-2 border border-dark rounded mt-2">
+                <span class="ps-2">Advanced Math</span>
+                <button class="btn btn-sm btn-warning" data-bs-toggle="modal" data-bs-target="#editModal2">Edit</button>
+              </div>
             </td>
           </tr>
         </tbody>
@@ -149,6 +174,7 @@
     </div>
   </div>
 </div>
+
 
 <!-- Edit Modal 1 -->
 <div class="modal fade" id="editModal1" tabindex="-1">

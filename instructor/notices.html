@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Students</title>
+  <title>Notices</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet"
     integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr" crossorigin="anonymous">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
@@ -30,7 +30,7 @@
             <a class="nav-link" href="courses.html">Courses</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="notices.html">Notices</a>
+            <a class="nav-link active " href="notices.html">Notices</a>
           </li>
           <li class="nav-item">
             <a class="nav-link" href="profile.html">Profile</a>
@@ -43,24 +43,34 @@
     </div>
   </nav>
 
-  <div class="container">
-    <p class="fs-1 text-center">Students</p>
 
-    <div class="row shadow p-2">
-      <div class="col-md-10">
-        <input type="email" name="email" id="email" class="bg-transparent w-100 rounded h-100" placeholder="Email">
-      </div>
-      <div class="col-md-2">
-        <button class="btn btn-outline-dark w-100">Search</button>
+
+  <div class="container mt-5 mb-5">
+    <p class="text-center fs-1 mb-4">Notices</p>
+
+
+    <div class="card shadow bg-transparent card-h mb-5">
+      <div class="card-body">
+        <h5 class="card-title">System Maintenance</h5>
+        <p class="card-text">We will perform scheduled maintenance on the system tonight from 12:00 AM to 2:00 AM.
+          During this time, access may be temporarily unavailable.</p>
+        <p class="text-muted small">June 27, 2025 • 11:30 AM</p>
       </div>
     </div>
+
+
+    <div class="card shadow bg-transparent card-h mb-5">
+      <div class="card-body">
+        <h5 class="card-title">New Course Added</h5>
+        <p class="card-text">A new course titled "Advanced Machine Learning" has been added to the Computer Science
+          department for the upcoming semester.</p>
+        <p class="text-muted small">June 26, 2025 • 3:45 PM</p>
+      </div>
+    </div>
+
+
   </div>
 
-
-
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"
-    integrity="sha384-ndDqU0Gzau9qJ1lfW4pNLlhNTkCfHzAVBReH9diLvGRem5+R9g2FzA8ZGN954O5Q"
-    crossorigin="anonymous"></script>
 </body>
 
 </html>

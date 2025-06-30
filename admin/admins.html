@@ -11,22 +11,37 @@
 
 <nav class="navbar navbar-expand-lg navbar-blur sticky-top shadow-sm">
   <div class="container-fluid">
-    <a class="navbar-brand" href="#">XYZ</a>
+    <a class="navbar-brand fw-bold" href="">SkillUp Academy</a>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
       aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
-    
+  
     <div class="collapse navbar-collapse" id="navbarNav">
       <ul class="navbar-nav ms-auto">
         <li class="nav-item">
-          <a class="nav-link" href="#">Admins</a>
+          <a class="nav-link " href="dashboard.html">Dashboard</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="#">Instructors</a>
+          <a class="nav-link" href="courses.html">Courses</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="#">Notifications</a>
+          <a class="nav-link " href="">Instructors</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link active " href="">Admins</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="students.html">Students</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="notice.html">Notices</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="profile.html">Profile</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="">Logout</a>
         </li>
       </ul>
     </div>
@@ -34,12 +49,14 @@
 </nav>
 
 
+
 <div class="container-fluid mt-3 mb-5 px-3">
   <div class="row justify-content-center">
     <div class="col-12">
-      <div class="card bg-transparent shadow-lg border-0">
+      <div class="card bg-transparent border-0 card-h shadow-lg">
+
         <div class="card-body">
-          <h2 class="text-center mb-4">Admins</h2>
+          <p class="text-center fs-1 mb-4">Admins</p>
 
           <h5 class="mb-3">Create Admin's Profile</h5>
           
@@ -218,11 +235,11 @@
             </select>
           </div>
           <div class="mb-3">
-            <label class="form-label">Title</label>
+            <label class="form-label">Level</label>
             <select class="form-select border-dark">
-              <option>Junior Instructor</option>
-              <option selected>Instructor</option>
-              <option>Senior Instructor</option>
+              <option>1</option>
+              <option selected>2</option>
+              <option>3</option>
             </select>
           </div>
           <div class="d-flex justify-content-between">
@@ -245,10 +262,7 @@
       </div>
       <div class="modal-body">
         <form>
-          <div class="mb-3">
-            <label class="form-label">Name</label>
-            <input type="text" class="form-control border-dark" value="Jane Smith">
-          </div>
+         
           <div class="mb-3">
             <label class="form-label">Department</label>
             <select class="form-select border-dark">
@@ -266,11 +280,11 @@
             </select>
           </div>
           <div class="mb-3">
-            <label class="form-label">Title</label>
+            <label class="form-label">Level</label>
             <select class="form-select border-dark">
-              <option>Junior Instructor</option>
-              <option>Instructor</option>
-              <option selected>Senior Instructor</option>
+              <option selected>1</option>
+              <option>2</option>
+              <option >3</option>
             </select>
           </div>
           <div class="d-flex justify-content-between">

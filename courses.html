@@ -12,23 +12,38 @@
 
 
 <body>
-    <!-- Navigation Bar -->
     <nav class="navbar navbar-expand-lg navbar-blur sticky-top shadow-sm">
         <div class="container-fluid">
-            <a class="navbar-brand fw-bold d-none d-sm-block" href="index.html">SkillUp Academy</a>
+            <a class="navbar-brand fw-bold" href="">SkillUp Academy</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
 
-            <!-- Centered "All Available Courses" text - shown on all screens -->
-            <div class="mx-auto">
-                <span class="navbar-text fw-bold fs-4">All Available Courses</span>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link " href="index.html">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="">Courses</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="instructors.html">Instructors</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="auth/login.html">Login</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="auth/signup.html">Signup</a>
+                    </li>
+                </ul>
             </div>
-
-            <!-- Empty div to balance the flex layout -->
-            <div class="d-none d-sm-block" style="width: 120px;"></div>
         </div>
     </nav>
 
-    <!-- Search and Filter Section -->
     <div class="container mt-4 "></div>
+    <p class="text-center mb-4 fs-1">Courses</p>
     <div class="row justify-content-center ">
         <div class="col-md-8 ">
             <div class="input-group mb-3 ">
@@ -42,7 +57,7 @@
                     <option>Cloud Computing</option>
                     <option>Cyber Security</option>
                 </select>
-                <button class="btn btn-md btn-outline-dark"
+                <button class="btn btn-md btn-outline-dark bg-info"
                     onclick="showFilterToast('Filtered successfully!')">Filter</button>
             </div>
         </div>
@@ -51,7 +66,8 @@
     <div class="container mt-5">
         <div class="row">
             <div class="col-md-4 mb-4">
-                <div class="card card-h h-100 shadow-sm border-1 p-4 bg-transparent">
+                <div class="card card-h h-100 shadow-sm border-1 p-4"
+                    style="background-color: rgba(169, 169, 169, 0.356);">
                     <div class="card-body">
                         <h5 class="card-title">Complete Web Development Bootcamp</h5>
                         <div class="d-flex justify-content-between mb-2">
@@ -63,15 +79,17 @@
                             Node.js, and MongoDB.</p>
                         <p class="text-muted"><small>Instructor: John Doe</small></p>
                         <div class="d-flex justify-content-between align-items-center">
-                            <a href="fullstackwebdev.html" class="btn btn-sm btn-outline-dark">View Details</a>
-                            <button class="btn btn-sm btn-success">Buy Now ($199)</button>
+                            <a href="/course-details/full-stack-web-dev.html" class="btn btn-sm btn-outline-dark">View
+                                Details</a>
+                            <a href="auth/billing.html" class="btn btn-sm btn-success">Buy Now ($199)</a>
                         </div>
                     </div>
                 </div>
             </div>
 
             <div class="col-md-4 mb-4">
-                <div class="card card-h h-100 shadow-sm border-1 p-4 bg-transparent">
+                <div class="card card-h h-100 shadow-sm border-1 p-4 "
+                    style="background-color: rgba(169, 169, 169, 0.356);">
                     <div class="card-body">
                         <h5 class="card-title">Data Science Fundamentals</h5>
                         <div class="d-flex justify-content-between mb-2">
@@ -91,7 +109,8 @@
             </div>
 
             <div class="col-md-4 mb-4">
-                <div class="card card-h h-100 shadow-sm border-1 p-4 bg-transparent">
+                <div class="card card-h h-100 shadow-sm border-1 p-4 "
+                    style="background-color: rgba(169, 169, 169, 0.356);">
                     <div class="card-body">
                         <h5 class="card-title">Mobile App Development with Flutter</h5>
                         <div class="d-flex justify-content-between mb-2">
@@ -136,5 +155,41 @@
     </div>
 
 </body>
+
+<footer class="bg-dark text-white pt-5 pb-4">
+    <div class="container text-md-left">
+        <div class="row text-center text-md-left">
+
+            <div class="col-md-6 col-lg-6 col-xl-6 mx-auto mt-3">
+                <h5 class="mb-4 fw-bold">SkillUp Academy</h5>
+                <p>Empowering learners with the skills they need to succeed in the digital world.</p>
+                <a href="policies.html" class="text-white text-decoration-none">Academy policies &rarr;</a>
+            </div>
+
+            <div class="col-md-3 col-lg-3 col-xl-3 mx-auto mt-3">
+                <h5 class="mb-4 fw-bold">Contact</h5>
+                <p><i class="bi bi-envelope me-2"></i> support@skillup.com</p>
+                <p><i class="bi bi-phone me-2"></i> +880 1234-567890</p>
+                <p><i class="bi bi-geo-alt me-2"></i> Dhaka, Bangladesh</p>
+            </div>
+
+            <div class="col-md-3 col-lg-3 col-xl-3 mx-auto mt-3">
+                <h5 class="mb-4 fw-bold">Follow Us</h5>
+                <a href="#" class="text-white me-3"><i class="bi bi-facebook"></i></a>
+                <a href="#" class="text-white me-3"><i class="bi bi-twitter"></i></a>
+                <a href="#" class="text-white me-3"><i class="bi bi-linkedin"></i></a>
+                <a href="#" class="text-white"><i class="bi bi-youtube"></i></a>
+            </div>
+
+        </div>
+
+        <hr class="my-3">
+
+        <div class="text-center">
+            <p class="mb-0">&copy; 2025 SkillUp Academy. All rights reserved.</p>
+        </div>
+
+    </div>
+</footer>
 
 </html>

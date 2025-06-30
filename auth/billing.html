@@ -1,12 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Billing</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr" crossorigin="anonymous">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Billing</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="../style.css">
 </head>
 <body>
 
@@ -22,11 +21,9 @@
       <ul class="navbar-nav ms-auto">
         
         <li class="nav-item">
-          <a class="nav-link " href="">Home</a>
+          <a class="nav-link " href="../index.html">Home</a>
         </li>
-        <li class="nav-item">
-          <a class="nav-link active" href="">Billing</a>
-        </li>
+       
         <li class="nav-item">
           <a class="nav-link" href="courses.html">Courses</a>
         </li>
@@ -47,30 +44,32 @@
 
 <!-- Billing Section -->
 <div class="container my-5">
-  <h2 class="text-center mb-4 fw-bold">Billing</h2>
-  <div class="card bg-transparent border border-dark shadow-sm">
+  <p class="text-center mb-4 fs-1">Billing</p>
+  <div class="card shadow-lg card-h bg-transparent">
+    
     <div class="card-body">
       <div class="mb-3">
         <label class="form-label fw-semibold">Course Name</label>
-        <input type="text" class="form-control" value="Full Stack Web Development" disabled>
+        <input type="text" class="form-control form-control-sm bg-transparent border border-dark" value="Full Stack Web Development" disabled>
       </div>
 
       <div class="mb-3">
         <label class="form-label fw-semibold">Amount</label>
-        <input type="text" class="form-control" value="$120" disabled>
+        <input type="text" class="form-control form-control-sm bg-transparent border border-dark" value="$120" disabled>
       </div>
 
       <div class="mb-3">
         <label class="form-label fw-semibold">Account Email</label>
-        <input type="email" class="form-control" placeholder="Enter your Account email">
+        <input type="email" class="form-control form-control-sm bg-transparent border border-dark" placeholder="Enter your Account email">
       </div>
 
       <div class="text-center">
-        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#paymentModal">Proceed</button>
+        <button class="btn btn-success btn-lg px-5" data-bs-toggle="modal" data-bs-target="#paymentModal">Proceed</button>
       </div>
     </div>
   </div>
 </div>
+
 
 <!-- Payment Modal -->
 <div class="modal fade" id="paymentModal" tabindex="-1" aria-labelledby="paymentModalLabel" aria-hidden="true">

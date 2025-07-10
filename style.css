@@ -1,9 +1,7 @@
 html, body {
-  height: 100%;
   margin: 0;
   padding: 0;
   background: linear-gradient(-45deg, #dbeafe, #c7d2fe, #e0f2fe, #ccfbf1);
-
   background-size: 400% 400%;
   background-attachment: fixed;
   animation: gradientBG 15s ease-in-out infinite;

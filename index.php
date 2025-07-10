@@ -1,3 +1,8 @@
+<?php
+session_start();
+include 'auth/cnct.php';
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -29,12 +34,28 @@
         <li class="nav-item">
           <a class="nav-link" href="instructors.html">Instructors</a>
         </li>
-        <li class="nav-item">
-          <a class="nav-link" href="auth/login.html">Login</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="auth/signup.html">Signup</a>
-        </li>
+        
+        <?php
+          if(isset($_SESSION['role'])){
+            echo'<li class="nav-item">';
+            if($_SESSION['role']==="student")
+              echo '<a class="nav-link" href="student/dashboard.html">Dashboard</a> </li>';
+            else if($_SESSION['role']==="instructor")
+              echo '<a class="nav-link" href="instructor/dashboard.html">Dashboard</a> </li>';
+            else
+              echo '<a class="nav-link" href="admin/dashboard.html">Dashboard</a> </li>';
+
+            echo'<li class="nav-item">
+                  <a class="nav-link" href="auth/logout.php">Logout</a>
+                  </li>';
+          }
+          else{
+            echo '<a class="nav-link" href="auth/login.html">Login</a> </li>
+                  <li class="nav-item">
+                  <a class="nav-link" href="auth/signup.html">Signup</a>
+                  </li>';
+          }
+        ?>
       </ul>
     </div>
   </div>
@@ -43,7 +64,7 @@
 <section class="vh-100 hero-section d-flex align-items-center">
   <div class="container card-h shadow-lg p-5 rounded">
     <div class="hero-text">
-      <h1 class="fw-bold">Welcome to SkillUp Academy!</h1>
+      <h1 class="fw-bold" id="hero-text"></h1>
       <p class="lead">Learn new skills and boost your career with us...</p>
       <a href="auth/signup.html" class="btn btn-outline-dark">Get Started</a>
       <span>Or</span>
@@ -52,6 +73,42 @@
   </div>
 </section>
 
+<?php
+
+$stmt_student = $conn->prepare("SELECT COUNT(*) FROM students");
+$stmt_instructor = $conn->prepare("SELECT COUNT(*) FROM instructors");
+$stmt_domain = $conn->prepare("SELECT COUNT(DISTINCT domain) FROM courses");
+
+try{
+$stmt_student->execute();
+$stmt_student->bind_result($studentCount);
+$stmt_student->fetch();
+$stmt_student->close();
+
+$stmt_instructor->execute();
+$stmt_instructor->bind_result($instructorCount);
+$stmt_instructor->fetch();
+$stmt_instructor->close();
+
+$stmt_domain->execute();
+$stmt_domain->bind_result($domainCount);
+$stmt_domain->fetch();
+$stmt_domain->close();
+
+$conn->close();
+}
+catch(Exception $e){
+  $stmt_student->close();
+  $stmt_instructor->close();
+  $stmt_domain->close();
+  session_unset();
+  session_destroy();  
+  $conn->close();
+  header("Location: index.php");
+  exit();
+}
+
+?>
 
 <section id="explore" class="py-5">
   <div class="container">
@@ -63,19 +120,19 @@
   <div class="row justify-content-center text-center mb-5">
       <div class="col-md-4">
         <div class="card card-h h-100 shadow border-0 p-4 bg-transparent">
-          <h3 class="fw-bold">1,000+</h3>
+          <h3 class="fw-bold counter" data-target="<?php echo $studentCount  ?>">0</h3>
         <p>Students Trained</p>
         </div>
       </div>
       <div class="col-md-4">
         <div class="card card-h h-100 shadow border-0 p-4 bg-transparent">
-          <h3 class="fw-bold">100+</h3>
+          <h3 class="fw-bold counter" data-target="<?php echo $instructorCount  ?>">0</h3>
         <p>Expert Instructors</p>
         </div>
       </div>
       <div class="col-md-4">
         <div class="card card-h h-100 shadow border-0 p-4 bg-transparent">
-          <h3 class="fw-bold">10+</h3>
+          <h3 class="fw-bold counter" data-target="<?php echo $domainCount  ?>">0</h3>
         <p>Domains</p>
         </div>
       </div>
@@ -143,7 +200,7 @@
       <a href="instructors.html" class="btn btn-outline-dark ms-5">View Instructors</a>
     </div>
 </section>
-    
+    <script src="common/common.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js" integrity="sha384-ndDqU0Gzau9qJ1lfW4pNLlhNTkCfHzAVBReH9diLvGRem5+R9g2FzA8ZGN954O5Q" crossorigin="anonymous"></script>
 </body>
 <footer class="bg-dark text-white pt-5 pb-4">

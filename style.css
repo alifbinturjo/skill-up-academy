@@ -1,5 +1,20 @@
-body {
-  background-color: lightgray;
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  background: linear-gradient(-45deg, #dbeafe, #c7d2fe, #e0f2fe, #ccfbf1);
+
+  background-size: 400% 400%;
+  background-attachment: fixed;
+  animation: gradientBG 15s ease-in-out infinite;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: #1c1c1c;
+}
+
+@keyframes gradientBG {
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
 }
 
 .navbar-blur {

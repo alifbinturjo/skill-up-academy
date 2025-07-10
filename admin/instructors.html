@@ -49,8 +49,6 @@
     </div>
   </nav>
 
-
-
   <div class="container-fluid mt-3 mb-5 px-3">
     <div class="row justify-content-center">
       <div class="col-12">
@@ -58,55 +56,11 @@
           <div class="card-body">
             <p class="text-center fs-1 mb-4">Instructor</p>
 
-            <h5 class="mb-3">Create Instructor's Profile</h5>
-
-            <div class="row g-3 mb-3">
-              <div class="col-md-6">
-                <label for="email" class="form-label small">Email <span class="text-danger">*</span></label>
-                <input type="email" class="form-control form-control-sm bg-transparent border border-dark" id="email"
-                  required>
-              </div>
-              <div class="col-md-6">
-                <label for="level" class="form-label small">Level <span class="text-danger">*</span></label>
-                <select class="form-select form-select-sm bg-transparent border border-dark text-dark" id="level">
-                  <option selected disabled>Select Level</option>
-                  <option value="one">1</option>
-                  <option value="two">2</option>
-                  <option value="three">3</option>
-                  <option value="four">4</option>
-                </select>
-              </div>
-            </div>
-
-            <div class="row g-3 mb-4">
-              <div class="col-md-6">
-                <label for="department" class="form-label small">Department</label>
-                <select class="form-select form-select-sm bg-transparent border border-dark text-dark" id="department">
-                  <option selected disabled>Select Department</option>
-                  <option value="cse">Computer Science</option>
-                  <option value="eee">Electrical Engineering</option>
-                  <option value="civil">Civil Engineering</option>
-                  <option value="microbiology">Microbiology</option>
-                  <option value="math">Mathematics</option>
-                  <option value="physics">Physics</option>
-                  <option value="english">English Literature</option>
-                  <option value="media">Media & Journalism</option>
-                  <option value="bba">BBA</option>
-                </select>
-              </div>
-              <div class="col-md-6">
-                <label for="title" class="form-label small">Title</label>
-                <select class="form-select form-select-sm bg-transparent border border-dark text-dark" id="title">
-                  <option selected disabled>Select Title</option>
-                  <option value="junior">Junior Instructor</option>
-                  <option value="instructor">Instructor</option>
-                  <option value="senior">Senior Instructor</option>
-                </select>
-              </div>
-            </div>
-
-            <div class="text-center mt-2">
-              <button onclick="showDanger()" class="btn btn-primary btn-sm">Add Instructor</button>
+            <!-- Add Instructor Button (replaces the form) -->
+            <div class="d-grid">
+              <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addInstructorModal">
+                Add Instructor
+              </button>
             </div>
 
           </div>
@@ -115,10 +69,49 @@
     </div>
   </div>
 
+ <!-- Add Instructor Modal -->
+<div class="modal fade" id="addInstructorModal" tabindex="-1" aria-labelledby="addInstructorModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content border border-dark">
+      <div class="modal-header">
+        <h5 class="modal-title" id="addInstructorModalLabel">Create Instructor's Profile</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="row g-3">
+          <div class="col-12">
+            <label for="email" class="form-label small">Email <span class="text-danger">*</span></label>
+            <input type="email" class="form-control form-control-sm border border-dark" id="email" required>
+          </div>
+          <div class="col-12">
+            <label for="domain" class="form-label small">Domains</label>
+            <select class="form-select form-select-sm border border-dark" id="domain">
+              <option selected disabled>Select Domain</option>
+              <option value="programming">Programming</option>
+              <option value="problem-solving">Problem Solving</option>
+              <option value="web-development">Web Development</option>
+              <option value="android-development">Android Development</option>
+            </select>
+          </div>
+          <div class="col-12">
+            <label for="title" class="form-label small">Title</label>
+            <select class="form-select form-select-sm border border-dark" id="title">
+              <option selected disabled>Select Title</option>
+              <option value="junior">Junior Instructor</option>
+              <option value="instructor">Instructor</option>
+              <option value="senior">Senior Instructor</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-danger btn-sm" data-bs-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary btn-sm" onclick="showDanger()">Add Instructor</button>
+      </div>
+    </div>
   </div>
-  </div>
-  </div>
-
+</div>
+  
   <div class="position-fixed bottom-0 start-50 translate-middle-x p-3 mb-3" style="z-index: 11;">
     <div id="adminToast" class="toast align-items-center text-white bg-success border-0" role="alert"
       aria-live="assertive" aria-atomic="true">
@@ -135,9 +128,13 @@
       const toastEl = document.getElementById('adminToast');
       const toast = new bootstrap.Toast(toastEl, { delay: 2000 });
       toast.show();
+      // Close the modal after showing toast
+      const modal = bootstrap.Modal.getInstance(document.getElementById('addInstructorModal'));
+      modal.hide();
     }
   </script>
 
+  <!-- Rest of your existing HTML remains unchanged -->
   <div class="card bg-transparent shadow-lg border-0 mt-4">
     <div class="card-body bg-transparent  p-4">
       <h4 class="mb-4 text-center">Filter & Sort Instructors</h4>
@@ -185,7 +182,7 @@
       </div>
       <div class="text-center mt-3">
         <button class="btn btn-primary btn-sm" onclick="showFilterToast('Applied successfully!')">Apply</button>
-        <button class="btn btn-secondary btn-sm" onclick="showFilterToast('Reset successfully!')">Reset</button>
+        <button class="btn btn-warning btn-sm" onclick="showFilterToast('Reset successfully!')">Reset</button>
       </div>
 
 
@@ -229,8 +226,7 @@
                   <td class="bg-transparent">
                     <button class="btn btn-sm btn-warning me-2" data-bs-toggle="modal"
                       data-bs-target="#editModal">Edit</button>
-                    <button class="btn btn-sm btn-info" data-bs-toggle="modal"
-                      data-bs-target="#contactModal">Contact</button>
+                    <button class="btn btn-sm btn-success" data-bs-toggle="modal" data-bs-target="#contactModal">Contact</button>
                   </td>
                 </tr>
                 <tr class="bg-transparent">
@@ -240,8 +236,7 @@
                   <td class="bg-transparent">
                     <button class="btn btn-sm btn-warning me-2" data-bs-toggle="modal"
                       data-bs-target="#editModal2">Edit</button>
-                    <button class="btn btn-sm btn-info" data-bs-toggle="modal"
-                      data-bs-target="#contactModal2">Contact</button>
+                   <button class="btn btn-sm btn-success" data-bs-toggle="modal" data-bs-target="#contactModal">Contact</button>
                   </td>
                 </tr>
               </tbody>

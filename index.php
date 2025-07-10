@@ -63,7 +63,7 @@
   <div class="row justify-content-center text-center mb-5">
       <div class="col-md-4">
         <div class="card card-h h-100 shadow border-0 p-4 bg-transparent">
-          <h3 class="fw-bold">10,000+</h3>
+          <h3 class="fw-bold">1,000+</h3>
         <p>Students Trained</p>
         </div>
       </div>
@@ -75,7 +75,7 @@
       </div>
       <div class="col-md-4">
         <div class="card card-h h-100 shadow border-0 p-4 bg-transparent">
-          <h3 class="fw-bold">15+</h3>
+          <h3 class="fw-bold">10+</h3>
         <p>Domains</p>
         </div>
       </div>
@@ -86,27 +86,22 @@
       <div class="row justify-content-center text-center mb-5">
       <div class="col-md-3 mb-3">
         <div class="card card-h h-100 shadow-sm border-1 p-4 bg-transparent">
-          <h5 class="fw-bold">Web Development</h5>
+          <h5 class="fw-bold">Programming</h5>
         </div>
       </div>
       <div class="col-md-3 mb-3">
         <div class="card card-h h-100 shadow-sm border-1 p-4 bg-transparent">
-          <h5 class="fw-bold">Graphic Design</h5>
+          <h5 class="fw-bold">Problem solving</h5>
         </div>
       </div>
       <div class="col-md-3 mb-3">
         <div class="card card-h h-100 shadow-sm border-1 p-4 bg-transparent">
-          <h5 class="fw-bold">Digital Marketing</h5>
+          <h5 class="fw-bold">Web development</h5>
         </div>
       </div>
       <div class="col-md-3 mb-3">
         <div class="card card-h h-100 shadow-sm border-1 p-4 bg-transparent">
-          <h5 class="fw-bold">Data Science</h5>
-        </div>
-      </div>
-      <div class="col-md-3 mb-3">
-        <div class="card card-h h-100 shadow-sm border-1 p-4 bg-transparent">
-          <h5 class="fw-bold">Cybersecurity</h5>
+          <h5 class="fw-bold">Android development</h5>
         </div>
       </div>
     </div>

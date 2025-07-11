@@ -2,7 +2,7 @@
 include'../auth/cnct.php';
 session_start();
 
-if(!isset($_SESSION['role'])){
+if(!isset($_SESSION['role'])&&$_SESSION['role']!=="student"){
   session_unset();
   session_destroy();
   $conn->close();

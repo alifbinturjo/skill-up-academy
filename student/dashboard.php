@@ -1,3 +1,19 @@
+<?php
+include'../auth/cnct.php';
+session_start();
+$_SESSION['role']="student";
+$_SESSION['uid']=1;
+$uid=$_SESSION['uid'];
+
+if(!isset($_SESSION['role'])&&$_SESSION['role']!=="student"){
+  session_unset();
+  session_destroy();
+  $conn->close();
+  header("Location: ../index.php");
+  exit();
+}
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -12,7 +28,13 @@
 </head>
 
 <body>
-
+<script>
+        window.addEventListener('pageshow', function (event) {
+            if (event.persisted) {
+                window.location.reload();
+            }
+        });
+</script>
   <nav class="navbar navbar-expand-lg navbar-blur sticky-top shadow-sm">
     <div class="container-fluid">
       <a class="navbar-brand fw-bold" href="">SkillUp Academy</a>

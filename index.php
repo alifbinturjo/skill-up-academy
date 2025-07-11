@@ -1,8 +1,7 @@
 <?php
-session_start();
 include 'auth/cnct.php';
+session_start();
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -14,7 +13,13 @@ include 'auth/cnct.php';
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-
+<script>
+        window.addEventListener('pageshow', function (event) {
+            if (event.persisted) {
+                window.location.reload();
+            }
+        });
+</script>
 <nav class="navbar navbar-expand-lg navbar-blur sticky-top shadow-sm">
   <div class="container-fluid">
     <a class="navbar-brand fw-bold" href="">SkillUp Academy</a>
@@ -101,10 +106,8 @@ catch(Exception $e){
   $stmt_student->close();
   $stmt_instructor->close();
   $stmt_domain->close();
-  session_unset();
-  session_destroy();  
   $conn->close();
-  header("Location: index.php");
+  header("Location: ops.php");
   exit();
 }
 

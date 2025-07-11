@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jul 07, 2025 at 05:37 PM
+-- Generation Time: Jul 11, 2025 at 08:17 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -97,7 +97,8 @@ CREATE TABLE `instructors` (
   `domain` varchar(10) NOT NULL,
   `title` varchar(10) NOT NULL,
   `skills` varchar(50) DEFAULT NULL,
-  `image` varchar(100) DEFAULT NULL
+  `image` varchar(100) DEFAULT NULL,
+  `n_status` tinyint(1) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -123,7 +124,8 @@ CREATE TABLE `instructors_notices` (
 
 CREATE TABLE `students` (
   `u_id` int(11) NOT NULL,
-  `bio` varchar(500) DEFAULT NULL
+  `bio` varchar(500) DEFAULT NULL,
+  `n_status` tinyint(1) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------

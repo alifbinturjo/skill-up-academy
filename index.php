@@ -1,6 +1,6 @@
 <?php
-session_start();
 include 'auth/cnct.php';
+session_start();
 ?>
 
 <!DOCTYPE html>

@@ -9,6 +9,7 @@ try{
     $conn= new mysqli($host,$username,$password,$dbname);
 }
 catch(Exception $e){
+    $conn->close();
     header("Location: ../index.php");
     exit();
 }

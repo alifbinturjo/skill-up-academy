@@ -1,3 +1,15 @@
+<?php
+include'../auth/cnct.php';
+session_start();
+
+if(!isset($_SESSION['role'])){
+  session_unset();
+  session_destroy();
+  $conn->close();
+  header("Lcoation: ../index.php");
+}
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 

@@ -101,10 +101,8 @@ catch(Exception $e){
   $stmt_student->close();
   $stmt_instructor->close();
   $stmt_domain->close();
-  session_unset();
-  session_destroy();  
   $conn->close();
-  header("Location: index.php");
+  header("Location: ops.php");
   exit();
 }
 

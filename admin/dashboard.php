@@ -1,3 +1,16 @@
+<?php
+include'../auth/cnct.php';
+session_start();
+
+if(!isset($_SESSION['role'])&&$_SESSION['role']!=="Admin"){
+  session_unset();
+  session_destroy();
+  $conn->close();
+  header("Location: ../index.php");
+  exit();
+}
+$u_id=$_SESSION['u_id'];
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -9,7 +22,13 @@
     <link rel="stylesheet" href="../style.css">
 </head>
 <body>
-
+<script>
+        window.addEventListener('pageshow', function (event) {
+            if (event.persisted) {
+                window.location.reload();
+            }
+        });
+</script>
 <nav class="navbar navbar-expand-lg navbar-blur sticky-top shadow-sm">
   <div class="container-fluid">
     <a class="navbar-brand fw-bold" href="">SkillUp Academy</a>
@@ -36,23 +55,126 @@
           <a class="nav-link" href="students.html">Students</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="post-notices.html">Notices</a>
+          <a class="nav-link" href="post-notices.html">Post</a>
         </li>
         <li class="nav-item">
           <a class="nav-link" href="profile.html">Profile</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="">Logout</a>
+          <a class="nav-link" href="../auth/logout.php">Logout</a>
         </li>
       </ul>
     </div>
   </div>
 </nav>
+<?php
+$stmt_name = $conn->prepare("SELECT name FROM users WHERE u_id = ?");
+$stmt_name->bind_param("i", $u_id);
 
+$stmt_level = $conn->prepare("SELECT level FROM admins WHERE u_id = ?");
+$stmt_level->bind_param("i", $u_id);
+
+$stmt_offered = $conn->prepare("SELECT COUNT(*) FROM courses WHERE status = 'offered'");
+$stmt_started = $conn->prepare("SELECT COUNT(*) FROM courses WHERE status = 'started'");
+
+$stmt_notices = $conn->prepare("SELECT COUNT(*) FROM admin_notices");
+
+$stmt_junior = $conn->prepare("SELECT COUNT(*) FROM instructors WHERE title = 'junior'");
+$stmt_instructor = $conn->prepare("SELECT COUNT(*) FROM instructors WHERE title = 'instructor'");
+$stmt_senior = $conn->prepare("SELECT COUNT(*) FROM instructors WHERE title = 'senior'");
+
+$stmt_l0 = $conn->prepare("SELECT COUNT(*) FROM admins WHERE level = 0");
+$stmt_l1 = $conn->prepare("SELECT COUNT(*) FROM admins WHERE level = 1");
+
+$stmt_students = $conn->prepare("SELECT COUNT(*) FROM students");
+
+try{
+  
+  $stmt_name->execute();
+  $stmt_name->bind_result($name);
+  $stmt_name->fetch();
+  $stmt_name->close();
+
+  
+  $stmt_level->execute();
+  $stmt_level->bind_result($level);
+  $stmt_level->fetch();
+  $stmt_level->close();
+
+  
+  $stmt_offered->execute();
+  $stmt_offered->bind_result($offered);
+  $stmt_offered->fetch();
+  $stmt_offered->close();
+
+  $stmt_started->execute();
+  $stmt_started->bind_result($started);
+  $stmt_started->fetch();
+  $stmt_started->close();
+
+  
+  $stmt_notices->execute();
+  $stmt_notices->bind_result($notice_count);
+  $stmt_notices->fetch();
+  $stmt_notices->close();
+
+  
+  $stmt_junior->execute();
+  $stmt_junior->bind_result($junior);
+  $stmt_junior->fetch();
+  $stmt_junior->close();
+
+  $stmt_instructor->execute();
+  $stmt_instructor->bind_result($instructor);
+  $stmt_instructor->fetch();
+  $stmt_instructor->close();
+
+  $stmt_senior->execute();
+  $stmt_senior->bind_result($senior);
+  $stmt_senior->fetch();
+  $stmt_senior->close();
+
+  
+  $stmt_l0->execute();
+  $stmt_l0->bind_result($l0);
+  $stmt_l0->fetch();
+  $stmt_l0->close();
+
+  $stmt_l1->execute();
+  $stmt_l1->bind_result($l1);
+  $stmt_l1->fetch();
+  $stmt_l1->close();
+
+  
+  $stmt_students->execute();
+  $stmt_students->bind_result($total_students);
+  $stmt_students->fetch();
+  $stmt_students->close();
+
+  $conn->close();
+}
+catch(Exception $e){
+  $stmt_name->close();
+  $stmt_level->close();
+  $stmt_offered->close();
+  $stmt_started->close();
+  $stmt_notices->close();
+  $stmt_junior->close();
+  $stmt_instructor->close();
+  $stmt_senior->close();
+  $stmt_l0->close();
+  $stmt_l1->close();
+  $stmt_students->close();
+
+  $conn->close();
+  header("Location: ../auth/logout.php");
+  exit();
+}
+?>
 <div class="container">
 
     <div class="mb-5 mt-5">
-        <p class="lead fs-1">Hi Mr. Xyz</p>
+        <p class="lead fs-1">Hi <?php echo $name ?></p>
     </div>
 
     <div class="row">
@@ -61,10 +183,10 @@
             <div class="container ">
                 <div class="row">
                     <div class="col-md-4">
-                        <p class="lead fs-4">Type: Admin</p>
+                        <p class="lead fs-4">Type: <?php echo $_SESSION['role'] ?></p>
                     </div>
                     <div class="col-md-4">
-                        <p class="lead fs-4">Level: 1</p>
+                        <p class="lead fs-4">Level: <?php echo $level ?></p>
                     </div>
                     <div class="col-md-4">
                         <a href="profile.html" class="btn btn-outline-light">Go to profile</a>
@@ -79,8 +201,8 @@
         <div class="col-md-6">
             <div class="card h-100 card-h shadow-sm border-0 p-4 bg-success text-center text-light">
                 <p class="fs-3 lead"><strong>Courses</strong></p>
-                <p class="fs-4 lead">Offered: 12</p>
-                <p class="fs-4 lead">Ongoing: 1</p>
+                <p class="fs-4 lead">Offered: <?php echo $offered ?></p>
+                <p class="fs-4 lead">Ongoing: <?php echo $started ?></p>
                 <div class="text-center mt-5">
                   <a href="courses.html" class="btn btn-outline-light w-50">View</a>
                 </div>
@@ -89,7 +211,7 @@
         <div class="col-md-6">
             <div class="card h-100 card-h shadow-sm border-0 p-4 bg-info text-center">
                 <p class="fs-3 lead"><strong>Notices</strong></p>
-                <p class="fs-4 lead">Posted: 1</p>
+                <p class="fs-4 lead">Posted: <?php echo $notice_count ?></p>
                 <div class="text-center mt-5">
                   <a href="post-notices.html" class="mt-5 btn btn-outline-dark w-50">View</a>
                 </div>
@@ -103,9 +225,9 @@
         <div class="col-md-4">
             <div class="card h-100 card-h shadow-sm border-0 p-4 bg-info text-center text-dark">
                 <p class="fs-3 lead"><strong>Instructors</strong></p>
-                <p class="fs-4 lead">Junior instructor: 12</p>
-                <p class="fs-4 lead">Instructor: 2</p>
-                <p class="fs-4 lead">Senior instructor: 1</p>
+                <p class="fs-4 lead">Junior instructor: <?php echo $junior ?></p>
+                <p class="fs-4 lead">Instructor: <?php echo $instructor ?></p>
+                <p class="fs-4 lead">Senior instructor: <?php echo $senior ?></p>
                 <div class="text-center">
                   <a href="instructors.html" class="btn btn-outline-dark w-50">View</a>
                 </div>
@@ -114,8 +236,8 @@
         <div class="col-md-4">
             <div class="card h-100 card-h shadow-sm border-0 p-4 bg-success text-center text-light">
                 <p class="fs-3 lead"><strong>Admins</strong></p>
-                <p class="fs-4 lead">L1: 1</p>
-                <p class="fs-4 lead">L2: 2</p>
+                <p class="fs-4 lead">L0: <?php echo $l0 ?></p>
+                <p class="fs-4 lead">L1: <?php echo $l1 ?></p>
                 <div class="text-center mt-2">
                   <a href="admins.html" class="mt-5 btn btn-outline-light w-50">View</a>
                 </div>
@@ -124,7 +246,7 @@
         <div class="col-md-4">
             <div class="card h-100 card-h shadow-sm border-0 p-4 bg-secondary text-center text-light">
                 <p class="fs-3 lead"><strong>Students</strong></p>
-                <p class="fs-4 lead">Total: 12</p>
+                <p class="fs-4 lead">Total: <?php echo $total_students ?></p>
                 <div class="text-center mt-5">
                   <a href="students.html" class="btn btn-outline-light mt-5 w-50">View</a>
                 </div>

@@ -2,7 +2,7 @@
 include'../auth/cnct.php';
 session_start();
 
-if(!isset($_SESSION['role'])&&$_SESSION['role']!=="student"){
+if(!isset($_SESSION['role'])&&$_SESSION['role']!=="Student"){
   session_unset();
   session_destroy();
   $conn->close();
@@ -91,11 +91,11 @@ $stmt_name=$conn->prepare("SELECT name FROM users WHERE u_id = ?");
 $stmt_name->bind_param("i", $u_id);
 $stmt_taken=$conn->prepare("SELECT COUNT(*) FROM enrolls 
   JOIN courses ON enrolls.c_id = courses.c_id 
-  WHERE enrolls.u_id = ? AND (courses.status IS NULL OR courses.status != 'off')");
+  WHERE enrolls.u_id = ? AND (courses.status IS NULL OR courses.status != 'ended')");
 $stmt_taken->bind_param("i", $u_id);
 $stmt_past=$conn->prepare("SELECT COUNT(*) FROM enrolls 
   JOIN courses ON enrolls.c_id = courses.c_id 
-  WHERE enrolls.u_id = ? AND courses.status = 'off'");
+  WHERE enrolls.u_id = ? AND courses.status = 'ended'");
 $stmt_past->bind_param("i", $u_id);
 $stmt_platform=$conn->prepare("SELECT COUNT(*) FROM admin_notices WHERE audience = 'student'");
 $stmt_courses=$conn->prepare("SELECT COUNT(DISTINCT instructors_notices.n_id) 

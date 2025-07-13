@@ -43,9 +43,9 @@ session_start();
         <?php
           if(isset($_SESSION['role'])){
             echo'<li class="nav-item">';
-            if($_SESSION['role']==="student")
+            if($_SESSION['role']==="Student")
               echo '<a class="nav-link" href="student/dashboard.html">Dashboard</a> </li>';
-            else if($_SESSION['role']==="instructor")
+            else if($_SESSION['role']==="Instructor")
               echo '<a class="nav-link" href="instructor/dashboard.html">Dashboard</a> </li>';
             else
               echo '<a class="nav-link" href="admin/dashboard.html">Dashboard</a> </li>';

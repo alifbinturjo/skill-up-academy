@@ -1,3 +1,8 @@
+<?php
+include 'auth/cnct.php';
+session_start();
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -9,7 +14,13 @@
     <link rel="stylesheet" href="../style.css">
 </head>
 <body>
-
+<script>
+        window.addEventListener('pageshow', function (event) {
+            if (event.persisted) {
+                window.location.reload();
+            }
+        });
+</script>
   <nav class="navbar navbar-expand-lg navbar-blur sticky-top shadow-sm">
   <div class="container-fluid">
     <a class="navbar-brand fw-bold" href="../index.html">SkillUp Academy</a>
@@ -29,12 +40,27 @@
         <li class="nav-item">
           <a class="nav-link" href="../instructors.html">Instructors</a>
         </li>
-        <li class="nav-item">
-          <a class="nav-link" href="../auth/login.html">Login</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="../auth/signup.html">Signup</a>
-        </li>
+        <?php
+          if(isset($_SESSION['role'])){
+            echo'<li class="nav-item">';
+            if($_SESSION['role']==="Student")
+              echo '<a class="nav-link" href="student/dashboard.html">Dashboard</a> </li>';
+            else if($_SESSION['role']==="Instructor")
+              echo '<a class="nav-link" href="instructor/dashboard.html">Dashboard</a> </li>';
+            else
+              echo '<a class="nav-link" href="admin/dashboard.html">Dashboard</a> </li>';
+
+            echo'<li class="nav-item">
+                  <a class="nav-link" href="auth/logout.php">Logout</a>
+                  </li>';
+          }
+          else{
+            echo '<a class="nav-link" href="auth/login.html">Login</a> </li>
+                  <li class="nav-item">
+                  <a class="nav-link" href="auth/signup.html">Signup</a>
+                  </li>';
+          }
+        ?>
       </ul>
     </div>
   </div>

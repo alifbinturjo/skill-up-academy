@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jul 11, 2025 at 08:17 AM
+-- Generation Time: Jul 13, 2025 at 09:15 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -58,9 +58,11 @@ CREATE TABLE `courses` (
   `title` varchar(100) NOT NULL,
   `amount` smallint(6) NOT NULL,
   `description` varchar(500) NOT NULL,
-  `domain` varchar(10) NOT NULL,
+  `domain` varchar(50) NOT NULL,
   `duration` smallint(6) NOT NULL,
-  `u_id` int(11) NOT NULL
+  `u_id` int(11) NOT NULL,
+  `start_date` date NOT NULL,
+  `status` varchar(7) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -94,11 +96,11 @@ CREATE TABLE `enrolls` (
 CREATE TABLE `instructors` (
   `u_id` int(11) NOT NULL,
   `bio` varchar(500) DEFAULT NULL,
-  `domain` varchar(10) NOT NULL,
+  `domain` varchar(50) NOT NULL,
   `title` varchar(10) NOT NULL,
-  `skills` varchar(50) DEFAULT NULL,
+  `skills` varchar(100) DEFAULT NULL,
   `image` varchar(100) DEFAULT NULL,
-  `n_status` tinyint(1) NOT NULL
+  `n_status` varchar(6) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -125,7 +127,7 @@ CREATE TABLE `instructors_notices` (
 CREATE TABLE `students` (
   `u_id` int(11) NOT NULL,
   `bio` varchar(500) DEFAULT NULL,
-  `n_status` tinyint(1) NOT NULL
+  `n_status` varchar(6) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -141,7 +143,7 @@ CREATE TABLE `users` (
   `reg_date` date NOT NULL DEFAULT curdate(),
   `dob` date NOT NULL,
   `gender` varchar(6) NOT NULL,
-  `name` varchar(50) NOT NULL
+  `name` varchar(100) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -236,7 +238,7 @@ ALTER TABLE `instructors_notices`
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `u_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `u_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- Constraints for dumped tables

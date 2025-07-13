@@ -1,3 +1,24 @@
+<?php
+include'../auth/cnct.php';
+session_start();
+
+if(!isset($_SESSION['role'])&&$_SESSION['role']!=="Instructor"){
+  session_unset();
+  session_destroy();
+  $conn->close();
+  header("Location: ../index.php");
+  exit();
+}
+/*$_POST['cid']=1;
+if(!isset($_POST['c_id'])){
+  $conn->close();
+  header("Location: courses.html");
+  exit();
+}*/
+$c_id=1;
+$u_id=$_SESSION['u_id'];
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -36,26 +57,78 @@
             <a class="nav-link" href="profile.html">Profile</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="">Logout</a>
+            <a class="nav-link" href="../auth/logout.php">Logout</a>
           </li>
         </ul>
       </div>
     </div>
   </nav>
 
-  <div class="container">
+
     <p class="fs-1 text-center">Students</p>
 
-    <div class="row shadow p-2">
-      <div class="col-md-10">
-        <input type="email" name="email" id="email" class="bg-transparent w-100 rounded h-100" placeholder="Email">
-      </div>
-      <div class="col-md-2">
-        <button class="btn btn-outline-dark w-100">Search</button>
-      </div>
-    </div>
-  </div>
+    
+  <?php
 
+  $stmt_list = $conn->prepare("
+  SELECT users.name, users.email
+  FROM enrolls 
+  JOIN students ON enrolls.u_id = students.u_id 
+  JOIN users ON students.u_id = users.u_id 
+  WHERE enrolls.c_id = ?
+");
+$stmt_list->bind_param("i", $c_id);
+try{
+  $stmt_list->execute();
+  $stmt_list->bind_result($name,$email);
+  
+}
+catch(Exception $e){
+  $stmt_list->close();
+  $conn->close();
+  header("Location: courses.php");
+  exit();
+}
+?>
+<div class="container mt-5">
+  
+
+  <div class="table-responsive">
+    <table class="table table-bordered table-hover align-middle">
+      <thead class="table-dark">
+        <tr>
+          <th>#</th>
+          <th>Name</th>
+          <th>Email</th>
+        </tr>
+      </thead>
+      <tbody>
+        <?php
+        $i = 1;
+        $found = false;
+        while ($stmt_list->fetch()):
+          $found = true;
+        ?>
+        <tr>
+          <td><?php echo $i++; ?></td>
+          <td><?php echo htmlspecialchars($name); ?></td>
+          <td><?php echo htmlspecialchars($email); ?></td>
+        </tr>
+        <?php endwhile; ?>
+
+        <?php if (!$found): ?>
+        <tr>
+          <td colspan="3" class="text-center">No students enrolled in this course.</td>
+        </tr>
+        <?php endif; ?>
+      </tbody>
+    </table>
+  </div>
+</div>
+<?php
+$stmt_list->close();
+$conn->close();
+?>
 
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"

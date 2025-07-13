@@ -1,3 +1,54 @@
+<?php
+include'../auth/cnct.php';
+session_start();
+
+$_SESSION['role']="Admin";
+$_SESSION['u_id']=1;
+
+if(!isset($_SESSION['role'])&&$_SESSION['role']!=="Admin"){
+  session_unset();
+  session_destroy();
+  $conn->close();
+  header("Location: ../dashboard.php");
+  exit();
+}
+$u_id=$_SESSION['u_id'];
+
+if (isset($_POST['search'])) {
+    $search = '%' . trim($_POST['search']) . '%';
+
+    $stmt = $conn->prepare("
+        SELECT users.name, users.email
+        FROM students 
+        JOIN users ON students.u_id = users.u_id
+        WHERE users.name LIKE ? OR users.email LIKE ?
+        LIMIT 20
+    ");
+    $stmt->bind_param("ss", $search, $search);
+    $stmt->execute();
+    $stmt->bind_result($name, $email);
+
+    echo '<div class="table-responsive"><table class="table table-bordered table-hover mt-3">
+            <thead class="table-dark"><tr><th>#</th><th>Name</th><th>Email</th></tr></thead><tbody>';
+    $i = 1;
+    $found = false;
+    while ($stmt->fetch()) {
+        $found = true;
+        echo "<tr><td>$i</td><td>" . htmlspecialchars($name) . "</td><td>" . htmlspecialchars($email) . "</td></tr>";
+        $i++;
+    }
+    if (!$found) {
+        echo '<tr><td colspan="3" class="text-center">No results found</td></tr>';
+    }
+    echo '</tbody></table></div>';
+
+    $stmt->close();
+    $conn->close();
+    exit();
+}
+
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -42,7 +93,7 @@
           <a class="nav-link" href="profile.html">Profile</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="">Logout</a>
+          <a class="nav-link" href="../auth.php">Logout</a>
         </li>
       </ul>
     </div>
@@ -53,11 +104,10 @@
     <p class="fs-1 text-center">Students</p>
 
     <div class="row shadow p-2">
-        <div class="col-md-10">
-            <input type="email" name="email" id="email" class="bg-transparent w-100 rounded h-100" placeholder="Email">
-        </div>
-        <div class="col-md-2">
-            <button class="btn btn-outline-dark w-100">Search</button>
+        <div class="col-md-12">
+            <input type="text" name="text" id="text" class="form-control" placeholder="Name or email...">
+<div id="result" class="mt-2"></div>
+
         </div>
     </div>
 </div>
@@ -65,5 +115,22 @@
 
     
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js" integrity="sha384-ndDqU0Gzau9qJ1lfW4pNLlhNTkCfHzAVBReH9diLvGRem5+R9g2FzA8ZGN954O5Q" crossorigin="anonymous"></script>
-</body>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+$(document).ready(function () {
+  $('#text').on('input', function () {
+    let query = $(this).val();
+    if (query.trim() === "") {
+      $('#result').html("");
+      return;
+    }
+
+    $.post("students.php", { search: query }, function (data) {
+      $('#result').html(data);
+    });
+  });
+});
+</script>
+
+  </body>
 </html>

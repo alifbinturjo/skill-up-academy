@@ -2,11 +2,6 @@
 include '../auth/cnct.php';
 session_start();
 
-// Mock session user ID for testing (remove in production)
-if (!isset($_SESSION['id'])) {
-    $_SESSION['id'] = 2; // Replace with actual login session user ID
-}
-
 if(!isset($_SESSION['role'])&&$_SESSION['role']!=="student"){
   session_unset();
   session_destroy();

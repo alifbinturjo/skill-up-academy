@@ -1,11 +1,6 @@
-<<<<<<< HEAD
-=======
 <?php
 include '../auth/cnct.php';
 session_start();
-
-$_SESSION['role'] = "Student";
-$_SESSION['u_id'] = 2;
 
 if (!isset($_SESSION['role']) && $_SESSION['role'] !== "Student") {
     session_unset();
@@ -41,28 +36,19 @@ $stmt->execute();
 $result = $stmt->get_result();
 ?>
 
->>>>>>> fbe117958de6045b5583d0919310a59a8d8f1ca9
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<<<<<<< HEAD
-    <title>Coruses</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet"
-        integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr" crossorigin="anonymous">
-=======
     <title>Courses</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
->>>>>>> fbe117958de6045b5583d0919310a59a8d8f1ca9
     <link rel="stylesheet" href="../style.css">
 </head>
 
 <body>
 
-<<<<<<< HEAD
-=======
     <?php
     $stmt_n = $conn->prepare("SELECT n_status FROM instructors WHERE u_id = ?");
     $stmt_n->bind_param("i", $u_id);
@@ -79,7 +65,6 @@ $result = $stmt->get_result();
         exit();
     }
     ?>
->>>>>>> fbe117958de6045b5583d0919310a59a8d8f1ca9
     <nav class="navbar navbar-expand-lg navbar-blur sticky-top shadow-sm">
         <div class="container-fluid">
             <a class="navbar-brand fw-bold" href="">SkillUp Academy</a>
@@ -91,21 +76,6 @@ $result = $stmt->get_result();
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
                     <li class="nav-item">
-<<<<<<< HEAD
-                        <a class="nav-link " href="dashboard.html">Dashboard</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link active" href="">Courses</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="notices.html">Notices</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="profile.html">Profile</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="">Logout</a>
-=======
                         <a class="nav-link" href="dashboard.php">Dashboard</a>
                     </li>
                     <li class="nav-item">
@@ -125,7 +95,6 @@ $result = $stmt->get_result();
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="../auth/logout.php">Logout</a>
->>>>>>> fbe117958de6045b5583d0919310a59a8d8f1ca9
                     </li>
                 </ul>
             </div>
@@ -133,40 +102,6 @@ $result = $stmt->get_result();
     </nav>
 
     <div class="container mt-5">
-<<<<<<< HEAD
-        <p class="text-center mb-4 fs-1">Courses</p>
-        <div class="row">
-            <div class="col-md-4 mb-4">
-                <div class="card card-h h-100 shadow-sm border-1 p-4"
-                    style="background-color: rgba(169, 169, 169, 0.356);">
-                    <div class="card-body">
-                        <h5 class="card-title">Complete Web Development Bootcamp</h5>
-                        <div class="d-flex justify-content-between mb-2">
-                            <span class="badge bg-primary">Web Development</span>
-                            <span class="text-muted">8 Weeks</span>
-                        </div>
-                        <hr class="divider my-2">
-                        <p class="card-text">Learn full-stack web development with HTML, CSS, JavaScript, React,
-                            Node.js, and MongoDB.</p>
-                        <p class="text-muted"><small>Instructor: John Doe</small></p>
-                        <div class="d-flex justify-content-between align-items-center">
-                            <a href="notices.html" class="btn btn-md btn-outline-dark">View Announcements</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-
-
-
-
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-ndDqU0Gzau9qJ1lfW4pNLlhNTkCfHzAVBReH9diLvGRem5+R9g2FzA8ZGN954O5Q"
-        crossorigin="anonymous"></script>
-=======
         <p class="text-center fs-1 mb-4">Courses</p>
         <div class="row">
             <?php while ($row = $result->fetch_assoc()): ?>
@@ -192,7 +127,6 @@ $result = $stmt->get_result();
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
->>>>>>> fbe117958de6045b5583d0919310a59a8d8f1ca9
 </body>
 
 </html>

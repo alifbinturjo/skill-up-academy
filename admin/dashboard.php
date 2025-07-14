@@ -43,22 +43,22 @@ $u_id=$_SESSION['u_id'];
           <a class="nav-link active" href="#">Dashboard</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="courses.html">Courses</a>
+          <a class="nav-link" href="courses.php">Courses</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="instructors.html">Instructors</a>
+          <a class="nav-link" href="instructors.php">Instructors</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="admins.html">Admins</a>
+          <a class="nav-link" href="admins.php">Admins</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="students.html">Students</a>
+          <a class="nav-link" href="students.php">Students</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="post-notices.html">Post</a>
+          <a class="nav-link" href="post-notices.php">Post</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="profile.html">Profile</a>
+          <a class="nav-link" href="profile.php">Profile</a>
         </li>
         <li class="nav-item">
           <a class="nav-link" href="../auth/logout.php">Logout</a>
@@ -189,7 +189,7 @@ catch(Exception $e){
                         <p class="lead fs-4">Level: <?php echo $level ?></p>
                     </div>
                     <div class="col-md-4">
-                        <a href="profile.html" class="btn btn-outline-light">Go to profile</a>
+                        <a href="profile.php" class="btn btn-outline-light">Go to profile</a>
                     </div>
                 </div>
             </div>
@@ -204,7 +204,7 @@ catch(Exception $e){
                 <p class="fs-4 lead">Offered: <?php echo $offered ?></p>
                 <p class="fs-4 lead">Ongoing: <?php echo $started ?></p>
                 <div class="text-center mt-5">
-                  <a href="courses.html" class="btn btn-outline-light w-50">View</a>
+                  <a href="courses.php" class="btn btn-outline-light w-50">View</a>
                 </div>
             </div>
         </div>
@@ -213,7 +213,7 @@ catch(Exception $e){
                 <p class="fs-3 lead"><strong>Notices</strong></p>
                 <p class="fs-4 lead">Posted: <?php echo $notice_count ?></p>
                 <div class="text-center mt-5">
-                  <a href="post-notices.html" class="mt-5 btn btn-outline-dark w-50">View</a>
+                  <a href="post-notices.php" class="mt-5 btn btn-outline-dark w-50">View</a>
                 </div>
             </div>
         </div>
@@ -229,7 +229,7 @@ catch(Exception $e){
                 <p class="fs-4 lead">Instructor: <?php echo $instructor ?></p>
                 <p class="fs-4 lead">Senior instructor: <?php echo $senior ?></p>
                 <div class="text-center">
-                  <a href="instructors.html" class="btn btn-outline-dark w-50">View</a>
+                  <a href="instructors.php" class="btn btn-outline-dark w-50">View</a>
                 </div>
             </div>
         </div>
@@ -239,7 +239,7 @@ catch(Exception $e){
                 <p class="fs-4 lead">L0: <?php echo $l0 ?></p>
                 <p class="fs-4 lead">L1: <?php echo $l1 ?></p>
                 <div class="text-center mt-2">
-                  <a href="admins.html" class="mt-5 btn btn-outline-light w-50">View</a>
+                  <a href="admins.php" class="mt-5 btn btn-outline-light w-50">View</a>
                 </div>
             </div>
         </div>
@@ -248,7 +248,7 @@ catch(Exception $e){
                 <p class="fs-3 lead"><strong>Students</strong></p>
                 <p class="fs-4 lead">Total: <?php echo $total_students ?></p>
                 <div class="text-center mt-5">
-                  <a href="students.html" class="btn btn-outline-light mt-5 w-50">View</a>
+                  <a href="students.php" class="btn btn-outline-light mt-5 w-50">View</a>
                 </div>
             </div>
         </div>

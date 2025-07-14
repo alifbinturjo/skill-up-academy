@@ -2,7 +2,7 @@
 include'../auth/cnct.php';
 session_start();
 
-if(!isset($_SESSION['role'])&&$_SESSION['role']!=="Student"){
+if(!isset($_SESSION['role'])&&isset($_SESSION['u_id'])&&$_SESSION['role']!=="Student"){
   session_unset();
   session_destroy();
   $conn->close();
@@ -64,10 +64,10 @@ catch(Exception $e){
             <a class="nav-link active" href="">Dashboard</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="courses.html">Courses</a>
+            <a class="nav-link" href="courses.php">Courses</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="notices.html">Notices
+            <a class="nav-link" href="notices.php">Notices
               <?php if ($n_status==="unread"): ?>
       <span class="position-absolute top-0 start-100 translate-middle p-1 bg-danger border border-light rounded-circle">
         <span class="visually-hidden">New</span>
@@ -76,7 +76,7 @@ catch(Exception $e){
             </a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="profile.html">Profile</a>
+            <a class="nav-link" href="profile.php">Profile</a>
           </li>
           <li class="nav-item">
             <a class="nav-link" href="../auth/logout.php">Logout</a>
@@ -160,7 +160,7 @@ catch(Exception $e){
                 <p class="lead fs-4">Type: <?php echo $_SESSION['role']; ?></p>
               </div>
               <div class="col-md-6">
-                <a href="profile.html" class="btn btn-outline-light">Go to profile</a>
+                <a href="profile.php" class="btn btn-outline-light">Go to profile</a>
               </div>
             </div>
           </div>
@@ -175,7 +175,7 @@ catch(Exception $e){
           <p class="fs-4 lead">Taken: <?php echo $taken ?></p>
           <p class="fs-4 lead">Previous: <?php echo $past ?></p>
           <div class="text-center">
-            <a href="courses.html" class="btn btn-outline-light w-50">View</a>
+            <a href="courses.php" class="btn btn-outline-light w-50">View</a>
           </div>
 
         </div>
@@ -186,7 +186,7 @@ catch(Exception $e){
           <p class="fs-4 lead">Platform: <?php echo $platform ?></p>
           <p class="fs-4 lead">Courses: <?php echo $courses ?></p>
           <div class="text-center">
-            <a href="notices.html" class="btn btn-outline-dark w-50">View</a>
+            <a href="notices.php" class="btn btn-outline-dark w-50">View</a>
           </div>
         </div>
       </div>

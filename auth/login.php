@@ -1,12 +1,16 @@
+
+
+
+
 <?php
-include 'cnct.php';  // Include the database connection file
-session_start();  // Start the session to store user data
+include 'cnct.php';  
+session_start();  
 
 // Handle the login form submission
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     // Collect form data
     $email = $_POST['email'];
-    $password = $_POST['pass'];  // Make sure it's 'pass' as per your input name
+    $password = $_POST['pass'];  
 
     // Validate form data
     if (empty($email) || empty($password)) {
@@ -22,7 +26,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $stmt = $conn->prepare($emailCheckQuery);
     $stmt->bind_param("s", $email);
     $stmt->execute();
-    $stmt->bind_result($userId, $dbEmail, $storedPassword);  // Bind the results
+    $stmt->bind_result($userId, $dbEmail, $storedPassword);  
     $stmt->fetch();
     $stmt->close();
 
@@ -47,11 +51,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $stmt->execute();
     $studentResult = $stmt->get_result();
 
-    $role = 'unknown';  // Default role is 'unknown'
+    $role = 'unknown';  
     if ($studentResult->num_rows > 0) {
-        $role = 'Student';  // If found in students table, role is 'student'
+        $role = 'Student';  
     } else {
-        // Check if the user is an admin
         $roleCheckQuery = "SELECT * FROM admins WHERE u_id = ?";
         $stmt = $conn->prepare($roleCheckQuery);
         $stmt->bind_param("i", $userId);
@@ -59,9 +62,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $adminResult = $stmt->get_result();
 
         if ($adminResult->num_rows > 0) {
-            $role = 'Admin';  // If found in admins table, role is 'admin'
+            $role = 'Admin';  
         } else {
-            // Check if the user is an instructor
             $roleCheckQuery = "SELECT * FROM instructors WHERE u_id = ?";
             $stmt = $conn->prepare($roleCheckQuery);
             $stmt->bind_param("i", $userId);
@@ -69,7 +71,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $instructorResult = $stmt->get_result();
 
             if ($instructorResult->num_rows > 0) {
-                $role = 'Instructor';  // If found in instructors table, role is 'instructor'
+                $role = 'Instructor';  
             }
         }
     }
@@ -80,17 +82,20 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $_SESSION['email'] = $dbEmail;
 
     // Redirect based on role
-if ($role == 'Student') {
-    header('Location:/skill-up-academy/student/dashboard.php');  // Correct path for student dashboard
-} elseif ($role == 'Admin') {
-    header('Location: /skill-up-academy/admin/dashboard.php');    // Correct path for admin dashboard
-} elseif ($role == 'Instructor') {
-    header('Location:/skill-up-academy/instructor/dashboard.php'); // Correct path for instructor dashboard
-} else {
-    $_SESSION['error'] = 'User role is undefined.';
-    header('Location: /auth/login.php');  // Redirect back to login page if no role is found
-    exit();
-}
+    if ($role == 'Student') {
+        header('Location:/skill-up-academy/student/dashboard.php');  
+        exit();
+    } elseif ($role == 'Admin') {
+        header('Location: /skill-up-academy/admin/dashboard.php');    
+        exit();
+    } elseif ($role == 'Instructor') {
+        header('Location:/skill-up-academy/instructor/dashboard.php'); 
+        exit();
+    } else {
+        $_SESSION['error'] = 'User role is undefined.';
+        header('Location: /auth/login.php');  
+        exit();
+    }
 }
 ?>
 
@@ -123,10 +128,10 @@ if ($role == 'Student') {
                         <a class="nav-link" href="../index.php">Home</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="signup.php">Signup</a>
+                        <a class="nav-link active" href="signup.php">Signup</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link active" href="login.php">Login</a>
+                        <a class="nav-link" href="login.php">Login</a>
                     </li>
                 </ul>
             </div>
@@ -149,13 +154,20 @@ if ($role == 'Student') {
 
                     <div class="mb-3">
                         <label for="email" class="form-label fw-semibold">Email</label>
-                        <input type="email" class="form-control form-control-lg" id="email" name="email" placeholder="example@email.com" required>
+                        <input type="email" class="form-control form-control-lg" id="email" name="email"
+                            placeholder="example@email.com" required>
                     </div>
 
                     <div class="mb-3 position-relative">
                         <label for="password" class="form-label fw-semibold">Password</label>
-                        <input type="password" class="form-control form-control-lg" id="password" name="pass" placeholder="Your password" required>
-                        <i class="bi bi-eye-slash position-absolute end-0 pe-3" id="togglePassword" style="top: 70%; transform: translateY(-50%); cursor: pointer;"></i>
+                        <input type="password" class="form-control form-control-lg" id="password" name="pass"
+                            placeholder="Your password" required>
+                        <i class="bi bi-eye-slash position-absolute end-0 pe-3" id="togglePassword"
+                            style="top: 70%; transform: translateY(-50%); cursor: pointer;"></i>
+                    </div>
+
+                    <div class="mb-3 text-end">
+                        <a href="#" data-bs-toggle="modal" data-bs-target="#forgotPasswordModal" class="text-decoration-none">Forgot Password?</a>
                     </div>
 
                     <button type="submit" class="btn btn-dark w-100 py-2 fs-5">Login</button>
@@ -163,6 +175,28 @@ if ($role == 'Student') {
 
                 <div class="text-center mt-3 mb-5">
                     <small>Don't have an account? <a href="signup.php">Signup</a></small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Forgot Password Modal -->
+    <div class="modal fade" id="forgotPasswordModal" tabindex="-1" aria-labelledby="forgotPasswordModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="forgotPasswordModalLabel">Reset Password</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form action="reset_password.php" method="POST">
+                        <div class="mb-3">
+                            <label for="emailReset" class="form-label">Enter your email to reset password</label>
+                            <input type="email" class="form-control" id="emailReset" name="emailReset" required>
+                        </div>
+                        <button type="submit" class="btn btn-dark w-100 py-2 fs-5">Send Reset Link</button>
+                    </form>
                 </div>
             </div>
         </div>
@@ -187,40 +221,4 @@ if ($role == 'Student') {
 
 </body>
 
-<footer class="bg-dark text-white pt-5 pb-4 mt-5">
-    <div class="container text-md-left">
-        <div class="row text-center text-md-left">
-            <div class="col-md-6 col-lg-6 col-xl-6 mx-auto mt-3">
-                <h5 class="mb-4 fw-bold">SkillUp Academy</h5>
-                <p>Empowering learners with the skills they need to succeed in the digital world.</p>
-                <a href="policies.html" class="text-white text-decoration-none">Academy policies &rarr;</a>
-            </div>
-
-            <div class="col-md-3 col-lg-3 col-xl-3 mx-auto mt-3">
-                <h5 class="mb-4 fw-bold">Contact</h5>
-                <p><i class="bi bi-envelope me-2"></i> support@skillup.com</p>
-                <p><i class="bi bi-phone me-2"></i> +880 1234-567890</p>
-                <p><i class="bi bi-geo-alt me-2"></i> Dhaka, Bangladesh</p>
-            </div>
-
-            <div class="col-md-3 col-lg-3 col-xl-3 mx-auto mt-3">
-                <h5 class="mb-4 fw-bold">Follow Us</h5>
-                <a href="#" class="text-white me-3"><i class="bi bi-facebook"></i></a>
-                <a href="#" class="text-white me-3"><i class="bi bi-twitter"></i></a>
-                <a href="#" class="text-white me-3"><i class="bi bi-linkedin"></i></a>
-                <a href="#" class="text-white"><i class="bi bi-youtube"></i></a>
-            </div>
-
-        </div>
-
-        <hr class="my-3">
-
-        <div class="text-center">
-            <p class="mb-0">&copy; 2025 SkillUp Academy. All rights reserved.</p>
-        </div>
-
-    </div>
-</footer>
 </html>
-
-

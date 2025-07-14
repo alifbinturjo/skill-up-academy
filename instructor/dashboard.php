@@ -26,6 +26,16 @@ $u_id=$_SESSION['u_id'];
 </head>
 
 <body>
+<<<<<<< HEAD
+<script>
+        window.addEventListener('pageshow', function (event) {
+            if (event.persisted) {
+                window.location.reload();
+            }
+        });
+</script>
+=======
+>>>>>>> 7203b5f43dfb0c4e7561a971ad91fd952bddc50e
 <?php
 $stmt_n = $conn->prepare("SELECT n_status FROM instructors WHERE u_id = ?");
 $stmt_n->bind_param("i", $u_id);

@@ -2,52 +2,54 @@
 include '../auth/cnct.php';
 session_start();
 
-if(!isset($_SESSION['role'])&&$_SESSION['role']!=="student"){
-  session_unset();
-  session_destroy();
-  $conn->close();
-  header("Location: ../index.php");
-  exit();
+// Mock session user ID for testing (remove in production)
+if (!isset($_SESSION['id'])) {
+    $_SESSION['id'] = 2; // Replace with actual login session user ID
 }
-$u_id=$_SESSION['u_id'];
+$uid = $_SESSION['id'];
+
 // Handle profile update (POST)
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $name = $_POST['name'] ?? '';
     $email = $_POST['email'] ?? '';
     $bio = $_POST['bio'] ?? '';
-    $contact = $_POST['contact'] ?? '';
+    $skills = implode(', ', array_filter([
+        $_POST['skill1'] ?? '',
+        $_POST['skill2'] ?? '',
+        $_POST['skill3'] ?? ''
+    ]));
 
-    // Update user profile in 'users' table
-    $stmt = $conn->prepare("UPDATE users SET name=?, email=?, contact=? WHERE u_id=?");
-    $stmt->bind_param("sssi", $name, $email, $contact, $uid);
+    $stmt = $conn->prepare("UPDATE users SET name=?, email=? WHERE u_id=?");
+    $stmt->bind_param("ssi", $name, $email, $uid);
     $stmt->execute();
     $stmt->close();
 
-    // Update student profile in 'students' table
-    $stmt = $conn->prepare("UPDATE students SET bio=? WHERE u_id=?");
-    $stmt->bind_param("si", $bio, $uid);
+    $stmt = $conn->prepare("UPDATE instructors SET bio=?, skills=? WHERE u_id=?");
+    $stmt->bind_param("ssi", $bio, $skills, $uid);
     $stmt->execute();
     $stmt->close();
 }
 
 // Fetch profile data
-$sql = "SELECT u.name, u.email, s.bio, u.contact
+$sql = "SELECT u.name, u.email, i.title, i.bio, i.skills, i.domain, i.image
         FROM users u
-        JOIN students s ON u.u_id = s.u_id
+        JOIN instructors i ON u.u_id = i.u_id
         WHERE u.u_id = ?";
 $stmt = $conn->prepare($sql);
 $stmt->bind_param("i", $uid);
 $stmt->execute();
-$stmt->bind_result($name, $email, $bio, $contact);
+$stmt->bind_result($name, $email, $title, $bio, $skills, $domain, $image);
 $stmt->fetch();
 $stmt->close();
-?>
 
+$skillsArray = explode(', ', $skills ?? '');
+$image = $image ? ('../' . $image) : '../image-assets/Instructors/default.webp';
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8" />
-    <title>Student Profile</title>
+    <title>Profile</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet" />
     <link rel="stylesheet" href="../style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -73,22 +75,36 @@ $stmt->close();
 </nav>
 
 <div class="container mt-5">
-    <p class="text-center mb-4 fs-1">Student Profile</p>
+    <p class="text-center mb-4 fs-1">Profile</p>
     <div class="row">
         <div class="col-md-4 text-center mb-4">
-            <img src="../image-assets/common/profile.webp" class="rounded-circle shadow-sm" alt="Student Photo" style="width: 170px; height: 170px;">
+            <img src="<?= htmlspecialchars($image) ?>" class="rounded-circle shadow-sm" alt="Instructor Photo" style="width: 170px; height: 170px;">
             <h4 class="mt-3"><?= htmlspecialchars($name) ?></h4>
-            <p class="text-muted">Student</p>
+            <p class="text-muted"><?= htmlspecialchars($title) ?></p>
+            <span class="badge bg-primary"><?= htmlspecialchars($domain) ?></span>
         </div>
 
         <div class="col-md-8 mt-4">
             <h5>Bio</h5>
             <p><?= nl2br(htmlspecialchars($bio)) ?></p>
             <hr class="divider my-2">
-            <h5>Contact</h5>
-            <p>Email: <a href="mailto:<?= htmlspecialchars($email) ?>" class="text-black text-decoration-none"><?= htmlspecialchars($email) ?></a></p>
-            <p>Phone: <?= htmlspecialchars($contact) ?></p>
+            <h5>Skills</h5>
+            <ul class="list-inline">
+                <?php foreach ($skillsArray as $skill): ?>
+                    <li class="list-inline-item badge bg-dark text-light p-2 m-1"><?= htmlspecialchars($skill) ?></li>
+                <?php endforeach; ?>
+            </ul>
             <hr class="divider my-2">
+            <div class="row">
+                <div class="col-md-6">
+                    <h5>Contacts</h5>
+                    <div class="d-flex gap-4 mt-3">
+                        <a href="mailto:<?= htmlspecialchars($email) ?>" class="text-decoration-none">
+                            <i class="fas fa-envelope fa-2x text-muted"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <div class="row text-center">
@@ -110,8 +126,16 @@ $stmt->close();
                     <div class="modal-body">
                         <div class="mb-3"><label class="form-label">Name</label><input type="text" name="name" class="form-control" value="<?= htmlspecialchars($name) ?>"></div>
                         <div class="mb-3"><label class="form-label">Email</label><input type="email" name="email" class="form-control" value="<?= htmlspecialchars($email) ?>"></div>
-                        <div class="mb-3"><label class="form-label">Contact</label><input type="text" name="contact" class="form-control" value="<?= htmlspecialchars($contact) ?>"></div>
                         <div class="mb-3"><label class="form-label">Bio</label><textarea name="bio" class="form-control" rows="5"><?= htmlspecialchars($bio) ?></textarea></div>
+                        <div class="mb-3"><label class="form-label">Skills</label>
+                            <div class="row">
+                                <?php for ($i = 0; $i < 3; $i++): ?>
+                                    <div class="col-md-4 mb-2">
+                                        <input type="text" class="form-control" name="skill<?= $i+1 ?>" value="<?= $skillsArray[$i] ?? '' ?>">
+                                    </div>
+                                <?php endfor; ?>
+                            </div>
+                        </div>
                     </div>
                     <div class="modal-footer">
                         <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
@@ -127,4 +151,3 @@ $stmt->close();
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
-

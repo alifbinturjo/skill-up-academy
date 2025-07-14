@@ -60,7 +60,7 @@ if (!empty($cart_ids)) {
                 <?php endforeach; ?>
                 <tr class="table-dark fw-bold">
                     <td>Total</td>
-                    <td id="total-price">৳<?= $total ?></td>
+                    <td id="total-price">BDT<?= $total ?></td>
                     <td></td>
                 </tr>
             </tbody>

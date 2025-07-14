@@ -2,6 +2,13 @@
 require_once '../auth/cnct.php';
 session_start();
 
+// Restrict access to students only
+if (!isset($_SESSION['user_type']) || $_SESSION['user_type'] !== 'student') {
+    $_SESSION['error'] = "Unauthorized access. Please log in as a student.";
+    header("Location: ../auth/login.php");
+    exit();
+}
+
 // For testing without login (remove in production)
 if (!isset($_SESSION['user_type'])) {
     $_SESSION['user_type'] = 'student'; 

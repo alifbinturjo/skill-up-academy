@@ -2,22 +2,47 @@
 require_once '../auth/cnct.php';
 session_start();
 
-// For testing (remove in production)
-$_SESSION['user_type'] = 'instructor';
-$_SESSION['user_id'] = 2;
-$_SESSION['course_id'] = 1;
+// -------------------------------
+// Instructor-only access restriction
+// -------------------------------
+if (!isset($_SESSION['user_id'], $_SESSION['user_type']) || $_SESSION['user_type'] !== 'instructor') {
+    $_SESSION['error'] = "Unauthorized access. Please login as instructor.";
+    header("Location: ../auth/login.php");
+    exit();
+}
 
-// Handle form submission
+// Verify instructor exists in database (optional but recommended)
+$user_id = $_SESSION['user_id'];
+$stmt = $conn->prepare("SELECT u_id FROM instructors WHERE u_id = ?");
+$stmt->bind_param("i", $user_id);
+$stmt->execute();
+$result = $stmt->get_result();
+
+if ($result->num_rows === 0) {
+    // Instructor not found: force logout
+    $_SESSION['error'] = "Access denied. Instructor not found.";
+    session_destroy();
+    header("Location: ../auth/login.php");
+    exit();
+}
+$stmt->close();
+
+// For testing only: preset course_id (remove or update in production)
+if (!isset($_SESSION['course_id'])) {
+    $_SESSION['course_id'] = 1;
+}
+
+// Handle form submission - post new notice
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $title = $conn->real_escape_string($_POST['title']);
-    $message = $conn->real_escape_string($_POST['message']);
+    $title = $conn->real_escape_string($_POST['title'] ?? '');
+    $message = $conn->real_escape_string($_POST['message'] ?? '');
 
     $sql = "INSERT INTO instructors_notices (title, message, date, u_id, c_id) 
             VALUES ('$title', '$message', CURDATE(), {$_SESSION['user_id']}, {$_SESSION['course_id']})";
 
     if ($conn->query($sql)) {
         $_SESSION['success'] = "Notice posted successfully!";
-        $_SESSION['new_notice'] = true;  // <-- Added new notice flag
+        $_SESSION['new_notice'] = true;
         header("Location: post-notices.php");
         exit;
     } else {
@@ -27,7 +52,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-// Delete notice
+// Handle notice deletion
 if (isset($_GET['delete'])) {
     $id = (int)$_GET['delete'];
     $sql = "DELETE FROM instructors_notices WHERE n_id = $id AND u_id = {$_SESSION['user_id']}";
@@ -37,15 +62,15 @@ if (isset($_GET['delete'])) {
     } else {
         $_SESSION['error'] = "Delete failed!";
     }
-    header("Location: notices.php");
+    header("Location: post-notices.php");
     exit;
 }
 
-// Fetch notices ordered by newest first
+// Fetch notices for this instructor, newest first
 $result = $conn->query("SELECT * FROM instructors_notices WHERE u_id = {$_SESSION['user_id']} ORDER BY date DESC, n_id DESC");
 $notices = $result ? $result->fetch_all(MYSQLI_ASSOC) : [];
 
-// Check if there is a new notice for red dot
+// Check if new notice flag is set (for red dot)
 $hasNewNotice = isset($_SESSION['new_notice']) && $_SESSION['new_notice'];
 ?>
 
@@ -72,7 +97,7 @@ $hasNewNotice = isset($_SESSION['new_notice']) && $_SESSION['new_notice'];
         <li class="nav-item"><a class="nav-link" href="dashboard.html">Dashboard</a></li>
         <li class="nav-item"><a class="nav-link" href="courses.html">Courses</a></li>
         <li class="nav-item position-relative">
-          <a class="nav-link <?= $hasNewNotice ? 'fw-bold' : '' ?>" href="">
+          <a class="nav-link <?= $hasNewNotice ? 'fw-bold' : '' ?>" href="post-notices.php">
             Notices
             <?php if ($hasNewNotice): ?>
               <span class="position-absolute top-0 start-100 translate-middle p-1 bg-danger border border-light rounded-circle"></span>
@@ -80,7 +105,7 @@ $hasNewNotice = isset($_SESSION['new_notice']) && $_SESSION['new_notice'];
           </a>
         </li>
         <li class="nav-item"><a class="nav-link" href="profile.html">Profile</a></li>
-        <li class="nav-item"><a class="nav-link" href="#">Logout</a></li>
+        <li class="nav-item"><a class="nav-link" href="../auth/logout.php">Logout</a></li>
       </ul>
     </div>
   </div>
@@ -109,7 +134,7 @@ $hasNewNotice = isset($_SESSION['new_notice']) && $_SESSION['new_notice'];
       <div class="modal-content">
         <form method="POST" action="">
           <div class="modal-header">
-            <h5 class="modal-title">Create New Notice</h5>
+            <h5 class="modal-title" id="noticeModalLabel">Create New Notice</h5>
             <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
           </div>
           <div class="modal-body">
@@ -179,7 +204,7 @@ $hasNewNotice = isset($_SESSION['new_notice']) && $_SESSION['new_notice'];
     }, 4000);
   </script>
   <?php 
-  // Clear messages and new notice flag after showing
+  // Clear session messages and new notice flag after showing
   unset($_SESSION['success'], $_SESSION['error'], $_SESSION['new_notice']); 
   ?>
 <?php endif; ?>

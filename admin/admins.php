@@ -2,12 +2,14 @@
 session_start();
 include '../auth/cnct.php';
 
-// TEMPORARY BYPASS FOR TESTING ONLY (REMOVE IN PRODUCTION)
-$_SESSION['u_id'] = 1;
-$_SESSION['level'] = 4;
+// Restrict access to admins only
+if (!isset($_SESSION['u_id']) || !isset($_SESSION['level']) || $_SESSION['level'] < 1 || $_SESSION['level'] > 4) {
+    $_SESSION['message'] = "Access denied. Admins only.";
+    $_SESSION['message_type'] = "danger";
 
-
-//restrictions......
+    header("Location: ../auth/login.php"); // Or redirect to a general dashboard
+    exit;
+}
 
 // Handle AJAX request for email validation
 if (isset($_POST['check_email'])) {
@@ -77,10 +79,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $stmt = $conn->prepare("INSERT INTO admins (u_id, level) VALUES (?, ?)");
                 $stmt->bind_param("ii", $u_id, $level);
                 if ($stmt->execute()) {
+                    // Remove user from students table when promoted to admin
+                    $stmt_delete = $conn->prepare("DELETE FROM students WHERE u_id = ?");
+                    $stmt_delete->bind_param("i", $u_id);
+                    $stmt_delete->execute();
+                    $stmt_delete->close();
+
                     $_SESSION['message'] = "Admin added successfully!";
                     $_SESSION['message_type'] = "success";
-
-                    //delete uid from strudent...............
                 } else {
                     $_SESSION['message'] = "Error adding admin: " . $stmt->error;
                     $_SESSION['message_type'] = "danger";
@@ -181,7 +187,6 @@ while ($row = $result->fetch_assoc()) {
 }
 
 $stmt->close();
-
 ?>
 
 <!DOCTYPE html>

@@ -2,6 +2,13 @@
 require_once '../auth/cnct.php';
 session_start();
 
+// Restrict to admins only
+if (!isset($_SESSION['user_id']) || $_SESSION['user_type'] !== 'admin') {
+    $_SESSION['error'] = "Unauthorized access.";
+    header("Location: ../auth/login.php");
+    exit();
+}
+
 // Verify and get a valid admin ID
 $valid_admin_id = null;
 $admin_query = $conn->query("SELECT u_id FROM admins LIMIT 1");

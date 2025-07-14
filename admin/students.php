@@ -2,9 +2,6 @@
 include'../auth/cnct.php';
 session_start();
 
-$_SESSION['role']="Admin";
-$_SESSION['u_id']=1;
-
 if(!isset($_SESSION['role'])&&$_SESSION['role']!=="Admin"){
   session_unset();
   session_destroy();
@@ -72,28 +69,28 @@ if (isset($_POST['search'])) {
     <div class="collapse navbar-collapse" id="navbarNav">
       <ul class="navbar-nav ms-auto">
         <li class="nav-item">
-          <a class="nav-link" href="dashboard.html">Dashboard</a>
+          <a class="nav-link" href="dashboard.php">Dashboard</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="courses.html">Courses</a>
+          <a class="nav-link" href="courses.php">Courses</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="instructors.html">Instructors</a>
+          <a class="nav-link" href="instructors.php">Instructors</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="admins.html">Admins</a>
+          <a class="nav-link" href="admins.php">Admins</a>
         </li>
         <li class="nav-item">
           <a class="nav-link active" href="">Students</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="post-notices.html">Notices</a>
+          <a class="nav-link" href="post-notices.php">Notices</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="profile.html">Profile</a>
+          <a class="nav-link" href="profile.php">Profile</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="../auth.php">Logout</a>
+          <a class="nav-link" href="../auth/logout.php">Logout</a>
         </li>
       </ul>
     </div>

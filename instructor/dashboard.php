@@ -26,7 +26,6 @@ $u_id=$_SESSION['u_id'];
 </head>
 
 <body>
-<<<<<<< HEAD
 <script>
         window.addEventListener('pageshow', function (event) {
             if (event.persisted) {
@@ -34,8 +33,6 @@ $u_id=$_SESSION['u_id'];
             }
         });
 </script>
-=======
->>>>>>> 7203b5f43dfb0c4e7561a971ad91fd952bddc50e
 <?php
 $stmt_n = $conn->prepare("SELECT n_status FROM instructors WHERE u_id = ?");
 $stmt_n->bind_param("i", $u_id);
@@ -67,10 +64,10 @@ catch(Exception $e){
             <a class="nav-link active" href="">Dashboard</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="courses.html">Courses</a>
+            <a class="nav-link" href="courses.php">Courses</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="notices.html">Notices
+            <a class="nav-link" href="notices.php">Notices
               <?php if ($n_status==="unread"): ?>
       <span class="position-absolute top-0 start-100 translate-middle p-1 bg-danger border border-light rounded-circle">
         <span class="visually-hidden">New</span>
@@ -79,7 +76,7 @@ catch(Exception $e){
             </a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="profile.html">Profile</a>
+            <a class="nav-link" href="profile.php">Profile</a>
           </li>
           <li class="nav-item">
             <a class="nav-link" href="../auth/logout.php">Logout</a>
@@ -171,7 +168,7 @@ catch(Exception $e){
           <p class="fs-4 lead">Taken: <?php echo $taken ?></p>
           <p class="fs-4 lead">Previous: <?php echo $previous ?></p>
           <div class="text-center">
-            <a href="courses.html" class="btn w-50 btn-outline-light">View</a>
+            <a href="courses.php" class="btn w-50 btn-outline-light">View</a>
           </div>
 
         </div>
@@ -181,7 +178,7 @@ catch(Exception $e){
           <p class="fs-3 lead"><strong>Notices</strong></p>
           <p class="fs-4 lead">Platform: <?php echo $platform ?></p>
           <div class="text-center mt-5">
-            <a href="notices.html" class="btn w-50 btn-outline-dark">View</a>
+            <a href="notices.php" class="btn w-50 btn-outline-dark">View</a>
           </div>
         </div>
       </div>

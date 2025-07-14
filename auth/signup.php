@@ -44,7 +44,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $stmt->bind_param("s", $email);
     $stmt->execute();
     $emailResult = $stmt->get_result();
-
+    $stmt->close();
    
 
     if ($emailResult->num_rows > 0) {
@@ -74,6 +74,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $stmt->bind_param("i", $userId);
             if ($stmt->execute()) {
                 $_SESSION['success'] = 'Registration successful!';
+                
                 header('Location: login.php'); // Redirect to login page after successful registration
                 exit();
             } else {

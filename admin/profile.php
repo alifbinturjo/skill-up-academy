@@ -7,7 +7,13 @@ if (!isset($_SESSION['id'])) {
     $_SESSION['id'] = 2; // Replace with actual login session user ID
 }
 $uid = $_SESSION['id'];
-
+if(!isset($_SESSION['role'])&&$_SESSION['role']!=="admin"){
+  session_unset();
+  session_destroy();
+  $conn->close();
+  header("Location: ../index.php");
+  exit();
+}
 // Handle profile update (POST)
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $name = $_POST['name'] ?? '';

@@ -2,8 +2,9 @@
 include '../auth/cnct.php';
 session_start();
 
+/* For Check
 $_SESSION['role'] = "Instructor";
-$_SESSION['u_id'] = 2;
+$_SESSION['u_id'] = 2; */
 
 if (!isset($_SESSION['role']) || $_SESSION['role'] !== "Instructor") {
     session_unset();

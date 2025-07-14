@@ -2,7 +2,6 @@
 include 'auth/cnct.php';
 session_start();
 
-
 // Handle Add to Cart
 if (isset($_GET['add_to_cart'])) {
     $c_id = (int) $_GET['add_to_cart'];
@@ -215,7 +214,7 @@ $conn->close();
     <!-- Floating Cart -->
     <?php if (isset($_COOKIE['cart']) && !empty($_COOKIE['cart'])): ?>
         <div class="floating-cart">
-            <a href="./auth/billing.php" class="btn btn-lg btn-dark shadow">
+            <a href="auth/billing.php" class="btn btn-lg btn-dark shadow">
                 🛒 Checkout (<?= count(explode(',', $_COOKIE['cart'])) ?>)
             </a>
         </div>

@@ -1,11 +1,7 @@
 <?php
 include 'cnct.php';
 session_start();
-<<<<<<< HEAD
-
-=======
 //student
->>>>>>> ecd471347ba464aa8d76551a79ec57a6eb411a75
 $cart_ids = isset($_COOKIE['cart']) ? explode(',', $_COOKIE['cart']) : [];
 
 $courses = [];
@@ -31,11 +27,7 @@ if (!empty($cart_ids)) {
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<<<<<<< HEAD
-    <meta charset="UTF-8">
-=======
     <meta charset="UTF-8" />
->>>>>>> ecd471347ba464aa8d76551a79ec57a6eb411a75
     <title>Billing | SkillUp Academy</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet"/>
     <link rel="stylesheet" href="../style.css" />
@@ -48,20 +40,6 @@ if (!empty($cart_ids)) {
     <?php if (empty($courses)): ?>
         <p class="text-muted">Your cart is empty.</p>
     <?php else: ?>
-<<<<<<< HEAD
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>Course Title</th>
-                    <th>Price (৳)</th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php foreach ($courses as $course): ?>
-                    <tr>
-                        <td><?= htmlspecialchars($course['title']) ?></td>
-                        <td><?= $course['amount'] ?></td>
-=======
         <table class="table align-middle">
             <thead>
                 <tr>
@@ -78,33 +56,22 @@ if (!empty($cart_ids)) {
                         <td>
                             <button type="button" class="btn btn-outline-danger btn-sm remove-btn" aria-label="Remove course">&times;</button>
                         </td>
->>>>>>> ecd471347ba464aa8d76551a79ec57a6eb411a75
                     </tr>
                 <?php endforeach; ?>
                 <tr class="table-dark fw-bold">
                     <td>Total</td>
-<<<<<<< HEAD
-                    <td>৳<?= $total ?></td>
-=======
                     <td id="total-price">৳<?= $total ?></td>
                     <td></td>
->>>>>>> ecd471347ba464aa8d76551a79ec57a6eb411a75
                 </tr>
             </tbody>
         </table>
 
         <div class="text-end">
-<<<<<<< HEAD
-            <a href="pay_now.php" class="btn btn-success">Proceed to Payment</a>
-=======
             <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#paymentModal" id="proceed-btn">Proceed to Payment</button>
->>>>>>> ecd471347ba464aa8d76551a79ec57a6eb411a75
         </div>
     <?php endif; ?>
 </div>
 
-<<<<<<< HEAD
-=======
 <!-- Payment Modal -->
 <div class="modal fade" id="paymentModal" tabindex="-1" aria-labelledby="paymentModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
@@ -223,6 +190,5 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 </script>
 
->>>>>>> ecd471347ba464aa8d76551a79ec57a6eb411a75
 </body>
 </html>

@@ -2,7 +2,7 @@
 session_start();
 include '../auth/cnct.php';
 
-if (!isset($_SESSION['user_id']) || !isset($_SESSION['user_type']) || $_SESSION['user_type'] !== 'instructor') {
+if (!isset($_SESSION['u_id']) || !isset($_SESSION['role']) || $_SESSION['role'] !== 'Admin') {
     $_SESSION['message'] = "Unauthorized access.";
     $_SESSION['message_type'] = "danger";
     header("Location: ../auth/login.php");
@@ -200,7 +200,7 @@ $stmt->close();
         <li class="nav-item"><a class="nav-link" href="dashboard.php">Dashboard</a></li>
         <li class="nav-item"><a class="nav-link" href="courses.php">Courses</a></li>
         <li class="nav-item"><a class="nav-link active" href="instructors.php">Instructors</a></li>
-        <li class="nav-item"><a class="nav-link" href="#">Admins</a></li>
+        <li class="nav-item"><a class="nav-link" href="admins.php">Admins</a></li>
         <li class="nav-item"><a class="nav-link" href="students.php">Students</a></li>
         <li class="nav-item"><a class="nav-link" href="post-notices.php">Notices</a></li>
         <li class="nav-item"><a class="nav-link" href="profile.php">Profile</a></li>

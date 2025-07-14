@@ -3,7 +3,7 @@ require_once '../auth/cnct.php';
 session_start();
 
 // Restrict to admins only
-if (!isset($_SESSION['user_id']) || $_SESSION['user_type'] !== 'admin') {
+if (!isset($_SESSION['u_id']) || $_SESSION['role'] !== 'Admin') {
     $_SESSION['error'] = "Unauthorized access.";
     header("Location: ../auth/login.php");
     exit();

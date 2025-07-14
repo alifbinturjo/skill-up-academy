@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 <!DOCTYPE html>
 <html lang="en">
 
@@ -152,7 +151,6 @@
           </div>
         </div>
 
-=======
 <?php
 require_once '../auth/cnct.php';
 session_start();
@@ -160,14 +158,14 @@ session_start();
 // -------------------------------
 // Instructor-only access restriction
 // -------------------------------
-if (!isset($_SESSION['user_id'], $_SESSION['user_type']) || $_SESSION['user_type'] !== 'instructor') {
+if (!isset($_SESSION['u_id'], $_SESSION['role']) || $_SESSION['role'] !== 'Instructor') {
     $_SESSION['error'] = "Unauthorized access. Please login as instructor.";
     header("Location: ../auth/login.php");
     exit();
 }
 
 // Verify instructor exists in database (optional but recommended)
-$user_id = $_SESSION['user_id'];
+$user_id = $_SESSION['u_id'];
 $stmt = $conn->prepare("SELECT u_id FROM instructors WHERE u_id = ?");
 $stmt->bind_param("i", $user_id);
 $stmt->execute();
@@ -279,18 +277,15 @@ $hasNewNotice = isset($_SESSION['new_notice']) && $_SESSION['new_notice'];
             </button>
           </div>
         </div>
->>>>>>> ecd471347ba464aa8d76551a79ec57a6eb411a75
       </div>
     </div>
   </div>
 
-<<<<<<< HEAD
   <!-- Bootstrap JS -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 
 </html>
-=======
   <!-- Create Notice Modal -->
   <div class="modal fade" id="noticeModal" tabindex="-1" aria-labelledby="noticeModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
@@ -375,4 +370,3 @@ $hasNewNotice = isset($_SESSION['new_notice']) && $_SESSION['new_notice'];
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
->>>>>>> ecd471347ba464aa8d76551a79ec57a6eb411a75

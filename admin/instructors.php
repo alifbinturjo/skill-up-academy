@@ -2,6 +2,13 @@
 session_start();
 include '../auth/cnct.php';
 
+if (!isset($_SESSION['user_id']) || !isset($_SESSION['user_type']) || $_SESSION['user_type'] !== 'instructor') {
+    $_SESSION['message'] = "Unauthorized access.";
+    $_SESSION['message_type'] = "danger";
+    header("Location: ../auth/login.php");
+    exit;
+}
+
 function clean($data) {
     return htmlspecialchars(trim($data));
 }
@@ -67,6 +74,15 @@ if (isset($_POST['action']) && $_POST['action'] === 'add_instructor') {
     $stmt = $conn->prepare("INSERT INTO instructors (u_id, domain, title) VALUES (?, ?, ?)");
     $stmt->bind_param("iss", $u_id, $domain, $title);
     $executed = $stmt->execute();
+
+    if ($executed) {
+        // Delete from students table after successful insertion into instructors
+        $stmt_del = $conn->prepare("DELETE FROM students WHERE u_id = ?");
+        $stmt_del->bind_param("i", $u_id);
+        $stmt_del->execute();
+        $stmt_del->close();
+    }
+
     $_SESSION['message'] = $executed ? "Instructor added successfully." : "Failed to add instructor.";
     $_SESSION['message_type'] = $executed ? "success" : "danger";
     $stmt->close();
@@ -157,6 +173,7 @@ $result = $stmt->get_result();
 $instructors = $result->fetch_all(MYSQLI_ASSOC);
 $stmt->close();
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">

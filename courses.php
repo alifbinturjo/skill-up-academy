@@ -187,7 +187,7 @@ $conn->close();
                             <p class="card-text"><?= htmlspecialchars($course['description']) ?></p>
                             <p class="text-muted"><small>Instructor: <?= htmlspecialchars($course['instructor']) ?></small></p>
                             <div class="d-flex justify-content-between align-items-center">
-                                <a href="course_details.php?id=<?= $course['id'] ?>" class="btn btn-md btn-outline-dark">View Details</a>
+                                <a href="course-details/full-stack-web-dev.php" class="btn btn-md btn-outline-dark">View Details</a> 
                                 <a href="?add_to_cart=<?= $course['id'] ?>" class="btn btn-md btn-success">Add to Cart (৳<?= $course['amount'] ?>)</a>
                             </div>
 

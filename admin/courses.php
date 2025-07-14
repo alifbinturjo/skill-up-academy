@@ -3,7 +3,7 @@ session_start();
 include '../auth/cnct.php';
 
 // Restrict access: Only admin users allowed
-if (!isset($_SESSION['user_id'], $_SESSION['user_type']) || $_SESSION['user_type'] !== 'admin') {
+if (!isset($_SESSION['u_id'], $_SESSION['role']) || $_SESSION['role'] !== 'Admin') {
     $_SESSION['error'] = "Unauthorized access. Please login as admin.";
     header("Location: ../auth/login.php");
     exit();

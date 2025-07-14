@@ -1,5 +1,5 @@
 <?php
-include 'auth/cnct.php';
+include '../auth/cnct.php';
 session_start();
 ?>
 
@@ -23,7 +23,7 @@ session_start();
 </script>
   <nav class="navbar navbar-expand-lg navbar-blur sticky-top shadow-sm">
   <div class="container-fluid">
-    <a class="navbar-brand fw-bold" href="../index.html">SkillUp Academy</a>
+    <a class="navbar-brand fw-bold" href="">SkillUp Academy</a>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
       aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
@@ -32,32 +32,32 @@ session_start();
     <div class="collapse navbar-collapse" id="navbarNav">
       <ul class="navbar-nav ms-auto">
         <li class="nav-item">
-          <a class="nav-link" href="../index.html">Home</a>
+          <a class="nav-link" href="../index.php">Home</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="../courses.html">Courses</a>
+          <a class="nav-link" href="../courses.php">Courses</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="../instructors.html">Instructors</a>
+          <a class="nav-link" href="../instructors.php">Instructors</a>
         </li>
         <?php
           if(isset($_SESSION['role'])){
             echo'<li class="nav-item">';
             if($_SESSION['role']==="Student")
-              echo '<a class="nav-link" href="student/dashboard.html">Dashboard</a> </li>';
+              echo '<a class="nav-link" href="student/dashboard.php">Dashboard</a> </li>';
             else if($_SESSION['role']==="Instructor")
-              echo '<a class="nav-link" href="instructor/dashboard.html">Dashboard</a> </li>';
+              echo '<a class="nav-link" href="instructor/dashboard.php">Dashboard</a> </li>';
             else
-              echo '<a class="nav-link" href="admin/dashboard.html">Dashboard</a> </li>';
+              echo '<a class="nav-link" href="admin/dashboard.php">Dashboard</a> </li>';
 
             echo'<li class="nav-item">
                   <a class="nav-link" href="auth/logout.php">Logout</a>
                   </li>';
           }
           else{
-            echo '<a class="nav-link" href="auth/login.html">Login</a> </li>
+            echo '<a class="nav-link" href="auth/login.php">Login</a> </li>
                   <li class="nav-item">
-                  <a class="nav-link" href="auth/signup.html">Signup</a>
+                  <a class="nav-link" href="auth/signup.php">Signup</a>
                   </li>';
           }
         ?>
@@ -65,13 +65,47 @@ session_start();
     </div>
   </div>
 </nav>
+<?php
+$c_id = 1;
 
+$stmt = $conn->prepare("
+    SELECT 
+        c.title AS course_title,
+        c.domain,
+        c.duration,
+        c.description,
+        c.u_id,
+        c.amount,
+        i.title AS instructor_title,
+        u.name AS instructor_name
+    FROM 
+        courses c
+    JOIN 
+        instructors i ON c.u_id = i.u_id
+    JOIN 
+        users u ON c.u_id = u.u_id
+    WHERE 
+        c.c_id = ?
+");
+
+
+    $stmt->bind_param("i", $c_id);
+    $stmt->execute();
+    $stmt->bind_result($courseTitle, $domain, $duration, $description, $uid, $amount, $instructorTitle, $instructorName);
+
+    $stmt->fetch();
+        
+
+    $stmt->close();
+
+
+?>
 <div class="container py-5">
-    <h1 class="mb-3">Full Stack Web Development</h1>
+    <h1 class="mb-3"><?php echo $courseTitle ?></h1>
 
     <div class="mb-4">
-        <span class="badge bg-primary">Web development</span>
-        <span class="ms-3 text-muted">Duration: 12 weeks</span>
+        <span class="badge bg-primary"><?php echo $domain ?></span>
+        <span class="ms-3 text-muted">Duration: <?php echo $duration ?> weeks</span>
 
         <div class="mt-3 text-center">
           <img src="../image-assets/course-images/full-stack-web-dev.webp" alt="Full stack web development" class="img-fluid rounded shadow">
@@ -80,7 +114,7 @@ session_start();
 
     <div class="mb-4">
         <h4>Description</h4>
-        <p>This course covers the complete journey of building web applications from scratch using HTML, CSS, JavaScript, and backend technologies.</p>
+        <p><?php echo $description ?></p>
     </div>
 
     <div class="mb-4">
@@ -130,15 +164,15 @@ session_start();
       <h4>Instructor</h4>
       <div class="d-flex align-items-center">
         <div>
-          <p class="lead">John Doe</p>
-          <p class="text-muted">Senior web dev instructor</p>
+          <p class="lead"><?php echo $instructorName ?></p>
+          <p class="text-muted"><?php echo $instructorTitle ?></p>
         </div>
       </div>
     </div>
     <div class="text-center">
       <a href="../auth/billing.html" class="btn card-h shadow btn-success w-50">
       <strong class="fs-5">Buy now</strong>
-      <p class="lead">BDT <strong>999</strong></p>
+      <p class="lead">BDT <strong><?php echo $amount ?></strong></p>
     </a>
     </div>
     

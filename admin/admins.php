@@ -2,13 +2,12 @@
 session_start();
 include '../auth/cnct.php';
 
-// Restrict access to admins only
-if (!isset($_SESSION['u_id']) || !isset($_SESSION['level']) || $_SESSION['level'] < 1 || $_SESSION['level'] > 4) {
-    $_SESSION['message'] = "Access denied. Admins only.";
-    $_SESSION['message_type'] = "danger";
-
-    header("Location: ../auth/login.php"); // Or redirect to a general dashboard
-    exit;
+if(!isset($_SESSION['role'])&&$_SESSION['role']!=="Admin"){
+  session_unset();
+  session_destroy();
+  $conn->close();
+  header("Location: ../index.php");
+  exit();
 }
 
 // Handle AJAX request for email validation

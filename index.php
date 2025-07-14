@@ -34,10 +34,10 @@ session_start();
           <a class="nav-link active" href="">Home</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="courses.html">Courses</a>
+          <a class="nav-link" href="courses.php">Courses</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="instructors.html">Instructors</a>
+          <a class="nav-link" href="instructors.php">Instructors</a>
         </li>
         
         <?php

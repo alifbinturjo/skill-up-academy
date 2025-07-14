@@ -1,15 +1,26 @@
 <?php
 include'../auth/cnct.php';
 session_start();
+<<<<<<< HEAD
+$_SESSION['role']="student";
+$_SESSION['uid']=1;
+$uid=$_SESSION['uid'];
+
+if(!isset($_SESSION['role'])&&$_SESSION['role']!=="student"){
+=======
 
 if(!isset($_SESSION['role'])&&$_SESSION['role']!=="Instructor"){
+>>>>>>> ecd471347ba464aa8d76551a79ec57a6eb411a75
   session_unset();
   session_destroy();
   $conn->close();
   header("Location: ../index.php");
   exit();
 }
+<<<<<<< HEAD
+=======
 $u_id=$_SESSION['u_id'];
+>>>>>>> ecd471347ba464aa8d76551a79ec57a6eb411a75
 ?>
 
 <!DOCTYPE html>
@@ -26,6 +37,15 @@ $u_id=$_SESSION['u_id'];
 </head>
 
 <body>
+<<<<<<< HEAD
+<script>
+        window.addEventListener('pageshow', function (event) {
+            if (event.persisted) {
+                window.location.reload();
+            }
+        });
+</script>
+=======
 <?php
 $stmt_n = $conn->prepare("SELECT n_status FROM instructors WHERE u_id = ?");
 $stmt_n->bind_param("i", $u_id);
@@ -43,6 +63,7 @@ catch(Exception $e){
   exit();
 }
 ?>
+>>>>>>> ecd471347ba464aa8d76551a79ec57a6eb411a75
   <nav class="navbar navbar-expand-lg navbar-blur sticky-top shadow-sm">
     <div class="container-fluid">
       <a class="navbar-brand fw-bold" href="">SkillUp Academy</a>
@@ -57,6 +78,18 @@ catch(Exception $e){
             <a class="nav-link active" href="">Dashboard</a>
           </li>
           <li class="nav-item">
+<<<<<<< HEAD
+            <a class="nav-link" href="courses.php">Courses</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="notices.php">Notices</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="profile.php">Profile</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="">Logout</a>
+=======
             <a class="nav-link" href="courses.html">Courses</a>
           </li>
           <li class="nav-item">
@@ -73,12 +106,19 @@ catch(Exception $e){
           </li>
           <li class="nav-item">
             <a class="nav-link" href="../auth/logout.php">Logout</a>
+>>>>>>> ecd471347ba464aa8d76551a79ec57a6eb411a75
           </li>
         </ul>
       </div>
     </div>
   </nav>
 
+<<<<<<< HEAD
+  <div class="container">
+
+    <div class="mb-5 mt-5">
+      <p class="lead fs-1">Hi Mr. Xyz</p>
+=======
   <?php
 $stmt_name = $conn->prepare("SELECT users.name, instructors.title FROM users JOIN instructors ON users.u_id = instructors.u_id WHERE users.u_id = ?");
 $stmt_name->bind_param("i", $u_id);
@@ -132,6 +172,7 @@ catch(Exception $e){
 
     <div class="mb-5 mt-5">
       <p class="lead fs-1">Hi <?php echo $name ?></p>
+>>>>>>> ecd471347ba464aa8d76551a79ec57a6eb411a75
     </div>
 
     <div class="row">
@@ -139,6 +180,12 @@ catch(Exception $e){
         <div class="card h-100 shadow border-0 p-4 bg-primary text-center text-light">
           <div class="container ">
             <div class="row">
+<<<<<<< HEAD
+              <div class="col-md-6">
+                <p class="lead fs-4">Type: Student</p>
+              </div>
+              <div class="col-md-6">
+=======
               <div class="col-md-4">
                 <p class="lead fs-4">Type: <?php echo $_SESSION['role'] ?></p>
               </div>
@@ -146,6 +193,7 @@ catch(Exception $e){
                 <p class="lead fs-4">Title: <?php echo $title ?></p>
               </div>
               <div class="col-md-4">
+>>>>>>> ecd471347ba464aa8d76551a79ec57a6eb411a75
                 <a href="profile.html" class="btn btn-outline-light">Go to profile</a>
               </div>
             </div>
@@ -156,22 +204,40 @@ catch(Exception $e){
 
     <div class="row mt-5">
       <div class="col-md-6">
+<<<<<<< HEAD
+        <div class="card card-h h-100 shadow-sm border-0 p-4 bg-success text-center text-light">
+          <p class="fs-3 lead"><strong>Courses</strong></p>
+          <p class="fs-4 lead">Taken: 12</p>
+          <p class="fs-4 lead">Previous: 1</p>
+          <div class="text-center">
+            <a href="courses.html" class="btn btn-outline-light w-50">View</a>
+=======
         <div class="card card-h h-100 shadow border-0 p-4 bg-success text-center text-light">
           <p class="fs-3 lead"><strong>Courses</strong></p>
           <p class="fs-4 lead">Taken: <?php echo $taken ?></p>
           <p class="fs-4 lead">Previous: <?php echo $previous ?></p>
           <div class="text-center">
             <a href="courses.html" class="btn w-50 btn-outline-light">View</a>
+>>>>>>> ecd471347ba464aa8d76551a79ec57a6eb411a75
           </div>
 
         </div>
       </div>
       <div class="col-md-6">
+<<<<<<< HEAD
+        <div class="card card-h h-100 shadow-sm border-0 p-4 bg-info text-center">
+          <p class="fs-3 lead">Notices</p>
+          <p class="fs-4 lead">Platform: 1</p>
+          <p class="fs-4 lead">Courses: 1</p>
+          <div class="text-center">
+            <a href="notices.html" class="btn btn-outline-dark w-50">View</a>
+=======
         <div class="card h-100 card-h shadow border-0 p-4 bg-info text-center">
           <p class="fs-3 lead"><strong>Notices</strong></p>
           <p class="fs-4 lead">Platform: <?php echo $platform ?></p>
           <div class="text-center mt-5">
             <a href="notices.html" class="btn w-50 btn-outline-dark">View</a>
+>>>>>>> ecd471347ba464aa8d76551a79ec57a6eb411a75
           </div>
         </div>
       </div>

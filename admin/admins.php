@@ -6,13 +6,53 @@ include '../auth/cnct.php';
 $_SESSION['u_id'] = 1;
 $_SESSION['level'] = 4;
 
-// Handle form submissions
+
+//restrictions......
+
+// Handle AJAX request for email validation
+if (isset($_POST['check_email'])) {
+    $email = $_POST['check_email'];
+
+    // Check if email exists in users table
+    $stmt = $conn->prepare("SELECT u_id FROM users WHERE email = ?");
+    $stmt->bind_param("s", $email);
+    $stmt->execute();
+    $res = $stmt->get_result();
+
+    if ($res && $res->num_rows > 0) {
+        $user = $res->fetch_assoc();
+        $u_id = $user['u_id'];
+        $stmt->close();
+
+        // Check if already an admin
+        $stmt = $conn->prepare("SELECT * FROM admins WHERE u_id = ?");
+        $stmt->bind_param("i", $u_id);
+        $stmt->execute();
+        $admin_res = $stmt->get_result();
+
+        if ($admin_res && $admin_res->num_rows > 0) {
+            echo json_encode(["status" => "exists", "message" => "This user is already an admin."]);
+        } else {
+            echo json_encode(["status" => "valid", "message" => "User exists and can be added."]);
+        }
+        exit;
+    } else {
+        echo json_encode(["status" => "not_found", "message" => "User email is not registered."]);
+        exit;
+    }
+}
+
+// Initialize filter and sort variables for the listing
+$filter_name = isset($_GET['filter_name']) ? trim($_GET['filter_name']) : '';
+$filter_level = isset($_GET['filter_level']) ? (int)$_GET['filter_level'] : 0;
+$sort_option = isset($_GET['sort_option']) ? $_GET['sort_option'] : 'name-asc';
+
+// ADD / UPDATE / REMOVE ADMIN
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($_POST['add_admin'])) {
         $email = $_POST['email'];
         $level = (int)$_POST['level'];
 
-        // Check if user exists by email - prepared statement
         $stmt = $conn->prepare("SELECT u_id FROM users WHERE email = ?");
         $stmt->bind_param("s", $email);
         $stmt->execute();
@@ -23,7 +63,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $u_id = $user['u_id'];
             $stmt->close();
 
-            // Check if already admin - prepared statement
             $stmt = $conn->prepare("SELECT * FROM admins WHERE u_id = ?");
             $stmt->bind_param("i", $u_id);
             $stmt->execute();
@@ -35,13 +74,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $stmt->close();
             } else {
                 $stmt->close();
-
-                // Insert into admins - prepared statement
                 $stmt = $conn->prepare("INSERT INTO admins (u_id, level) VALUES (?, ?)");
                 $stmt->bind_param("ii", $u_id, $level);
                 if ($stmt->execute()) {
                     $_SESSION['message'] = "Admin added successfully!";
                     $_SESSION['message_type'] = "success";
+
+                    //delete uid from strudent...............
                 } else {
                     $_SESSION['message'] = "Error adding admin: " . $stmt->error;
                     $_SESSION['message_type'] = "danger";
@@ -56,12 +95,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         header("Location: admins.php");
         exit();
-
     } elseif (isset($_POST['update_admin'])) {
         $u_id = (int)$_POST['u_id'];
         $level = (int)$_POST['level'];
-
-        // Update admin level - prepared statement
         $stmt = $conn->prepare("UPDATE admins SET level = ? WHERE u_id = ?");
         $stmt->bind_param("ii", $level, $u_id);
         if ($stmt->execute()) {
@@ -72,14 +108,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $_SESSION['message_type'] = "danger";
         }
         $stmt->close();
-
         header("Location: admins.php");
         exit();
-
     } elseif (isset($_POST['remove_admin'])) {
         $u_id = (int)$_POST['u_id'];
-
-        // Delete admin - prepared statement
         $stmt = $conn->prepare("DELETE FROM admins WHERE u_id = ?");
         $stmt->bind_param("i", $u_id);
         if ($stmt->execute()) {
@@ -90,34 +122,29 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $_SESSION['message_type'] = "danger";
         }
         $stmt->close();
-
         header("Location: admins.php");
         exit();
     }
 }
 
-// Filters
-$filter_name = isset($_GET['filter_name']) ? $_GET['filter_name'] : '';
-$filter_level = isset($_GET['filter_level']) ? (int)$_GET['filter_level'] : 0;
-$sort_option = isset($_GET['sort_option']) ? $_GET['sort_option'] : 'name-asc';
-
-// Build base query and parameters
-$sql = "SELECT u.u_id, u.name, u.email, u.contact, a.level 
-        FROM users u 
-        JOIN admins a ON u.u_id = a.u_id 
-        WHERE 1=1";
+// Prepare query to fetch admins with filters and sorting
+$sql = "SELECT a.u_id, a.level, u.name, u.email, u.contact
+        FROM admins a
+        JOIN users u ON a.u_id = u.u_id
+        WHERE 1=1 ";
 
 $params = [];
 $types = "";
 
-// Filters
-if (!empty($filter_name)) {
-    $sql .= " AND u.name LIKE ?";
+// Filtering
+if ($filter_name !== '') {
+    $sql .= " AND u.name LIKE ? ";
     $params[] = "%$filter_name%";
     $types .= "s";
 }
+
 if ($filter_level > 0) {
-    $sql .= " AND a.level = ?";
+    $sql .= " AND a.level = ? ";
     $params[] = $filter_level;
     $types .= "i";
 }
@@ -125,28 +152,36 @@ if ($filter_level > 0) {
 // Sorting
 switch ($sort_option) {
     case 'name-desc':
-        $sql .= " ORDER BY u.name DESC";
+        $sql .= " ORDER BY u.name DESC ";
         break;
     case 'level-asc':
-        $sql .= " ORDER BY a.level ASC";
+        $sql .= " ORDER BY a.level ASC ";
         break;
     case 'level-desc':
-        $sql .= " ORDER BY a.level DESC";
+        $sql .= " ORDER BY a.level DESC ";
         break;
+    case 'name-asc':
     default:
-        $sql .= " ORDER BY u.name ASC";
+        $sql .= " ORDER BY u.name ASC ";
         break;
 }
 
-// Prepare and execute the statement for listing admins
 $stmt = $conn->prepare($sql);
+
 if ($types) {
     $stmt->bind_param($types, ...$params);
 }
+
 $stmt->execute();
 $result = $stmt->get_result();
-$admins = $result->fetch_all(MYSQLI_ASSOC);
+
+$admins = [];
+while ($row = $result->fetch_assoc()) {
+    $admins[] = $row;
+}
+
 $stmt->close();
+
 ?>
 
 <!DOCTYPE html>
@@ -154,26 +189,26 @@ $stmt->close();
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Admins</title>
+  <title>Admins - SkillUp Academy</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet" />
   <link rel="stylesheet" href="../style.css" />
 </head>
 <body>
 
-<nav class="navbar navbar-expand-lg navbar-blur sticky-top shadow-sm">
+<nav class="navbar navbar-expand-lg navbar-blur sticky-top shadow-sm"> 
   <div class="container-fluid">
-    <a class="navbar-brand fw-bold" href="">SkillUp Academy</a>
+    <a class="navbar-brand fw-bold" href="#">SkillUp Academy</a>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
       aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
-  
+
     <div class="collapse navbar-collapse" id="navbarNav">
       <ul class="navbar-nav ms-auto">
         <li class="nav-item"><a class="nav-link" href="dashboard.php">Dashboard</a></li>
         <li class="nav-item"><a class="nav-link" href="courses.php">Courses</a></li>
         <li class="nav-item"><a class="nav-link" href="instructors.php">Instructors</a></li>
-        <li class="nav-item"><a class="nav-link active" href="">Admins</a></li>
+        <li class="nav-item"><a class="nav-link active" href="#">Admins</a></li>
         <li class="nav-item"><a class="nav-link" href="students.php">Students</a></li>
         <li class="nav-item"><a class="nav-link" href="post-notices.php">Notices</a></li>
         <li class="nav-item"><a class="nav-link" href="profile.php">Profile</a></li>
@@ -200,6 +235,17 @@ $stmt->close();
       <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
     </div>
   </div>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const toastEl = document.getElementById('sessionToast');
+      if (toastEl) {
+        const toast = new bootstrap.Toast(toastEl, { delay: 1000 });
+        toast.show();
+      }
+    });
+  </script>
+
   <?php unset($_SESSION['message'], $_SESSION['message_type']); ?>
 <?php endif; ?>
 
@@ -230,7 +276,7 @@ $stmt->close();
         <h5 class="modal-title" id="addAdminModalLabel">Add Existing User as Admin</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
-      <form method="POST" action="admins.php">
+      <form method="POST" action="admins.php" id="addAdminForm">
         <div class="modal-body">
           <div class="mb-3">
             <label for="email" class="form-label small">User Email <span class="text-danger">*</span></label>
@@ -242,6 +288,7 @@ $stmt->close();
               required
               autocomplete="off"
             />
+            <div id="emailFeedback" class="form-text mt-1"></div>
           </div>
           <div class="mb-3">
             <label for="level" class="form-label small">Admin Level <span class="text-danger">*</span></label>
@@ -261,7 +308,7 @@ $stmt->close();
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-danger btn-sm" data-bs-dismiss="modal">Close</button>
-          <button type="submit" class="btn btn-success btn-sm" name="add_admin">Add Admin</button>
+          <button type="submit" class="btn btn-success btn-sm" name="add_admin" id="addAdminSubmit">Add Admin</button>
         </div>
       </form>
     </div>
@@ -336,6 +383,10 @@ $stmt->close();
           </tr>
         </thead>
         <tbody>
+          <?php if (count($admins) === 0): ?>
+            <tr><td colspan="4">No admins found.</td></tr>
+          <?php endif; ?>
+
           <?php foreach ($admins as $admin): ?>
             <tr class="bg-transparent">
               <td class="bg-transparent"><?php echo htmlspecialchars($admin['name']); ?></td>
@@ -355,7 +406,7 @@ $stmt->close();
               </td>
             </tr>
 
-            <!-- Edit Modal for each admin -->
+            <!-- Edit Modal -->
             <div class="modal fade" id="editModal<?php echo $admin['u_id']; ?>" tabindex="-1" aria-labelledby="editModalLabel<?php echo $admin['u_id']; ?>" aria-hidden="true">
               <div class="modal-dialog">
                 <div class="modal-content border border-dark">
@@ -377,7 +428,7 @@ $stmt->close();
                         </select>
                       </div>
                       <div class="d-flex justify-content-between">
-                        <button type="submit" class="btn btn-danger btn-sm" name="remove_admin">Remove</button>
+                        <button type="submit" class="btn btn-danger btn-sm" name="remove_admin" onclick="return confirm('Are you sure to remove this admin?');">Remove</button>
                         <button type="submit" class="btn btn-success btn-sm" name="update_admin">Save Changes</button>
                       </div>
                     </div>
@@ -386,7 +437,7 @@ $stmt->close();
               </div>
             </div>
 
-            <!-- Contact Modal for each admin -->
+            <!-- Contact Modal -->
             <div class="modal fade" id="contactModal<?php echo $admin['u_id']; ?>" tabindex="-1" aria-labelledby="contactModalLabel<?php echo $admin['u_id']; ?>" aria-hidden="true">
               <div class="modal-dialog">
                 <div class="modal-content border border-dark">
@@ -412,16 +463,44 @@ $stmt->close();
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
 
 <script>
-  document.addEventListener('DOMContentLoaded', () => {
-    const toastEl = document.getElementById('sessionToast');
-    if (toastEl) {
-      const toast = new bootstrap.Toast(toastEl, {
-        delay: 1000,
-        autohide: true
-      });
-      toast.show();
+// Live AJAX validation for email input in Add Admin modal
+document.addEventListener("DOMContentLoaded", () => {
+  const emailInput = document.getElementById("email");
+  const emailFeedback = document.getElementById("emailFeedback");
+  const addAdminSubmit = document.getElementById("addAdminSubmit");
+
+  emailInput.addEventListener("input", () => {
+    const email = emailInput.value.trim();
+    if (!email) {
+      emailFeedback.innerHTML = "";
+      addAdminSubmit.disabled = false;
+      return;
     }
+
+    fetch("admins.php", {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: "check_email=" + encodeURIComponent(email)
+    })
+    .then(res => res.json())
+    .then(data => {
+      if (data.status === "valid") {
+        emailFeedback.innerHTML = `<span class="text-success">✅ ${data.message}</span>`;
+        addAdminSubmit.disabled = false;
+      } else if (data.status === "exists") {
+        emailFeedback.innerHTML = `<span class="text-warning">⚠️ ${data.message}</span>`;
+        addAdminSubmit.disabled = true;
+      } else {
+        emailFeedback.innerHTML = `<span class="text-danger">❌ ${data.message}</span>`;
+        addAdminSubmit.disabled = true;
+      }
+    })
+    .catch(() => {
+      emailFeedback.innerHTML = `<span class="text-danger">⚠️ Error checking email</span>`;
+      addAdminSubmit.disabled = false;
+    });
   });
+});
 </script>
 
 </body>

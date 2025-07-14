@@ -45,16 +45,16 @@ $u_id=$_SESSION['u_id'];
       <div class="collapse navbar-collapse" id="navbarNav">
         <ul class="navbar-nav ms-auto">
           <li class="nav-item">
-            <a class="nav-link " href="dashboard.html">Dashboard</a>
+            <a class="nav-link " href="dashboard.php">Dashboard</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="courses.html">Courses</a>
+            <a class="nav-link" href="courses.php">Courses</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="notices.html">Notices</a>
+            <a class="nav-link" href="notices.php">Notices</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="profile.html">Profile</a>
+            <a class="nav-link" href="profile.php">Profile</a>
           </li>
           <li class="nav-item">
             <a class="nav-link" href="../auth/logout.php">Logout</a>

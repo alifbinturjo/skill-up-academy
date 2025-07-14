@@ -2,8 +2,9 @@
 include '../auth/cnct.php';
 session_start();
 
+/* For Checking
 $_SESSION['role'] = "Instructor";
-$_SESSION['u_id'] = 2;
+$_SESSION['u_id'] = 2; */
 
 if (!isset($_SESSION['role']) && $_SESSION['role'] !== "Instructor") {
     session_unset();
@@ -14,12 +15,7 @@ if (!isset($_SESSION['role']) && $_SESSION['role'] !== "Instructor") {
 }
 
 $u_id = $_SESSION['u_id'];
-/*
-// Use logged-in instructor's user ID
-if (!isset($_SESSION['id'])) {
-    $_SESSION['id'] = 1; // for testing; replace with actual session management in production
-}
-$uid = $_SESSION['id']; */
+
 
 // Fetch instructor's courses
 $stmt = $conn->prepare("SELECT c_id, title, description, domain, duration FROM courses WHERE u_id = ?");

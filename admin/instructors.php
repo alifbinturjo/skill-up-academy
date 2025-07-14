@@ -2,7 +2,11 @@
 session_start();
 include '../auth/cnct.php';
 
+<<<<<<< HEAD
 if (!isset($_SESSION['u_id']) || !isset($_SESSION['role']) || $_SESSION['role'] !== 'Admin') {
+=======
+if (!isset($_SESSION['u_id'], $_SESSION['role']) || $_SESSION['role'] !== 'Admin') {
+>>>>>>> 79e1c56159815d344ed8c7364852eec0b9651ae8
     $_SESSION['message'] = "Unauthorized access.";
     $_SESSION['message_type'] = "danger";
     header("Location: ../auth/login.php");

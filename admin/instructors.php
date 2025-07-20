@@ -2,15 +2,12 @@
 session_start();
 include '../auth/cnct.php';
 
-<<<<<<< HEAD
-if (!isset($_SESSION['u_id']) || !isset($_SESSION['role']) || $_SESSION['role'] !== 'Admin') {
-=======
-if (!isset($_SESSION['u_id'], $_SESSION['role']) || $_SESSION['role'] !== 'Admin') {
->>>>>>> 79e1c56159815d344ed8c7364852eec0b9651ae8
-    $_SESSION['message'] = "Unauthorized access.";
-    $_SESSION['message_type'] = "danger";
-    header("Location: ../auth/login.php");
-    exit;
+if(!isset($_SESSION['role'])&&$_SESSION['role']!=="Admin"){
+  session_unset();
+  session_destroy();
+  $conn->close();
+  header("Location: ../index.php");
+  exit();
 }
 
 function clean($data) {
@@ -201,14 +198,33 @@ $stmt->close();
 
     <div class="collapse navbar-collapse" id="navbarNav">
       <ul class="navbar-nav ms-auto">
-        <li class="nav-item"><a class="nav-link" href="dashboard.php">Dashboard</a></li>
-        <li class="nav-item"><a class="nav-link" href="courses.php">Courses</a></li>
-        <li class="nav-item"><a class="nav-link active" href="instructors.php">Instructors</a></li>
-        <li class="nav-item"><a class="nav-link" href="admins.php">Admins</a></li>
-        <li class="nav-item"><a class="nav-link" href="students.php">Students</a></li>
-        <li class="nav-item"><a class="nav-link" href="post-notices.php">Notices</a></li>
-        <li class="nav-item"><a class="nav-link" href="profile.php">Profile</a></li>
-        <li class="nav-item"><a class="nav-link" href="logout.php">Logout</a></li>
+        <li class="nav-item">
+          <a class="nav-link " href="dashboard.php">Dashboard</a>
+        </li>
+         <li class="nav-item">
+          <a class="nav-link " href="">Admins</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link active" href="instructors.php">Instructors</a>
+        </li>
+
+        <li class="nav-item">
+          <a class="nav-link" href="courses.php">Courses</a>
+        </li>
+        
+       
+        <li class="nav-item">
+          <a class="nav-link" href="students.php">Students</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="post-notices.php">Notices</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="profile.php">Profile</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="../auth/logout.php">Logout</a>
+        </li>
       </ul>
     </div>
   </div>

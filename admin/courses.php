@@ -2,19 +2,24 @@
 session_start();
 include '../auth/cnct.php';
 
-// Restrict access: Only admin users allowed
-if (!isset($_SESSION['u_id'], $_SESSION['role']) || $_SESSION['role'] !== 'Admin') {
-<<<<<<< HEAD
-
-=======
->>>>>>> 79e1c56159815d344ed8c7364852eec0b9651ae8
-    $_SESSION['error'] = "Unauthorized access. Please login as admin.";
-    header("Location: ../auth/login.php");
-    exit();
+if(!isset($_SESSION['role']) || $_SESSION['role']!=="Admin"){
+  session_unset();
+  session_destroy();
+  $conn->close();
+  header("Location: ../index.php");
+  exit();
 }
+
 function clean($data) {
     return htmlspecialchars(trim($data));
 }
+
+// Domain mapping for display
+$domainMap = [
+    'web' => 'Web Development',
+    'data' => 'Data Science',
+    'ai' => 'AI & ML'
+];
 
 // Add Course
 if (isset($_POST['action']) && $_POST['action'] === 'add_course') {
@@ -24,6 +29,7 @@ if (isset($_POST['action']) && $_POST['action'] === 'add_course') {
     $domain = clean($_POST['domain']);
     $duration = (int)$_POST['duration'];
     $u_id = (int)$_POST['instructor'];
+    $status = 'active'; // Default status
 
     if (!$title || !$amount || !$description || !$domain || !$duration || !$u_id) {
         $_SESSION['message'] = "Please fill all required fields.";
@@ -32,8 +38,8 @@ if (isset($_POST['action']) && $_POST['action'] === 'add_course') {
         exit;
     }
 
-    $stmt = $conn->prepare("INSERT INTO courses (title, amount, description, domain, duration, u_id) VALUES (?, ?, ?, ?, ?, ?)");
-    $stmt->bind_param("sissii", $title, $amount, $description, $domain, $duration, $u_id);
+    $stmt = $conn->prepare("INSERT INTO courses (title, amount, description, domain, duration, u_id, status) VALUES (?, ?, ?, ?, ?, ?, ?)");
+    $stmt->bind_param("sissiis", $title, $amount, $description, $domain, $duration, $u_id, $status);
     $executed = $stmt->execute();
     $_SESSION['message'] = $executed ? "Course added successfully!" : "Failed to add course.";
     $_SESSION['message_type'] = $executed ? "success" : "danger";
@@ -123,30 +129,33 @@ $instructors = $instructor_result->fetch_all(MYSQLI_ASSOC);
 
       <div class="collapse navbar-collapse" id="navbarNav">
         <ul class="navbar-nav ms-auto">
-          <li class="nav-item">
-            <a class="nav-link" href="dashboard.php">Dashboard</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link active" href="courses.php">Courses</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="instructors.php">Instructors</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="admins.php">Admins</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="students.php">Students</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="post-notices.php">Notices</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="profile.php">Profile</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="logout.php">Logout</a>
-          </li>
+        <li class="nav-item">
+          <a class="nav-link " href="#">Dashboard</a>
+        </li>
+         <li class="nav-item">
+          <a class="nav-link" href="admins.php">Admins</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="instructors.php">Instructors</a>
+        </li>
+
+        <li class="nav-item">
+          <a class="nav-link active" href="courses.php">Courses</a>
+        </li>
+        
+       
+        <li class="nav-item">
+          <a class="nav-link" href="students.php">Students</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="post-notices.php">Notices</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="profile.php">Profile</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="../auth/logout.php">Logout</a>
+        </li>
         </ul>
       </div>
     </div>
@@ -169,7 +178,8 @@ $instructors = $instructor_result->fetch_all(MYSQLI_ASSOC);
             </div>
         </div>
     </div>
-</div>
+  </div>
+
   <?php if (isset($_SESSION['message'])): ?>
     <div class="position-fixed bottom-0 start-50 translate-middle-x mb-3" style="z-index: 1080;">
       <div class="toast align-items-center text-bg-<?= $_SESSION['message_type'] ?> show" role="alert">
@@ -210,7 +220,7 @@ $instructors = $instructor_result->fetch_all(MYSQLI_ASSOC);
                       <span class="ps-2"><?= htmlspecialchars($course['title']) ?></span>
                     </div>
                   </td>
-                  <td class="bg-transparent"><?= htmlspecialchars($course['domain']) ?></td>
+                  <td class="bg-transparent"><?= htmlspecialchars($domainMap[$course['domain']] ?? $course['domain']) ?></td>
                   <td class="bg-transparent"><?= htmlspecialchars($course['duration']) ?> weeks</td>
                   <td class="bg-transparent"><?= htmlspecialchars($course['instructor_name'] ?? 'Not assigned') ?></td>
                   <td class="bg-transparent">
@@ -332,7 +342,7 @@ $instructors = $instructor_result->fetch_all(MYSQLI_ASSOC);
                 </select>
               </div>
               <div class="mb-2">
-                <label class="form-label">Price (₹)</label>
+                <label class="form-label">Price (BDT)</label>
                 <input type="number" class="form-control border-dark" name="amount" value="<?= htmlspecialchars($course['amount']) ?>" required>
               </div>
               <div class="mb-3">

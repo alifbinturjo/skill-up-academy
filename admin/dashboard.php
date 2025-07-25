@@ -42,20 +42,23 @@ $u_id=$_SESSION['u_id'];
         <li class="nav-item">
           <a class="nav-link active" href="#">Dashboard</a>
         </li>
-        <li class="nav-item">
-          <a class="nav-link" href="courses.php">Courses</a>
+         <li class="nav-item">
+          <a class="nav-link" href="admins.php">Admins</a>
         </li>
         <li class="nav-item">
           <a class="nav-link" href="instructors.php">Instructors</a>
         </li>
+
         <li class="nav-item">
-          <a class="nav-link" href="admins.php">Admins</a>
+          <a class="nav-link" href="courses.php">Courses</a>
         </li>
+        
+       
         <li class="nav-item">
           <a class="nav-link" href="students.php">Students</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="post-notices.php">Post</a>
+          <a class="nav-link" href="post-notices.php">Notices</a>
         </li>
         <li class="nav-item">
           <a class="nav-link" href="profile.php">Profile</a>

@@ -1,81 +1,76 @@
 <?php
-require_once '../auth/cnct.php';
 session_start();
+require_once '../auth/cnct.php';
 
-// Restrict to admins only
+// Ensure only admin can access
 if (!isset($_SESSION['u_id']) || $_SESSION['role'] !== 'Admin') {
     $_SESSION['error'] = "Unauthorized access.";
     header("Location: ../auth/login.php");
     exit();
 }
 
-// Verify and get a valid admin ID
-$valid_admin_id = null;
-$admin_query = $conn->query("SELECT u_id FROM admins LIMIT 1");
-if ($admin_query && $admin_query->num_rows > 0) {
-    $admin_row = $admin_query->fetch_assoc();
-    $valid_admin_id = $admin_row['u_id'];
-} else {
-    die("No admin accounts found in database");
-}
+      // Check if Admin
+            $admin_check = $conn->prepare("SELECT * FROM admins WHERE u_id = ?");
+            $admin_check->bind_param("i", $u_id);
+            $admin_check->execute();
+            $admin_res = $admin_check->get_result();
+            if ($admin_res->num_rows > 0) {
+                $role = 'Admin';
+                $_SESSION['role'] = $role;
+                header("Location: ../admin/post-notices.php");
+                exit();
+            }
 
-// For testing (use a valid admin ID)
-$_SESSION['user_type'] = 'admin';
-$_SESSION['user_id'] = $valid_admin_id;
-
-// Handle form submission
+// Handle new notice submission
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $title = $conn->real_escape_string($_POST['title'] ?? '');
     $message = $conn->real_escape_string($_POST['message'] ?? '');
     $audience = $conn->real_escape_string($_POST['audience'] ?? 'all');
-    
+
     try {
         $stmt = $conn->prepare("INSERT INTO admin_notices (title, message, date, u_id, audience) 
-                               VALUES (?, ?, CURDATE(), ?, ?)");
-        $stmt->bind_param("ssis", $title, $message, $_SESSION['user_id'], $audience);
-        
+                                VALUES (?, ?, CURDATE(), ?, ?)");
+        $stmt->bind_param("ssis", $title, $message, $_SESSION['u_id'], $audience);
+
         if ($stmt->execute()) {
             $_SESSION['success'] = "Notice posted successfully!";
-
-            // ✅ Set red dot alert for students or instructors
-            if (in_array($audience, ['students', 'instructors', 'all'])) {
-                $_SESSION['new_notice'] = true;
-            }
-
         } else {
-            throw new Exception("Database error: " . $stmt->error);
+            throw new Exception("Failed to post: " . $stmt->error);
         }
     } catch (Exception $e) {
-        $_SESSION['error'] = "Error: " . $e->getMessage();
+        $_SESSION['error'] = $e->getMessage();
     }
+
+    // Redirect to avoid form re-submission on refresh
     header("Location: post-notices.php");
     exit();
 }
 
-
-// Handle notice deletion
+// Optional: Handle delete notice
 if (isset($_GET['delete'])) {
     $id = (int)$_GET['delete'];
     try {
         $stmt = $conn->prepare("DELETE FROM admin_notices WHERE n_id = ?");
         $stmt->bind_param("i", $id);
-        
         if ($stmt->execute()) {
             $_SESSION['success'] = "Notice deleted successfully!";
         } else {
-            throw new Exception("Delete failed: " . $stmt->error);
+            throw new Exception("Failed to delete: " . $stmt->error);
         }
     } catch (Exception $e) {
-        $_SESSION['error'] = "Error: " . $e->getMessage();
+        $_SESSION['error'] = $e->getMessage();
     }
+
     header("Location: post-notices.php");
     exit();
 }
 
-// Fetch all admin notices
+// Load notices
 $notices = [];
-$result = $conn->query("SELECT * FROM admin_notices ORDER BY date DESC, n_id DESC");
-if ($result) $notices = $result->fetch_all(MYSQLI_ASSOC);
+$res = $conn->query("SELECT * FROM admin_notices ORDER BY date DESC, n_id DESC");
+if ($res) {
+    $notices = $res->fetch_all(MYSQLI_ASSOC);
+}
 ?>
 
 <!DOCTYPE html>
@@ -103,6 +98,9 @@ if ($result) $notices = $result->fetch_all(MYSQLI_ASSOC);
         <li class="nav-item">
           <a class="nav-link" href="dashboard.php">Dashboard</a>
         </li>
+        <li class="nav-item">
+            <a class="nav-link" href="admins.php">Admins</a>
+          </li>
         <li class="nav-item">
           <a class="nav-link" href="courses.php">Courses</a>
         </li>

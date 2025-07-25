@@ -30,11 +30,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $errors[] = "Invalid email format.";
     }
 
+<<<<<<< HEAD
     // Phone number validation: must be 11 digits, starting with '01'
     // Phone number validation: must be 11 digits, starting with '01'
     if (!preg_match('/^1[0-9]{9}$/', $contact)) {
         $errors[] = "Phone number must be 11 digits and start with 1.";
     }
+=======
+    
+>>>>>>> 8bde489b8ef3cccc53b00cd4ea7121719607098c
 
 
 
@@ -131,7 +135,7 @@ $image = '../image-assets/common/profile.webp';
 
         <div class="row">
             <div class="col-md-4 text-center mb-4">
-                <img src="<?= htmlspecialchars($image) ?>" class="rounded-circle shadow-sm" alt="Student Photo" style="width: 170px; height: 170px;">
+                <img src="../image-assets/common/Profile.webp" class="rounded-circle shadow-sm" alt="Student Photo" style="width: 170px; height: 170px;">
                 <h4 class="mt-3"><?= htmlspecialchars($name) ?></h4>
                 <p class="text-muted">Student</p>
             </div>

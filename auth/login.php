@@ -1,7 +1,5 @@
 
 
-
-
 <?php
 include 'cnct.php';  
 session_start();  

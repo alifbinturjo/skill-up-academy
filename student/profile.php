@@ -2,10 +2,7 @@
 include '../auth/cnct.php';
 session_start();
 
-/* For Check
-$_SESSION['role'] = "Student";
-$_SESSION['u_id'] = 2; */
-
+// Check if user is logged in as a Student
 if (!isset($_SESSION['role']) || $_SESSION['role'] !== "Student") {
     session_unset();
     session_destroy();
@@ -15,7 +12,6 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== "Student") {
 }
 
 $u_id = $_SESSION['u_id'];
-
 $errors = [];
 
 // Handle profile update (POST)
@@ -25,7 +21,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $bio = trim($_POST['bio'] ?? '');
     $contact = trim($_POST['contact'] ?? '');
 
-    if (empty($_POST["name"])) {
+    // Validate fields
+    if (empty($name)) {
         $errors[] = "Name is required";
     }
 
@@ -33,20 +30,38 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $errors[] = "Invalid email format.";
     }
 
-    if (!preg_match('/^01[0-9]{9}$/', $contact)) {
-        $errors[] = "Phone number must be 11 digits and start with 01.";
+    // Phone number validation: must be 11 digits, starting with '01'
+    // Phone number validation: must be 11 digits, starting with '01'
+    if (!preg_match('/^1[0-9]{9}$/', $contact)) {
+        $errors[] = "Phone number must be 11 digits and start with 1.";
     }
 
+
+
+    // If no errors, proceed to update the profile
     if (empty($errors)) {
+        // Update user data in the `users` table
         $stmt = $conn->prepare("UPDATE users SET name=?, email=?, contact=? WHERE u_id=?");
         $stmt->bind_param("sssi", $name, $email, $contact, $u_id);
         $stmt->execute();
         $stmt->close();
 
+        // Update student bio in the `students` table
         $stmt = $conn->prepare("UPDATE students SET bio=? WHERE u_id=?");
         $stmt->bind_param("si", $bio, $u_id);
         $stmt->execute();
         $stmt->close();
+
+        // Set success message in session
+        $_SESSION['message'] = "Profile updated successfully!";
+        $_SESSION['message_type'] = "success";
+        header("Location: profile.php"); // Redirect to show the updated profile
+        exit();
+    } else {
+        // If errors exist, store them in the session
+        $_SESSION['errors'] = $errors;
+        header('Location: profile.php');  // Reload the page to display errors
+        exit();
     }
 }
 
@@ -101,12 +116,13 @@ $image = '../image-assets/Students/default.webp';
     <div class="container mt-5">
         <p class="text-center mb-4 fs-1">Student Profile</p>
 
-        <?php if (!empty($errors)): ?>
+        <?php if (isset($_SESSION['errors']) && !empty($_SESSION['errors'])): ?>
             <div class="alert alert-danger">
-                <?php foreach ($errors as $e): ?>
+                <?php foreach ($_SESSION['errors'] as $e): ?>
                     <p class="mb-0"><?= htmlspecialchars($e) ?></p>
                 <?php endforeach; ?>
             </div>
+            <?php unset($_SESSION['errors']); ?> <!-- Clear the errors after showing them -->
         <?php endif; ?>
 
         <div class="row">
@@ -130,7 +146,8 @@ $image = '../image-assets/Students/default.webp';
                             </div>
                             <div>
                                 <i class="fas fa-phone me-2 text-muted"></i>
-                                <span>+880<?= htmlspecialchars(substr($contact, 1)) ?></span>
+                                <!-- Correctly display phone number -->
+                                <span>+880<?= htmlspecialchars($contact) ?></span>
                             </div>
                         </div>
                     </div>
@@ -158,7 +175,7 @@ $image = '../image-assets/Students/default.webp';
                             <div class="mb-3"><label class="form-label">Email</label><input type="email" name="email" class="form-control" value="<?= htmlspecialchars($email) ?>"></div>
                             <div class="mb-3">
                                 <label class="form-label">Phone Number (Starts with 01)</label>
-                                <input type="text" name="contact" class="form-control" value="<?= htmlspecialchars($contact) ?>" placeholder="e.g., 017xxxxxxxx">
+                                <input type="text" name="contact" class="form-control" value="<?= htmlspecialchars($contact) ?>" placeholder="e.g., 01xxxxxxxxx">
                             </div>
                             <div class="mb-3"><label class="form-label">Bio</label><textarea name="bio" class="form-control" rows="5"><?= htmlspecialchars($bio) ?></textarea></div>
                         </div>

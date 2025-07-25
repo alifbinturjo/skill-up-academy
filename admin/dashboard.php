@@ -197,65 +197,64 @@ catch(Exception $e){
         </div>
     </div>
 
-    <div class="row mt-5">
-        <div class="col-md-6">
-            <div class="card h-100 card-h shadow-sm border-0 p-4 bg-success text-center text-light">
-                <p class="fs-3 lead"><strong>Courses</strong></p>
-                <p class="fs-4 lead">Offered: <?php echo $offered ?></p>
-                <p class="fs-4 lead">Ongoing: <?php echo $started ?></p>
+    <div class="row mt-5 justify-content-center">
+        <div class="col-md-2">
+            <div class="card h-100 card-h shadow-sm border-0 p-4 bg-light text-center text-primary">
+                <p class="fs-4 lead"><strong>Courses  <i class="bi bi-book"></i></strong></p>
+                <p class="fs-5 lead">Offered: <?php echo $offered ?></p>
+                <p class="fs-5 lead">Ongoing: <?php echo $started ?></p>
                 <div class="text-center mt-5">
-                  <a href="courses.php" class="btn btn-outline-light w-50">View</a>
+                  <a href="courses.php" class="btn btn-outline-primary btn-sm w-50">&rarr;</a>
                 </div>
             </div>
         </div>
-        <div class="col-md-6">
-            <div class="card h-100 card-h shadow-sm border-0 p-4 bg-info text-center">
-                <p class="fs-3 lead"><strong>Notices</strong></p>
-                <p class="fs-4 lead">Posted: <?php echo $notice_count ?></p>
+        <div class="col-md-2">
+            <div class="card h-100 card-h shadow-sm border-0 p-4 bg-light text-center text-secondary">
+                <p class="fs-4 lead"><strong>Notices  <i class="bi bi-megaphone"></i></strong></p>
+                <p class="fs-5 lead">Posted: <?php echo $notice_count ?></p>
                 <div class="text-center mt-5">
-                  <a href="post-notices.php" class="mt-5 btn btn-outline-dark w-50">View</a>
+                  <a href="post-notices.php" class="mt-5 btn btn-outline-secondary btn-sm w-50">&rarr;</a>
                 </div>
             </div>
         </div>
         
-    </div>
+    
 
-    <div class="row mt-3">
+    
         
-        <div class="col-md-4">
-            <div class="card h-100 card-h shadow-sm border-0 p-4 bg-info text-center text-dark">
-                <p class="fs-3 lead"><strong>Instructors</strong></p>
-                <p class="fs-4 lead">Junior instructor: <?php echo $junior ?></p>
-                <p class="fs-4 lead">Instructor: <?php echo $instructor ?></p>
-                <p class="fs-4 lead">Senior instructor: <?php echo $senior ?></p>
+        <div class="col-md-2">
+            <div class="card h-100 card-h shadow-sm border-0 p-4 bg-light text-center text-success">
+                <p class="fs-4 lead"><strong>Instructors  <i class="bi bi-person-lines-fill"></i></strong></p>
+                <p class="fs-5 lead">Junior instructor: <?php echo $junior ?></p>
+                <p class="fs-5 lead">Instructor: <?php echo $instructor ?></p>
+                <p class="fs-5 lead">Senior instructor: <?php echo $senior ?></p>
                 <div class="text-center">
-                  <a href="instructors.php" class="btn btn-outline-dark w-50">View</a>
+                  <a href="instructors.php" class="btn btn-outline-success btn-sm w-50">&rarr;</a>
                 </div>
             </div>
         </div>
-        <div class="col-md-4">
-            <div class="card h-100 card-h shadow-sm border-0 p-4 bg-success text-center text-light">
-                <p class="fs-3 lead"><strong>Admins</strong></p>
-                <p class="fs-4 lead">L0: <?php echo $l0 ?></p>
-                <p class="fs-4 lead">L1: <?php echo $l1 ?></p>
+        <div class="col-md-2">
+            <div class="card h-100 card-h shadow-sm border-0 p-4 bg-light text-center text-info">
+                <p class="fs-4 lead"><strong>Admins  <i class="bi bi-person-gear"></i></strong></p>
+                <p class="fs-5 lead">L0: <?php echo $l0 ?></p>
+                <p class="fs-5 lead">L1: <?php echo $l1 ?></p>
                 <div class="text-center mt-2">
-                  <a href="admins.php" class="mt-5 btn btn-outline-light w-50">View</a>
+                  <a href="admins.php" class="mt-5 btn btn-outline-info btn-sm w-50">&rarr;</a>
                 </div>
             </div>
         </div>
-        <div class="col-md-4">
-            <div class="card h-100 card-h shadow-sm border-0 p-4 bg-secondary text-center text-light">
-                <p class="fs-3 lead"><strong>Students</strong></p>
-                <p class="fs-4 lead">Total: <?php echo $total_students ?></p>
+        <div class="col-md-2">
+            <div class="card h-100 card-h shadow-sm border-0 p-4 bg-light text-center text-danger">
+                <p class="fs-4 lead"><strong>Students  <i class="bi bi-people"></i></strong></p>
+                <p class="fs-5 lead">Total: <?php echo $total_students ?></p>
                 <div class="text-center mt-5">
-                  <a href="students.php" class="btn btn-outline-light mt-5 w-50">View</a>
+                  <a href="students.php" class="btn btn-outline-danger btn-sm mt-5 w-50">&rarr;</a>
                 </div>
             </div>
         </div>
         
-    </div>
-
 </div>
+
 
 
     

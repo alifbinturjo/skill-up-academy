@@ -66,15 +66,17 @@ catch(Exception $e){
           <li class="nav-item">
             <a class="nav-link" href="courses.php">Courses</a>
           </li>
-          <li class="nav-item">
-            <a class="nav-link" href="notices.php">Notices
-              <?php if ($n_status==="unread"): ?>
-      <span class="position-absolute top-0 start-100 translate-middle p-1 bg-danger border border-light rounded-circle">
+          <li class="nav-item position-relative">
+  <a class="nav-link position-relative" href="notices.php">
+    Notices
+    <?php if ($n_status === "unread"): ?>
+      <span class="position-absolute top-15 start-85 translate-middle p-1 bg-danger border border-light rounded-circle"
+      style="width: 8px; height: 8px;">
         <span class="visually-hidden">New</span>
       </span>
     <?php endif; ?>
-            </a>
-          </li>
+  </a>
+</li>
           <li class="nav-item">
             <a class="nav-link" href="profile.php">Profile</a>
           </li>
@@ -168,25 +170,25 @@ catch(Exception $e){
       </div>
     </div>
 
-    <div class="row mt-5">
-      <div class="col-md-6">
-        <div class="card card-h h-100 shadow-sm border-0 p-4 bg-success text-center text-light">
-          <p class="fs-3 lead"><strong>Courses</strong></p>
-          <p class="fs-4 lead">Taken: <?php echo $taken ?></p>
-          <p class="fs-4 lead">Previous: <?php echo $past ?></p>
+    <div class="row mt-5 justify-content-center">
+      <div class="col-md-5">
+        <div class="card card-h h-100 shadow-sm border-0 p-4 bg-light text-center text-primary">
+          <p class="fs-4 lead"><strong>Courses  <i class="bi bi-book"></i></strong></p>
+          <p class="fs-5 lead">Taken: <?php echo $taken ?></p>
+          <p class="fs-5 lead">Previous: <?php echo $past ?></p>
           <div class="text-center">
-            <a href="courses.php" class="btn btn-outline-light w-50">View</a>
+            <a href="courses.php" class="btn btn-outline-primary btn-sm w-50">&rarr;</a>
           </div>
 
         </div>
       </div>
-      <div class="col-md-6">
-        <div class="card card-h h-100 shadow-sm border-0 p-4 bg-info text-center">
-          <p class="fs-3 lead">Notices</p>
-          <p class="fs-4 lead">Platform: <?php echo $platform ?></p>
-          <p class="fs-4 lead">Courses: <?php echo $courses ?></p>
+      <div class="col-md-5">
+        <div class="card card-h h-100 shadow-sm border-0 p-4 bg-light text-center text-secondary">
+          <p class="fs-4 lead"><strong>Notices  <i class="bi bi-megaphone"></i></strong></p>
+          <p class="fs-5 lead">Platform: <?php echo $platform ?></p>
+          <p class="fs-5 lead">Courses: <?php echo $courses ?></p>
           <div class="text-center">
-            <a href="notices.php" class="btn btn-outline-dark w-50">View</a>
+            <a href="notices.php" class="btn btn-outline-secondary btn-sm w-50">&rarr;</a>
           </div>
         </div>
       </div>

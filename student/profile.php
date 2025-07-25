@@ -33,9 +33,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $errors[] = "Invalid email format.";
     }
 
-    if (!preg_match('/^01[0-9]{9}$/', $contact)) {
-        $errors[] = "Phone number must be 11 digits and start with 01.";
-    }
+    
 
     if (empty($errors)) {
         $stmt = $conn->prepare("UPDATE users SET name=?, email=?, contact=? WHERE u_id=?");
@@ -111,7 +109,7 @@ $image = '../image-assets/Students/default.webp';
 
         <div class="row">
             <div class="col-md-4 text-center mb-4">
-                <img src="<?= htmlspecialchars($image) ?>" class="rounded-circle shadow-sm" alt="Student Photo" style="width: 170px; height: 170px;">
+                <img src="../image-assets/common/Profile.webp" class="rounded-circle shadow-sm" alt="Student Photo" style="width: 170px; height: 170px;">
                 <h4 class="mt-3"><?= htmlspecialchars($name) ?></h4>
                 <p class="text-muted">Student</p>
             </div>

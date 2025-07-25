@@ -1,10 +1,10 @@
 html, body {
   margin: 0;
   padding: 0;
-  background: linear-gradient(-45deg, #dbeafe, #c7d2fe, #e0f2fe, #ccfbf1);
+  background: linear-gradient(-45deg, #f6ed91, #bcecf0, #f5d5f0, #d8f3b9);
   background-size: 400% 400%;
   background-attachment: fixed;
-  animation: gradientBG 15s ease-in-out infinite;
+  animation: gradientBG 10s ease-in-out infinite;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   color: #1c1c1c;
 }

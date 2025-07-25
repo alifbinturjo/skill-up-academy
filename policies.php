@@ -1,3 +1,8 @@
+<?php
+include 'auth/cnct.php';
+session_start();
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -21,19 +26,19 @@
     <div class="collapse navbar-collapse" id="navbarNav">
       <ul class="navbar-nav ms-auto">
         <li class="nav-item">
-          <a class="nav-link" href="index.html">Home</a>
+          <a class="nav-link" href="index.php">Home</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="courses.html">Courses</a>
+          <a class="nav-link" href="courses.php">Courses</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="instructors.html">Instructors</a>
+          <a class="nav-link" href="instructors.php">Instructors</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="auth/login.html">Login</a>
+          <a class="nav-link" href="auth/login.php">Login</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="auth/signup.html">Signup</a>
+          <a class="nav-link" href="auth/signup.php">Signup</a>
         </li>
       </ul>
     </div>

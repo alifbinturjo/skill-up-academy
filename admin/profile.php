@@ -1,13 +1,8 @@
-
-
 <?php
 include '../auth/cnct.php';
 session_start();
 
-/* For Check
-$_SESSION['role'] = "Admin";
-$_SESSION['u_id'] = 1; */
-
+// Check if user is logged in as an Admin
 if (!isset($_SESSION['role']) || $_SESSION['role'] !== "Admin") {
     session_unset();
     session_destroy();
@@ -17,7 +12,6 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== "Admin") {
 }
 
 $u_id = $_SESSION['u_id'];
-
 $errors = [];
 
 // Handle profile update (POST)
@@ -25,9 +19,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $name = trim($_POST['name'] ?? '');
     $email = trim($_POST['email'] ?? '');
     $contact = trim($_POST['contact'] ?? '');
-    $level = trim($_POST['level'] ?? '');
 
-    if (empty($_POST["name"])) {
+    // Validate fields
+    if (empty($name)) {
         $errors[] = "Name is required";
     }
 
@@ -35,40 +29,45 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $errors[] = "Invalid email format.";
     }
 
-    if (!preg_match('/^01[0-9]{9}$/', $contact)) {
-        $errors[] = "Phone number must be 11 digits and start with 01.";
+    // Phone number validation: must be 11 digits, starting with '01'
+    if (!preg_match('/^1[0-9]{9}$/', $contact)) {
+        $errors[] = "Phone number must be 11 digits and start with 1.";
     }
 
+    // If no errors, proceed to update the profile
     if (empty($errors)) {
-        // Update the user profile
+        // Update user data in the `users` table
         $stmt = $conn->prepare("UPDATE users SET name=?, email=?, contact=? WHERE u_id=?");
         $stmt->bind_param("sssi", $name, $email, $contact, $u_id);
         $stmt->execute();
         $stmt->close();
 
-        // Update the admin's level (role management)
-        if ($level !== "") {
-            $stmt = $conn->prepare("UPDATE users SET level=? WHERE u_id=?");
-            $stmt->bind_param("ii", $level, $u_id);
-            $stmt->execute();
-            $stmt->close();
-        }
+        // Set success message in session
+        $_SESSION['message'] = "Profile updated successfully!";
+        $_SESSION['message_type'] = "success";
+        header("Location: profile.php"); // Redirect to show the updated profile
+        exit();
+    } else {
+        // If errors exist, store them in the session
+        $_SESSION['errors'] = $errors;
+        header('Location: profile.php');  // Reload the page to display errors
+        exit();
     }
 }
 
-// Fetch admin profile data
-$sql = "SELECT u.name, u.email, u.contact, u.role, u.level
+// Fetch profile data
+$sql = "SELECT u.name, u.email, u.contact, a.level
         FROM users u
         JOIN admins a ON u.u_id = a.u_id
         WHERE u.u_id = ?";
 $stmt = $conn->prepare($sql);
 $stmt->bind_param("i", $u_id);
 $stmt->execute();
-$stmt->bind_result($name, $email, $contact, $role, $level);
+$stmt->bind_result($name, $email, $contact, $level);
 $stmt->fetch();
 $stmt->close();
 
-$image = '../image-assets/Admins/default.webp'; // Fixed Profile Picture
+$image = '../image-assets/common/profile.webp';
 ?>
 
 <!DOCTYPE html>
@@ -84,42 +83,65 @@ $image = '../image-assets/Admins/default.webp'; // Fixed Profile Picture
 
 <body>
 
-    <nav class="navbar navbar-expand-lg navbar-blur sticky-top shadow-sm">
-        <div class="container-fluid">
-            <a class="navbar-brand fw-bold" href="">SkillUp Academy</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
-                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
+   <nav class="navbar navbar-expand-lg navbar-blur sticky-top shadow-sm">
+  <div class="container-fluid">
+    <a class="navbar-brand fw-bold" href="">SkillUp Academy</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+      aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+  
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav ms-auto">
+        <li class="nav-item">
+          <a class="nav-link " href="dashboard.php">Dashboard</a>
+        </li>
+         <li class="nav-item">
+          <a class="nav-link" href="admins.php">Admins</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="instructors.php">Instructors</a>
+        </li>
 
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto">
-                    <li class="nav-item"><a class="nav-link" href="dashboard.php">Dashboard</a></li>
-                    <li class="nav-item"><a class="nav-link" href="courses.php">Courses</a></li>
-                    <li class="nav-item"><a class="nav-link" href="notices.php">Notices</a></li>
-                    <li class="nav-item"><a class="nav-link active" href="#">Profile</a></li>
-                    <li class="nav-item"><a class="nav-link" href="../auth/logout.php">Logout</a></li>
-                </ul>
-            </div>
-        </div>
-    </nav>
-
+        <li class="nav-item">
+          <a class="nav-link" href="courses.php">Courses</a>
+        </li>
+        
+       
+        <li class="nav-item">
+          <a class="nav-link" href="students.php">Students</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="post-notices.php">Notices</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link active" href="#">Profile</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="../auth/logout.php">Logout</a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
     <div class="container mt-5">
         <p class="text-center mb-4 fs-1">Admin Profile</p>
 
-        <?php if (!empty($errors)): ?>
+        <?php if (isset($_SESSION['errors']) && !empty($_SESSION['errors'])): ?>
             <div class="alert alert-danger">
-                <?php foreach ($errors as $e): ?>
+                <?php foreach ($_SESSION['errors'] as $e): ?>
                     <p class="mb-0"><?= htmlspecialchars($e) ?></p>
                 <?php endforeach; ?>
             </div>
+            <?php unset($_SESSION['errors']); ?> <!-- Clear the errors after showing them -->
         <?php endif; ?>
 
         <div class="row">
             <div class="col-md-4 text-center mb-4">
                 <img src="<?= htmlspecialchars($image) ?>" class="rounded-circle shadow-sm" alt="Admin Photo" style="width: 170px; height: 170px;">
                 <h4 class="mt-3"><?= htmlspecialchars($name) ?></h4>
-                <p class="text-muted"><?= htmlspecialchars($role) ?> (Level: <?= htmlspecialchars($level) ?>)</p>
+                <p class="text-muted">Admin</p>
+                <p>Admin Level: <?= htmlspecialchars($level) ?></p>
             </div>
 
             <div class="col-md-8 mt-4">
@@ -134,7 +156,7 @@ $image = '../image-assets/Admins/default.webp'; // Fixed Profile Picture
                             </div>
                             <div>
                                 <i class="fas fa-phone me-2 text-muted"></i>
-                                <span>+880<?= htmlspecialchars(substr($contact, 1)) ?></span>
+                                <span>+880<?= htmlspecialchars($contact) ?></span>
                             </div>
                         </div>
                     </div>
@@ -162,15 +184,7 @@ $image = '../image-assets/Admins/default.webp'; // Fixed Profile Picture
                             <div class="mb-3"><label class="form-label">Email</label><input type="email" name="email" class="form-control" value="<?= htmlspecialchars($email) ?>"></div>
                             <div class="mb-3">
                                 <label class="form-label">Phone Number (Starts with 01)</label>
-                                <input type="text" name="contact" class="form-control" value="<?= htmlspecialchars($contact) ?>" placeholder="e.g., 017xxxxxxxx">
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label">Level (Permission Level)</label>
-                                <select name="level" class="form-control">
-                                    <option value="0" <?= $level == 0 ? 'selected' : '' ?>>Basic Admin</option>
-                                    <option value="1" <?= $level == 1 ? 'selected' : '' ?>>Super Admin</option>
-                                    <!-- Add more levels if needed -->
-                                </select>
+                                <input type="text" name="contact" class="form-control" value="<?= htmlspecialchars($contact) ?>" placeholder="e.g., 01xxxxxxxxx">
                             </div>
                         </div>
                         <div class="modal-footer">

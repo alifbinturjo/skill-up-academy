@@ -77,7 +77,7 @@ $stmt->bind_result($name, $email, $contact, $bio, $n_status);
 $stmt->fetch();
 $stmt->close();
 
-$image = '../image-assets/Students/default.webp';
+$image = '../image-assets/common/profile.webp';
 ?>
 
 <!DOCTYPE html>

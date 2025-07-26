@@ -106,7 +106,7 @@ $result = $stmt->get_result();
         <div class="row">
             <?php while ($row = $result->fetch_assoc()): ?>
                 <div class="col-md-4 mb-4">
-                    <div class="card h-100 shadow-sm p-4" style="background-color: rgba(169, 169, 169, 0.356);">
+                    <div class="card card-h h-100 shadow-sm p-4" style="background-color: rgba(169, 169, 169, 0.356);">
                         <div class="card-body">
                             <h5 class="card-title"><?= htmlspecialchars($row['title']) ?></h5>
                             <div class="d-flex justify-content-between mb-2">
@@ -117,12 +117,20 @@ $result = $stmt->get_result();
                             <p class="card-text"><?= htmlspecialchars($row['description']) ?></p>
                             <p class="text-muted"><small>Instructor: <?= htmlspecialchars($row['instructor']) ?></small></p>
                             <div class="d-flex justify-content-between align-items-center">
-                                <a href="#" class="btn btn-md btn-outline-dark">View Announcements</a>
+                                <a href="notices.php?c_id=<?= $row['c_id'] ?>" class="btn btn-md btn-outline-dark">View Announcements</a>
                             </div>
                         </div>
                     </div>
                 </div>
             <?php endwhile; ?>
+        </div>
+    </div>
+
+    <div class="row text-center">
+        <div class="col-md-12 mt-3 mb-4">
+            <a href="../courses.php" class="btn w-25 btn-success">
+                Buy Courses
+            </a>
         </div>
     </div>
 

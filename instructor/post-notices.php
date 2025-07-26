@@ -34,7 +34,7 @@
             <a class="nav-link" href="profile.php">Profile</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="">Logout</a>
+            <a class="nav-link" href="../auth/logout.php">Logout</a>
           </li>
         </ul>
       </div>

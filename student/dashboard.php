@@ -23,6 +23,30 @@ $u_id=$_SESSION['u_id'];
     integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr" crossorigin="anonymous">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
   <link rel="stylesheet" href="../style.css">
+  <style>
+    .welcome-card {
+      background: linear-gradient(135deg, #4e73df 0%, #224abe 100%);
+      border-radius: 10px;
+      color: white;
+    }
+    .info-card {
+      transition: all 0.3s ease;
+      border-radius: 10px;
+      border: none;
+      box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.1);
+    }
+    .info-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 0.5rem 1.5rem 0 rgba(58, 59, 69, 0.2);
+    }
+    .arrow-btn {
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+  </style>
 </head>
 
 <body>
@@ -61,24 +85,10 @@ catch(Exception $e){
       <div class="collapse navbar-collapse" id="navbarNav">
         <ul class="navbar-nav ms-auto">
           <li class="nav-item">
+            <a class="nav-link" href="../index.php">Home</a>
+          </li>
+          <li class="nav-item">
             <a class="nav-link active" href="">Dashboard</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="courses.php">Courses</a>
-          </li>
-          <li class="nav-item position-relative">
-  <a class="nav-link position-relative" href="notices.php">
-    Notices
-    <?php if ($n_status === "unread"): ?>
-      <span class="position-absolute top-15 start-85 translate-middle p-1 bg-danger border border-light rounded-circle"
-      style="width: 8px; height: 8px;">
-        <span class="visually-hidden">New</span>
-      </span>
-    <?php endif; ?>
-  </a>
-</li>
-          <li class="nav-item">
-            <a class="nav-link" href="profile.php">Profile</a>
           </li>
           <li class="nav-item">
             <a class="nav-link" href="../auth/logout.php">Logout</a>
@@ -99,7 +109,7 @@ $stmt_past=$conn->prepare("SELECT COUNT(*) FROM enrolls
   JOIN courses ON enrolls.c_id = courses.c_id 
   WHERE enrolls.u_id = ? AND courses.status = 'ended'");
 $stmt_past->bind_param("i", $u_id);
-$stmt_platform=$conn->prepare("SELECT COUNT(*) FROM admin_notices WHERE audience = 'student'");
+$stmt_platform=$conn->prepare("SELECT COUNT(*) FROM admin_notices WHERE audience = 'student' or audience='everyone'");
 $stmt_courses=$conn->prepare("SELECT COUNT(DISTINCT instructors_notices.n_id) 
   FROM instructors_notices
   JOIN enrolls ON instructors_notices.c_id = enrolls.c_id
@@ -147,59 +157,92 @@ catch(Exception $e){
 }
   ?>
 
-  <div class="container">
-
-    <div class="mb-5 mt-5">
-      <p class="lead fs-1">Hi <?php echo $name ?></p>
+  <div class="container py-5">
+    <!-- Welcome Section -->
+    <div class="row mb-5">
+      <div class="col-12">
+        <div class="welcome-card p-4 shadow">
+          <div class="d-flex justify-content-between align-items-center">
+            <div>
+              <h1 class="display-5 fw-bold mb-3">Welcome, <?php echo $name ?>!</h1>
+              <p class="lead mb-0">You're logged in as a <strong><?php echo $_SESSION['role']; ?></strong></p>
+            </div>
+            <a href="profile.php" class="btn btn-light btn-lg px-4">
+              <i class="bi bi-person-circle me-2"></i>View Profile
+            </a>
+          </div>
+        </div>
+      </div>
     </div>
 
-    <div class="row">
-      <div class="col-md-12">
-        <div class="card h-100 shadow border-0 p-4 bg-primary text-center text-light">
-          <div class="container ">
-            <div class="row">
-              <div class="col-md-6">
-                <p class="lead fs-4">Type: <?php echo $_SESSION['role']; ?></p>
+    <!-- Info Cards Section -->
+    <div class="row g-4">
+      <!-- Courses Card -->
+      <div class="col-md-6">
+        <div class="info-card h-100 p-4 bg-white">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <h3 class="fw-bold text-primary">
+              <i class="bi bi-book me-2"></i>Your Courses
+            </h3>
+            <a href="courses.php" class="btn btn-primary arrow-btn rounded-circle">
+              <i class="bi bi-arrow-right"></i>
+            </a>
+          </div>
+          <div class="row text-center">
+            <div class="col-6">
+              <div class="p-3">
+                <h2 class="fw-bold"><?php echo $taken ?></h2>
+                <p class="text-muted mb-0">Active</p>
               </div>
-              <div class="col-md-6">
-                <a href="profile.php" class="btn btn-outline-light">Go to profile</a>
+            </div>
+            <div class="col-6">
+              <div class="p-3">
+                <h2 class="fw-bold"><?php echo $past ?></h2>
+                <p class="text-muted mb-0">Completed</p>
               </div>
             </div>
           </div>
         </div>
       </div>
+
+      <!-- Notices Card -->
+      <!-- In the Notices Card section of student dashboard -->
+<div class="col-md-6">
+  <div class="info-card h-100 p-4 bg-white">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <div>
+        <h3 class="fw-bold text-secondary">
+          <i class="bi bi-megaphone me-2"></i>Your Notices
+          <?php if ($n_status === "unread"): ?>
+            <span class="badge bg-danger ms-2">New</span>
+          <?php endif; ?>
+        </h3>
+      </div>
+      <a href="notices.php" class="btn btn-secondary arrow-btn rounded-circle">
+        <i class="bi bi-arrow-right"></i>
+      </a>
     </div>
-
-    <div class="row mt-5 justify-content-center">
-      <div class="col-md-5">
-        <div class="card card-h h-100 shadow-sm border-0 p-4 bg-light text-center text-primary">
-          <p class="fs-4 lead"><strong>Courses  <i class="bi bi-book"></i></strong></p>
-          <p class="fs-5 lead">Taken: <?php echo $taken ?></p>
-          <p class="fs-5 lead">Previous: <?php echo $past ?></p>
-          <div class="text-center">
-            <a href="courses.php" class="btn btn-outline-primary btn-sm w-50">&rarr;</a>
-          </div>
-
+    <div class="row text-center">
+      <div class="col-6">
+        <div class="p-3">
+          <h2 class="fw-bold"><?php echo $platform ?></h2>
+          <p class="text-muted mb-0">Platform</p>
         </div>
       </div>
-      <div class="col-md-5">
-        <div class="card card-h h-100 shadow-sm border-0 p-4 bg-light text-center text-secondary">
-          <p class="fs-4 lead"><strong>Notices  <i class="bi bi-megaphone"></i></strong></p>
-          <p class="fs-5 lead">Platform: <?php echo $platform ?></p>
-          <p class="fs-5 lead">Courses: <?php echo $courses ?></p>
-          <div class="text-center">
-            <a href="notices.php" class="btn btn-outline-secondary btn-sm w-50">&rarr;</a>
-          </div>
+      <div class="col-6">
+        <div class="p-3">
+          <h2 class="fw-bold"><?php echo $courses ?></h2>
+          <p class="text-muted mb-0">Course</p>
         </div>
       </div>
     </div>
   </div>
-
-
+</div>
+    </div>
+  </div>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"
     integrity="sha384-ndDqU0Gzau9qJ1lfW4pNLlhNTkCfHzAVBReH9diLvGRem5+R9g2FzA8ZGN954O5Q"
     crossorigin="anonymous"></script>
 </body>
-
 </html>

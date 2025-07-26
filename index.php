@@ -33,12 +33,6 @@ session_start();
         <li class="nav-item">
           <a class="nav-link active" href="">Home</a>
         </li>
-        <li class="nav-item">
-          <a class="nav-link" href="courses.php">Courses</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="instructors.php">Instructors</a>
-        </li>
         
         <?php
           if(isset($_SESSION['role'])){
@@ -123,20 +117,23 @@ catch(Exception $e){
   <div class="row justify-content-center text-center mb-5">
       <div class="col-md-4">
         <div class="card card-h h-100 shadow border-0 p-4 bg-transparent">
+          <p>More than</p>
           <h3 class="fw-bold counter" data-target="<?php echo $studentCount  ?>">0</h3>
-        <p>+ Students Trained</p>
+        <p>Students Trained</p>
         </div>
       </div>
       <div class="col-md-4">
         <div class="card card-h h-100 shadow border-0 p-4 bg-transparent">
+          <p>More than</p>
           <h3 class="fw-bold counter" data-target="<?php echo $instructorCount  ?>">0</h3>
-        <p>+ Expert Instructors</p>
+        <p>Expert Instructors</p>
         </div>
       </div>
       <div class="col-md-4">
         <div class="card card-h h-100 shadow border-0 p-4 bg-transparent">
+          <p>More than</p>
           <h3 class="fw-bold counter" data-target="<?php echo $domainCount  ?>">0</h3>
-        <p>+ Domains</p>
+        <p>Domains</p>
         </div>
       </div>
     </div>
@@ -162,18 +159,16 @@ $result = $stmt->get_result();
 
 <div class="mb-5">
   <h3 class="mb-3 text-center fw-bold">Featured Domains</h3>
-  <div class="row justify-content-center text-center mb-5">
+  <div class="d-flex flex-wrap justify-content-center gap-2">
     <?php while ($row = $result->fetch_assoc()) { ?>
-      <div class="col-md-3 mb-3">
-        <div class="card card-h h-100 shadow-sm border-1 p-4 bg-transparent">
-          <h5 class="fw-bold badge bg-primary fs-5"><?php echo htmlspecialchars($row['domain']); ?></h5>
-        </div>
-      </div>
+      <span class="card-h badge bg-primary fs-6 fw-semibold px-3 py-3 m-2">
+        <?php echo htmlspecialchars(ucfirst($row['domain'])); ?>
+      </span>
     <?php } ?>
-    <?php $stmt->close();
-    ?>
+    <?php $stmt->close(); ?>
   </div>
 </div>
+
 
 <?php
 
@@ -266,7 +261,7 @@ try {
 
 
 <div class="mb-5">
-  <h3 class="mb-3 text-center fw-bold">Top Rated Teachers</h3>
+  <h3 class="mb-3 text-center fw-bold">Top Rated Instructors</h3>
   <div class="row justify-content-center text-center mb-5">
     <?php foreach ($instructors as $inst): ?>
       <div class="col-md-4 mb-4">
@@ -277,7 +272,7 @@ try {
             <p class="text-muted"><?= htmlspecialchars(ucwords(str_replace('-', ' ', $inst['domain']))) ?></p>
             <hr class="divider my-2">
             <p class="card-text"><?= htmlspecialchars($inst['bio'] ?: 'No bio available.') ?></p>
-            <p><strong>Average Rating:</strong> <?= number_format($inst['avg_rating'], 1) ?></p>
+            <p><strong>Average Rating:</strong> <?= number_format($inst['avg_rating'], 1) ?><span class="badge bg-warning mx-2 text-dark">Top rated</span></p>
           </div>
         </div>
       </div>
@@ -341,7 +336,7 @@ try {
         <h5 class="mb-4 fw-bold">Contact</h5>
         <p><i class="bi bi-envelope me-2"></i> support@skillup.com</p>
         <p><i class="bi bi-phone me-2"></i> +880 1234-567890</p>
-        <p><i class="bi bi-geo-alt me-2"></i> Dhaka, Bangladesh</p>
+        <a href="locate.php" class="text-white text-decoration-none"><i class="bi bi-geo-alt me-2"></i>Dhaka, Bangladesh &rarr;</a>
       </div>
 
       <div class="col-md-3 col-lg-3 col-xl-3 mx-auto mt-3">

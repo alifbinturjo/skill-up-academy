@@ -15,7 +15,7 @@ if(!isset($_POST['c_id'])){
   header("Location: courses.html");
   exit();
 }*/
-$c_id=1;
+$c_id=$_GET['c_id'];
 $u_id=$_SESSION['u_id'];
 ?>
 
@@ -45,16 +45,10 @@ $u_id=$_SESSION['u_id'];
       <div class="collapse navbar-collapse" id="navbarNav">
         <ul class="navbar-nav ms-auto">
           <li class="nav-item">
-            <a class="nav-link " href="dashboard.php">Dashboard</a>
+            <a class="nav-link" href="../index.php">Home</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="courses.php">Courses</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="notices.php">Notices</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="profile.php">Profile</a>
+            <a class="nav-link" href="dashboard.php">Dashboard</a>
           </li>
           <li class="nav-item">
             <a class="nav-link" href="../auth/logout.php">Logout</a>
@@ -72,10 +66,11 @@ $u_id=$_SESSION['u_id'];
 
   $stmt_list = $conn->prepare("
   SELECT users.name, users.email
-  FROM enrolls 
-  JOIN students ON enrolls.u_id = students.u_id 
-  JOIN users ON students.u_id = users.u_id 
-  WHERE enrolls.c_id = ?
+FROM enrolls 
+JOIN students ON enrolls.u_id = students.u_id 
+JOIN users ON users.u_id = students.u_id 
+WHERE enrolls.c_id = ?
+
 ");
 $stmt_list->bind_param("i", $c_id);
 try{

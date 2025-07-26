@@ -13,7 +13,7 @@ document.addEventListener("DOMContentLoaded", () => {
         counter.innerText = count + increment;
         setTimeout(updateCount, 10);
       } else {
-        counter.innerText = target.toLocaleString() + '+';
+        counter.innerText = target.toLocaleString();
       }
     };
 

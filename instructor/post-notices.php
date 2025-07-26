@@ -1,3 +1,79 @@
+<?php
+require_once '../auth/cnct.php';
+session_start();
+
+// -------------------------------
+// Instructor-only access restriction
+// -------------------------------
+if (!isset($_SESSION['u_id'], $_SESSION['role']) || $_SESSION['role'] !== 'Instructor') {
+    $_SESSION['error'] = "Unauthorized access. Please login as instructor.";
+    header("Location: ../auth/login.php");
+    exit();
+}
+
+// Verify instructor exists in database (optional but recommended)
+$user_id = $_SESSION['u_id'];
+$stmt = $conn->prepare("SELECT u_id FROM instructors WHERE u_id = ?");
+$stmt->bind_param("i", $user_id);
+$stmt->execute();
+$result = $stmt->get_result();
+
+if ($result->num_rows === 0) {
+    // Instructor not found: force logout
+    $_SESSION['error'] = "Access denied. Instructor not found.";
+    session_destroy();
+    header("Location: ../auth/login.php");
+    exit();
+}
+$stmt->close();
+
+// For testing only: preset course_id (remove or update in production)
+if (!isset($_SESSION['course_id'])) {
+    $_SESSION['course_id'] = 1;
+}
+
+// Handle form submission - post new notice
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $title = $conn->real_escape_string($_POST['title'] ?? '');
+    $message = $conn->real_escape_string($_POST['message'] ?? '');
+
+    $sql = "INSERT INTO instructors_notices (title, message, date, u_id, c_id) 
+            VALUES ('$title', '$message', CURDATE(), {$_SESSION['user_id']}, {$_SESSION['course_id']})";
+
+    if ($conn->query($sql)) {
+        $_SESSION['success'] = "Notice posted successfully!";
+        $_SESSION['new_notice'] = true;
+        header("Location: post-notices.php");
+        exit;
+    } else {
+        $_SESSION['error'] = "Error: " . $conn->error;
+        header("Location: post-notices.php");
+        exit;
+    }
+}
+
+// Handle notice deletion
+if (isset($_GET['delete'])) {
+    $id = (int)$_GET['delete'];
+    $sql = "DELETE FROM instructors_notices WHERE n_id = $id AND u_id = {$_SESSION['u_id']}";
+
+    if ($conn->query($sql)) {
+        $_SESSION['success'] = "Notice deleted!";
+    } else {
+        $_SESSION['error'] = "Delete failed!";
+    }
+    header("Location: post-notices.php");
+    exit;
+}
+
+// Fetch notices for this instructor, newest first
+$result = $conn->query("SELECT * FROM instructors_notices WHERE u_id = {$_SESSION['u_id']} ORDER BY date DESC, n_id DESC");
+$notices = $result ? $result->fetch_all(MYSQLI_ASSOC) : [];
+
+// Check if new notice flag is set (for red dot)
+$hasNewNotice = isset($_SESSION['new_notice']) && $_SESSION['new_notice'];
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -151,81 +227,7 @@
           </div>
         </div>
 
-<?php
-require_once '../auth/cnct.php';
-session_start();
 
-// -------------------------------
-// Instructor-only access restriction
-// -------------------------------
-if (!isset($_SESSION['u_id'], $_SESSION['role']) || $_SESSION['role'] !== 'Instructor') {
-    $_SESSION['error'] = "Unauthorized access. Please login as instructor.";
-    header("Location: ../auth/login.php");
-    exit();
-}
-
-// Verify instructor exists in database (optional but recommended)
-$user_id = $_SESSION['u_id'];
-$stmt = $conn->prepare("SELECT u_id FROM instructors WHERE u_id = ?");
-$stmt->bind_param("i", $user_id);
-$stmt->execute();
-$result = $stmt->get_result();
-
-if ($result->num_rows === 0) {
-    // Instructor not found: force logout
-    $_SESSION['error'] = "Access denied. Instructor not found.";
-    session_destroy();
-    header("Location: ../auth/login.php");
-    exit();
-}
-$stmt->close();
-
-// For testing only: preset course_id (remove or update in production)
-if (!isset($_SESSION['course_id'])) {
-    $_SESSION['course_id'] = 1;
-}
-
-// Handle form submission - post new notice
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $title = $conn->real_escape_string($_POST['title'] ?? '');
-    $message = $conn->real_escape_string($_POST['message'] ?? '');
-
-    $sql = "INSERT INTO instructors_notices (title, message, date, u_id, c_id) 
-            VALUES ('$title', '$message', CURDATE(), {$_SESSION['user_id']}, {$_SESSION['course_id']})";
-
-    if ($conn->query($sql)) {
-        $_SESSION['success'] = "Notice posted successfully!";
-        $_SESSION['new_notice'] = true;
-        header("Location: post-notices.php");
-        exit;
-    } else {
-        $_SESSION['error'] = "Error: " . $conn->error;
-        header("Location: post-notices.php");
-        exit;
-    }
-}
-
-// Handle notice deletion
-if (isset($_GET['delete'])) {
-    $id = (int)$_GET['delete'];
-    $sql = "DELETE FROM instructors_notices WHERE n_id = $id AND u_id = {$_SESSION['user_id']}";
-
-    if ($conn->query($sql)) {
-        $_SESSION['success'] = "Notice deleted!";
-    } else {
-        $_SESSION['error'] = "Delete failed!";
-    }
-    header("Location: post-notices.php");
-    exit;
-}
-
-// Fetch notices for this instructor, newest first
-$result = $conn->query("SELECT * FROM instructors_notices WHERE u_id = {$_SESSION['user_id']} ORDER BY date DESC, n_id DESC");
-$notices = $result ? $result->fetch_all(MYSQLI_ASSOC) : [];
-
-// Check if new notice flag is set (for red dot)
-$hasNewNotice = isset($_SESSION['new_notice']) && $_SESSION['new_notice'];
-?>
 
 <!DOCTYPE html>
 <html lang="en">

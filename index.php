@@ -33,12 +33,6 @@ session_start();
         <li class="nav-item">
           <a class="nav-link active" href="">Home</a>
         </li>
-        <li class="nav-item">
-          <a class="nav-link" href="courses.php">Courses</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="instructors.php">Instructors</a>
-        </li>
         
         <?php
           if(isset($_SESSION['role'])){
@@ -100,7 +94,7 @@ $stmt_domain->bind_result($domainCount);
 $stmt_domain->fetch();
 $stmt_domain->close();
 
-$conn->close();
+
 }
 catch(Exception $e){
   $stmt_student->close();
@@ -123,49 +117,175 @@ catch(Exception $e){
   <div class="row justify-content-center text-center mb-5">
       <div class="col-md-4">
         <div class="card card-h h-100 shadow border-0 p-4 bg-transparent">
+          <p>More than</p>
           <h3 class="fw-bold counter" data-target="<?php echo $studentCount  ?>">0</h3>
         <p>Students Trained</p>
         </div>
       </div>
       <div class="col-md-4">
         <div class="card card-h h-100 shadow border-0 p-4 bg-transparent">
+          <p>More than</p>
           <h3 class="fw-bold counter" data-target="<?php echo $instructorCount  ?>">0</h3>
         <p>Expert Instructors</p>
         </div>
       </div>
       <div class="col-md-4">
         <div class="card card-h h-100 shadow border-0 p-4 bg-transparent">
+          <p>More than</p>
           <h3 class="fw-bold counter" data-target="<?php echo $domainCount  ?>">0</h3>
         <p>Domains</p>
         </div>
       </div>
     </div>
 
-    <div class="mb-5">
-      <h3 class="mb-3 text-center fw-bold">Featured Domains</h4>
-      <div class="row justify-content-center text-center mb-5">
-      <div class="col-md-3 mb-3">
-        <div class="card card-h h-100 shadow-sm border-1 p-4 bg-transparent">
-          <h5 class="fw-bold">Programming</h5>
+    
+
+    <?php
+
+$stmt = $conn->prepare("SELECT domain, COUNT(*) as total_courses FROM courses GROUP BY domain ORDER BY total_courses DESC LIMIT 5");
+try{
+$stmt->execute();
+}
+catch(Exception $e){
+  $stmt->close();
+  $conn->close();
+  session_destroy();
+  header("Location: ops.php");
+  exit();
+}
+
+$result = $stmt->get_result();
+?>
+
+<div class="mb-5">
+  <h3 class="mb-3 text-center fw-bold">Featured Domains</h3>
+  <div class="d-flex flex-wrap justify-content-center gap-2">
+    <?php while ($row = $result->fetch_assoc()) { ?>
+      <span class="card-h badge bg-primary fs-6 fw-semibold px-3 py-3 m-2">
+        <?php echo htmlspecialchars(ucfirst($row['domain'])); ?>
+      </span>
+    <?php } ?>
+    <?php $stmt->close(); ?>
+  </div>
+</div>
+
+
+<?php
+
+$stmt = $conn->prepare("
+    SELECT c.*, u.name AS instructor, COALESCE(AVG(e.rating), 0) AS avg_rating
+    FROM courses c
+    JOIN users u ON c.u_id = u.u_id
+    LEFT JOIN enrolls e ON c.c_id = e.c_id
+    WHERE c.status = 'offered'
+    GROUP BY c.c_id
+    ORDER BY avg_rating DESC
+    LIMIT 3
+");
+
+try {
+    $stmt->execute();
+} catch(Exception $e) {
+    $stmt->close();
+    $conn->close();
+    session_destroy();
+    header("Location: ops.php");
+    exit();
+}
+
+$result = $stmt->get_result();
+$courses = $result->fetch_all(MYSQLI_ASSOC);
+$stmt->close();
+?>
+
+<div class="mb-5">
+    <h3 class="mb-3 fw-bold text-center">Featured Offered Courses</h3>
+    <div class="row justify-content-center">
+        <?php foreach ($courses as $course): ?>
+            <div class="col-md-4 mb-4">
+                <div class="card card-h h-100 shadow-sm border-1 p-4" style="background-color: rgba(169, 169, 169, 0.356);">
+                    <div class="card-body">
+                        <h5 class="card-title"><?= htmlspecialchars($course['title']) ?></h5>
+                        <div class="d-flex justify-content-between mb-2">
+                            <span class="badge bg-primary text-light"><?= htmlspecialchars(ucfirst($course['domain'])) ?></span>
+                            <span class="text-muted"><?= htmlspecialchars(ceil($course['duration'])) ?> Weeks</span>
+                        </div>
+                        <hr class="divider my-2">
+                        <p class="card-text"><?= htmlspecialchars($course['description']) ?></p>
+                        <p class="text-muted"><small>Instructor: <?= htmlspecialchars($course['instructor']) ?></small></p>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <a href="course-details/full-stack-web-dev.php" class="btn btn-md btn-outline-dark">View Details</a>
+                            <span class="badge bg-success">Offered</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        <?php endforeach; ?>
+        <div class="col md-12 text-center">
+          <a href="courses.php" class="text-dark text-decoration-none fw-bold ">View all courses &rarr;</a>
         </div>
-      </div>
-      <div class="col-md-3 mb-3">
-        <div class="card card-h h-100 shadow-sm border-1 p-4 bg-transparent">
-          <h5 class="fw-bold">Problem solving</h5>
-        </div>
-      </div>
-      <div class="col-md-3 mb-3">
-        <div class="card card-h h-100 shadow-sm border-1 p-4 bg-transparent">
-          <h5 class="fw-bold">Web development</h5>
-        </div>
-      </div>
-      <div class="col-md-3 mb-3">
-        <div class="card card-h h-100 shadow-sm border-1 p-4 bg-transparent">
-          <h5 class="fw-bold">Android development</h5>
-        </div>
-      </div>
     </div>
-    </div>
+</div>
+
+<?php
+$stmt = $conn->prepare("
+    SELECT 
+      i.u_id, 
+      u.name, 
+      i.image, 
+      i.bio, 
+      i.domain,
+      COALESCE(AVG(e.rating), 0) AS avg_rating
+    FROM instructors i
+    JOIN users u ON i.u_id = u.u_id
+    LEFT JOIN courses c ON i.u_id = c.u_id
+    LEFT JOIN enrolls e ON c.c_id = e.c_id
+    GROUP BY i.u_id
+    ORDER BY avg_rating DESC
+    LIMIT 3
+");
+
+try {
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $instructors = $result->fetch_all(MYSQLI_ASSOC);
+    $stmt->close();
+} catch (Exception $e) {
+    if (isset($stmt)) $stmt->close();
+    $conn->close();
+    session_destroy();
+    header("Location: ops.php");
+    exit();
+}
+?>
+
+
+<div class="mb-5">
+  <h3 class="mb-3 text-center fw-bold">Top Rated Instructors</h3>
+  <div class="row justify-content-center text-center mb-5">
+    <?php foreach ($instructors as $inst): ?>
+      <div class="col-md-4 mb-4">
+        <div class="card card-h h-100 shadow-sm border-1 p-4" style="background-color: rgba(169, 169, 169, 0.356);">
+          <div class="card-body text-center">
+            <img src="<?= htmlspecialchars($inst['image'] ?: 'default-teacher.png') ?>" class="rounded-circle mb-3" width="100" height="100" alt="<?= htmlspecialchars($inst['name']) ?>">
+            <h5 class="card-title"><?= htmlspecialchars($inst['name']) ?></h5>
+            <p class="text-muted"><?= htmlspecialchars(ucwords(str_replace('-', ' ', $inst['domain']))) ?></p>
+            <hr class="divider my-2">
+            <p class="card-text"><?= htmlspecialchars($inst['bio'] ?: 'No bio available.') ?></p>
+            <p><strong>Average Rating:</strong> <?= number_format($inst['avg_rating'], 1) ?><span class="badge bg-warning mx-2 text-dark">Top rated</span></p>
+          </div>
+        </div>
+      </div>
+    <?php endforeach; ?>
+    <div class="col md-12 text-center">
+          <a href="instructors.php" class="text-dark text-decoration-none fw-bold ">View all instructors &rarr;</a>
+        </div>
+  </div>
+</div>
+
+
+
+
 
     <div class="mb-5">
       <h3 class="mb-3 fw-bold text-center">How we faciliate</h4>
@@ -198,10 +318,6 @@ catch(Exception $e){
     </div>
     </div>
 
-    <div class="mb-5 text-center">
-      <a href="courses.php" class="btn btn-outline-dark">View Courses</a>
-      <a href="instructors.php" class="btn btn-outline-dark ms-5">View Instructors</a>
-    </div>
 </section>
     <script src="common/common.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js" integrity="sha384-ndDqU0Gzau9qJ1lfW4pNLlhNTkCfHzAVBReH9diLvGRem5+R9g2FzA8ZGN954O5Q" crossorigin="anonymous"></script>
@@ -220,7 +336,7 @@ catch(Exception $e){
         <h5 class="mb-4 fw-bold">Contact</h5>
         <p><i class="bi bi-envelope me-2"></i> support@skillup.com</p>
         <p><i class="bi bi-phone me-2"></i> +880 1234-567890</p>
-        <p><i class="bi bi-geo-alt me-2"></i> Dhaka, Bangladesh</p>
+        <a href="locate.php" class="text-white text-decoration-none"><i class="bi bi-geo-alt me-2"></i>Dhaka, Bangladesh &rarr;</a>
       </div>
 
       <div class="col-md-3 col-lg-3 col-xl-3 mx-auto mt-3">

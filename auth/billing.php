@@ -32,7 +32,7 @@ if (isset($_POST['pay_now'])) {
         $paymentSuccess = true; // Change this based on actual payment API response
 
         if ($paymentSuccess) {
-            $u_id = $_SESSION['u_id'] ?? 1; // Replace 1 with logged-in user ID
+            $u_id = $_SESSION['u_id'] ?? 1;
             $stmt = $conn->prepare("INSERT IGNORE INTO enrolls (u_id, c_id, rating) VALUES (?, ?, NULL)");
 
             foreach ($courses as $course) {
@@ -101,9 +101,8 @@ if (isset($_POST['pay_now'])) {
     <?php endif; ?>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
-
-<script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js" defer></script>
+<script defer>
 document.addEventListener('DOMContentLoaded', () => {
     const removeButtons = document.querySelectorAll('.remove-btn');
     const totalPriceEl = document.getElementById('total-price');

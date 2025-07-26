@@ -114,6 +114,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 </head>
 
 <body>
+   <script>
+        window.addEventListener('pageshow', function (event) {
+            if (event.persisted) {
+                window.location.reload();
+            }
+        });
+    </script>
     <!-- Navbar -->
     <nav class="navbar navbar-expand-lg navbar-blur sticky-top shadow-sm">
         <div class="container-fluid">
@@ -124,17 +131,35 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             </button>
 
             <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto">
-                    <li class="nav-item">
-                        <a class="nav-link" href="../index.php">Home</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link " href="signup.php">Signup</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link active" href="login.php">Login</a>
-                    </li>
-                </ul>
+          <div class="collapse navbar-collapse" id="navbarNav">
+             <ul class="navbar-nav ms-auto">
+        <li class="nav-item">
+          <a class="nav-link " href="../index.php">Home</a>
+        </li>
+
+        <?php
+          if(isset($_SESSION['role'])){
+            echo'<li class="nav-item">';
+            if($_SESSION['role']==="Student")
+              echo '<a class="nav-link" href="student/dashboard.php">Dashboard</a> </li>';
+            else if($_SESSION['role']==="Instructor")
+              echo '<a class="nav-link" href="instructor/dashboard.php">Dashboard</a> </li>';
+            else
+              echo '<a class="nav-link" href="admin/dashboard.php">Dashboard</a> </li>';
+
+            echo'<li class="nav-item">
+                  <a class="nav-link" href="auth/logout.php">Logout</a>
+                  </li>';
+          }
+          else{
+            echo '<a class="nav-link active" href="login.php">Login</a> </li>
+                  <li class="nav-item">
+                  <a class="nav-link" href="signup.php">Signup</a>
+                  </li>';
+          }
+        ?>
+         </ul>
+           </div> 
             </div>
         </div>
     </nav>

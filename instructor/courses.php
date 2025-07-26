@@ -2,6 +2,13 @@
 include '../auth/cnct.php';
 session_start();
 
+<<<<<<< HEAD
+/* For Checking
+$_SESSION['role'] = "Instructor";
+$_SESSION['u_id'] = 2; */
+
+=======
+>>>>>>> af47096ca39b8220ea2132b48f35e5d33a836325
 if (!isset($_SESSION['role']) && $_SESSION['role'] !== "Instructor") {
     session_unset();
     session_destroy();
@@ -65,22 +72,10 @@ $stmt->close();
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
                     <li class="nav-item">
+                        <a class="nav-link" href="../index.php">Home</a>
+                    </li>
+                    <li class="nav-item">
                         <a class="nav-link" href="dashboard.php">Dashboard</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link active" href="#">Courses</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="notices.php">Notices
-                            <?php if ($n_status === "unread"): ?>
-                                <span class="position-absolute top-0 start-100 translate-middle p-1 bg-danger border border-light rounded-circle">
-                                    <span class="visually-hidden">New</span>
-                                </span>
-                            <?php endif; ?>
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="profile.php">Profile</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="../auth/logout.php">Logout</a>

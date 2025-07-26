@@ -16,7 +16,7 @@ if (isset($_GET['add_to_cart'])) {
         $cart = [$c_id];
     }
 
-    setcookie('cart', implode(',', $cart), time() + (86400 * 7), "/"); // 7 days
+    setcookie('cart', implode(',', $cart), time() + (1800), "/"); // 30 min
     header("Location: courses.php");
     exit();
 }
@@ -44,10 +44,18 @@ $stmt = $conn->prepare($count_sql);
 if (!empty($filter)) {
     $stmt->bind_param($types, ...$params);
 }
-$stmt->execute();
-$stmt->bind_result($total);
-$stmt->fetch();
-$stmt->close();
+try {
+    $stmt->execute();
+    $stmt->bind_result($total);
+    $stmt->fetch();
+    $stmt->close();
+} catch (Exception $e) {
+    $stmt->close();
+    $conn->close();
+    header("Location: ops.php");
+    exit();
+}
+
 
 $total_pages = ceil($total / $limit);
 
@@ -103,6 +111,8 @@ $conn->close();
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet" />
     <link rel="stylesheet" href="style.css" />
+    <link rel="preload" as="stylesheet" href="style.css" as="style" />
+    <link rel="preload" as="script" href="main.js" as="script" />
 
     <style>
         .floating-cart {
@@ -124,22 +134,28 @@ $conn->close();
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
-                    <li class="nav-item"><a class="nav-link" href="index.php">Home</a></li>
-                    <li class="nav-item"><a class="nav-link active" href="#">Courses</a></li>
-                    <li class="nav-item"><a class="nav-link" href="instructors.php">Instructors</a></li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="index.php">Home</a>
+                    </li>
+
                     <?php
                     if (isset($_SESSION['role'])) {
                         echo '<li class="nav-item">';
-                        if ($_SESSION['role'] === "student")
-                            echo '<a class="nav-link" href="student/dashboard.php">Dashboard</a></li>';
-                        else if ($_SESSION['role'] === "instructor")
-                            echo '<a class="nav-link" href="instructor/dashboard.php">Dashboard</a></li>';
+                        if ($_SESSION['role'] === "Student")
+                            echo '<a class="nav-link" href="student/dashboard.php">Dashboard</a> </li>';
+                        else if ($_SESSION['role'] === "Instructor")
+                            echo '<a class="nav-link" href="instructor/dashboard.php">Dashboard</a> </li>';
                         else
-                            echo '<a class="nav-link" href="admin/dashboard.php">Dashboard</a></li>';
-                        echo '<li class="nav-item"><a class="nav-link" href="auth/logout.php">Logout</a></li>';
+                            echo '<a class="nav-link" href="admin/dashboard.php">Dashboard</a> </li>';
+
+                        echo '<li class="nav-item">
+                  <a class="nav-link" href="auth/logout.php">Logout</a>
+                  </li>';
                     } else {
-                        echo '<li class="nav-item"><a class="nav-link" href="auth/login.php">Login</a></li>';
-                        echo '<li class="nav-item"><a class="nav-link" href="auth/signup.php">Signup</a></li>';
+                        echo '<a class="nav-link" href="auth/login.php">Login</a> </li>
+                  <li class="nav-item">
+                  <a class="nav-link" href="auth/signup.php">Signup</a>
+                  </li>';
                     }
                     ?>
                 </ul>
@@ -187,7 +203,7 @@ $conn->close();
                             <p class="card-text"><?= htmlspecialchars($course['description']) ?></p>
                             <p class="text-muted"><small>Instructor: <?= htmlspecialchars($course['instructor']) ?></small></p>
                             <div class="d-flex justify-content-between align-items-center">
-                                <a href="course-details/full-stack-web-dev.php" class="btn btn-md btn-outline-dark">View Details</a> 
+                                <a href="course-details/full-stack-web-dev.php" class="btn btn-md btn-outline-dark">View Details</a>
                                 <a href="?add_to_cart=<?= $course['id'] ?>" class="btn btn-md btn-success">Add to Cart (৳<?= $course['amount'] ?>)</a>
                             </div>
 
@@ -214,9 +230,15 @@ $conn->close();
     <!-- Floating Cart -->
     <?php if (isset($_COOKIE['cart']) && !empty($_COOKIE['cart'])): ?>
         <div class="floating-cart">
-            <a href="auth/billing.php" class="btn btn-lg btn-dark shadow">
-                🛒 Checkout (<?= count(explode(',', $_COOKIE['cart'])) ?>)
-            </a>
+            <?php if (isset($_SESSION['role']) && $_SESSION['role'] == "Student"): ?>
+                <a href="auth/billing.php" class="btn btn-lg btn-dark shadow">
+                    🛒 Checkout (<?= count(explode(',', $_COOKIE['cart'])) ?>)
+                </a>
+            <?php else: ?>
+                <a href="auth/login.php" class="btn btn-lg btn-dark shadow" onclick="alert('Please login first to proceed to checkout!');">
+                    🛒 Checkout (<?= count(explode(',', $_COOKIE['cart'])) ?>)
+                </a>
+            <?php endif; ?>
         </div>
     <?php endif; ?>
 

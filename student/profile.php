@@ -128,13 +128,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['change_password'])) {
             </button>
 
             <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto">
-                    <li class="nav-item"><a class="nav-link" href="dashboard.php">Dashboard</a></li>
-                    <li class="nav-item"><a class="nav-link" href="courses.php">Courses</a></li>
-                    <li class="nav-item"><a class="nav-link" href="notices.php">Notices</a></li>
-                    <li class="nav-item"><a class="nav-link active" href="#">Profile</a></li>
-                    <li class="nav-item"><a class="nav-link" href="../auth/logout.php">Logout</a></li>
-                </ul>
+               <ul class="navbar-nav ms-auto">
+          <li class="nav-item">
+            <a class="nav-link" href="../index.php">Home</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="dashboard.php">Dashboard</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="../auth/logout.php">Logout</a>
+          </li>
+        </ul>
             </div>
         </div>
     </nav>
@@ -209,7 +213,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['change_password'])) {
                             <div class="mb-3"><label class="form-label">Bio</label><textarea name="bio" class="form-control" rows="5"><?= htmlspecialchars($bio) ?></textarea></div>
                         </div>
                         <div class="modal-footer">
-                            <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                             <button type="submit" class="btn btn-primary">Save Changes</button>
                         </div>
                     </form>

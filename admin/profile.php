@@ -99,6 +99,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['change_password'])) {
             $stmt->execute();
             $stmt->close();
             $success = true;
+
+            // Set success message for password change
+            $_SESSION['message'] = "Password updated successfully!";
+            $_SESSION['message_type'] = "success";
+            header("Location: profile.php"); // Redirect to show the updated profile
+            exit();
         }
     }
 }
@@ -127,50 +133,57 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['change_password'])) {
         });
     </script>
 
-   <nav class="navbar navbar-expand-lg navbar-blur sticky-top shadow-sm">
-  <div class="container-fluid">
-    <a class="navbar-brand fw-bold" href="">SkillUp Academy</a>
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
-      aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-  
-    <div class="collapse navbar-collapse" id="navbarNav">
-      <ul class="navbar-nav ms-auto">
-        <li class="nav-item">
-          <a class="nav-link " href="dashboard.php">Dashboard</a>
-        </li>
-         <li class="nav-item">
-          <a class="nav-link" href="admins.php">Admins</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="instructors.php">Instructors</a>
-        </li>
+    <nav class="navbar navbar-expand-lg navbar-blur sticky-top shadow-sm">
+        <div class="container-fluid">
+            <a class="navbar-brand fw-bold" href="">SkillUp Academy</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
 
-        <li class="nav-item">
-          <a class="nav-link" href="courses.php">Courses</a>
-        </li>
-        
-       
-        <li class="nav-item">
-          <a class="nav-link" href="students.php">Students</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="post-notices.php">Notices</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link active" href="#">Profile</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="../auth/logout.php">Logout</a>
-        </li>
-      </ul>
-    </div>
-  </div>
-</nav>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link " href="dashboard.php">Dashboard</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="admins.php">Admins</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="instructors.php">Instructors</a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="courses.php">Courses</a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="students.php">Students</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="post-notices.php">Notices</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="#">Profile</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="../auth/logout.php">Logout</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
 
     <div class="container mt-5">
         <p class="text-center mb-4 fs-1">Admin Profile</p>
+
+        <!-- Display success message if profile updated -->
+        <?php if (isset($_SESSION['message']) && $_SESSION['message_type'] === 'success'): ?>
+            <div class="alert alert-success">
+                <?= htmlspecialchars($_SESSION['message']) ?>
+            </div>
+            <?php unset($_SESSION['message']); // Clear the message after displaying it ?>
+        <?php endif; ?>
 
         <?php if (isset($_SESSION['errors']) && !empty($_SESSION['errors'])): ?>
             <div class="alert alert-danger">
@@ -236,7 +249,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['change_password'])) {
                             </div>
                         </div>
                         <div class="modal-footer">
-                            <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                             <button type="submit" class="btn btn-primary">Save Changes</button>
                         </div>
                     </form>
@@ -280,3 +293,4 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['change_password'])) {
 </body>
 
 </html>
+

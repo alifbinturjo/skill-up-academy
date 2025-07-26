@@ -2,13 +2,6 @@
 include '../auth/cnct.php';
 session_start();
 
-<<<<<<< HEAD
-/* For Checking
-$_SESSION['role'] = "Instructor";
-$_SESSION['u_id'] = 2; */
-
-=======
->>>>>>> af47096ca39b8220ea2132b48f35e5d33a836325
 if (!isset($_SESSION['role']) && $_SESSION['role'] !== "Instructor") {
     session_unset();
     session_destroy();

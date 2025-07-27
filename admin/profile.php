@@ -1,6 +1,7 @@
 <?php
-include '../auth/cnct.php';
 session_start();
+include '../auth/cnct.php';
+
 
 // Check if user is logged in as an Admin
 if (!isset($_SESSION['role']) || $_SESSION['role'] !== "Admin") {

@@ -1,6 +1,7 @@
 <?php
-include'../auth/cnct.php';
 session_start();
+include'../auth/cnct.php';
+
 
 if(!isset($_SESSION['role'])&&isset($_SESSION['u_id'])&&$_SESSION['role']!=="Student"){
   session_unset();

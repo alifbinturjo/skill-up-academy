@@ -1,6 +1,7 @@
 <?php
-include 'auth/cnct.php';
 session_start();
+include 'auth/cnct.php';
+
 ?>
 <!DOCTYPE html>
 <html lang="en">

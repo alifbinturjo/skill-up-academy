@@ -14,7 +14,7 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'Instructor') {
 $admin_notices = $conn->query("
   SELECT title, message, date 
   FROM admin_notices 
-  WHERE audience = 'instructor' OR audience = 'everyone'
+  WHERE audience = 'everyone'
   ORDER BY date DESC
 ");
 

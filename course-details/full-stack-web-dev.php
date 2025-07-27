@@ -172,12 +172,7 @@ $stmt = $conn->prepare("
         </div>
       </div>
     </div>
-    <div class="text-center">
-      <a href="../auth/billing.html" class="btn card-h shadow btn-success w-50">
-      <strong class="fs-5">Buy now</strong>
-      <p class="lead">BDT <strong><?php echo $amount ?></strong></p>
-    </a>
-    </div>
+    
     
 
 </div>

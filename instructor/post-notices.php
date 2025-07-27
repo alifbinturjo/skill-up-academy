@@ -3,9 +3,8 @@ session_start();
 require_once '../auth/cnct.php';
 
 
-// -------------------------------
 // Instructor-only access restriction
-// -------------------------------
+
 if (!isset($_SESSION['u_id'], $_SESSION['role']) || $_SESSION['role'] !== 'Instructor') {
     $_SESSION['error'] = "Unauthorized access. Please login as instructor.";
     header("Location: ../auth/login.php");
@@ -13,6 +12,7 @@ if (!isset($_SESSION['u_id'], $_SESSION['role']) || $_SESSION['role'] !== 'Instr
 }
 
 // Verify instructor exists in database
+
 $user_id = $_SESSION['u_id'];
 $stmt = $conn->prepare("SELECT u_id FROM instructors WHERE u_id = ?");
 $stmt->bind_param("i", $user_id);
@@ -27,67 +27,63 @@ if ($result->num_rows === 0) {
 }
 $stmt->close();
 
-// Fetch distinct course IDs for filter dropdown
-$courses = [];
-$courseResult = $conn->query("SELECT DISTINCT c_id FROM instructors_notices ORDER BY c_id");
-if ($courseResult) {
-    $courses = $courseResult->fetch_all(MYSQLI_ASSOC);
-}
+// Get c_id from URL (mandatory)
 
-// Determine selected course filter
-$selectedCourse = isset($_GET['course_id']) ? (int)$_GET['course_id'] : 0;
+$c_id = isset($_GET['c_id']) ? (int)$_GET['c_id'] : 0;
+if ($c_id === 0) {
+    $_SESSION['error'] = "Course ID not specified!";
+    header("Location: courses.php");
+    exit();
+}
 
 // Handle form submission - post new notice
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $title = $conn->real_escape_string($_POST['title'] ?? '');
-    $message = $conn->real_escape_string($_POST['message'] ?? '');
-    $courseId = (int)($_POST['c_id'] ?? 1);
+    $title = trim($_POST['title'] ?? '');
+    $message = trim($_POST['message'] ?? '');
 
-    $sql = "INSERT INTO instructors_notices (title, message, date, u_id, c_id) 
-            VALUES ('$title', '$message', CURDATE(), {$_SESSION['u_id']}, $courseId)";
+    if (!empty($title) && !empty($message)) {
+        $stmt = $conn->prepare("INSERT INTO instructors_notices (title, message, date, u_id, c_id) VALUES (?, ?, CURDATE(), ?, ?)");
+        $stmt->bind_param("ssii", $title, $message, $user_id, $c_id);
 
-    if ($conn->query($sql)) {
-        $_SESSION['success'] = "Notice posted successfully!";
-        $_SESSION['new_notice'] = true;
-        header("Location: post-notices.php");
+        if ($stmt->execute()) {
+            $_SESSION['success'] = "Notice posted successfully!";
+        } else {
+            $_SESSION['error'] = "Error posting notice!";
+        }
+        $stmt->close();
+        header("Location: post-notices.php?c_id=$c_id");
         exit;
     } else {
-        $_SESSION['error'] = "Error: " . $conn->error;
-        header("Location: post-notices.php");
-        exit;
+        $_SESSION['error'] = "All fields are required!";
     }
 }
 
 // Handle notice deletion
 if (isset($_GET['delete'])) {
     $id = (int)$_GET['delete'];
-    $sql = "DELETE FROM instructors_notices WHERE n_id = $id";
+    $stmt = $conn->prepare("DELETE FROM instructors_notices WHERE n_id = ? AND c_id = ?");
+    $stmt->bind_param("ii", $id, $c_id);
 
-    if ($conn->query($sql)) {
+    if ($stmt->execute()) {
         $_SESSION['success'] = "Notice deleted!";
     } else {
         $_SESSION['error'] = "Delete failed!";
     }
-    header("Location: post-notices.php");
+    $stmt->close();
+    header("Location: post-notices.php?c_id=$c_id");
     exit;
 }
 
-// Fetch notices (filtered by course if selected)
-$query = "SELECT * FROM instructors_notices";
-if ($selectedCourse > 0) {
-    $query .= " WHERE c_id = $selectedCourse";
-}
-$query .= " ORDER BY date DESC, n_id DESC";
-$result = $conn->query($query);
+// Fetch notices for this c_id only
+$stmt = $conn->prepare("SELECT n_id, title, message, date FROM instructors_notices WHERE c_id = ? ORDER BY date DESC, n_id DESC");
+$stmt->bind_param("i", $c_id);
+$stmt->execute();
+$result = $stmt->get_result();
 $notices = $result ? $result->fetch_all(MYSQLI_ASSOC) : [];
-
-// Check if new notice flag is set
-$hasNewNotice = isset($_SESSION['new_notice']) && $_SESSION['new_notice'];
+$stmt->close();
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -95,9 +91,7 @@ $hasNewNotice = isset($_SESSION['new_notice']) && $_SESSION['new_notice'];
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="../style.css">
 </head>
-
 <body>
-
   <nav class="navbar navbar-expand-lg navbar-blur sticky-top shadow-sm">
     <div class="container-fluid">
       <a class="navbar-brand fw-bold" href="">SkillUp Academy</a>
@@ -115,15 +109,6 @@ $hasNewNotice = isset($_SESSION['new_notice']) && $_SESSION['new_notice'];
             <a class="nav-link active" href="">Dashboard</a>
           </li>
           <li class="nav-item">
-<<<<<<< HEAD
-=======
-            <a class="nav-link active" href="notices.php">Notices</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="profile.php">Profile</a>
-          </li>
-          <li class="nav-item">
->>>>>>> fa605e02d6adde23530be8ca38e3745691c2c5de
             <a class="nav-link" href="../auth/logout.php">Logout</a>
           </li>
         </ul>
@@ -151,14 +136,6 @@ $hasNewNotice = isset($_SESSION['new_notice']) && $_SESSION['new_notice'];
                 <textarea class="form-control bg-transparent border border-dark" name="message" rows="5"
                   placeholder="Enter notification description" required></textarea>
               </div>
-              <div class="mb-3">
-                <label class="form-label">Select Course</label>
-                <select class="form-control bg-transparent border border-dark" name="c_id" required>
-                  <?php foreach ($courses as $course): ?>
-                    <option value="<?= $course['c_id'] ?>"><?= 'Course ID: ' . $course['c_id'] ?></option>
-                  <?php endforeach; ?>
-                </select>
-              </div>
               <div class="text-center mt-2">
                 <button type="submit" class="btn btn-primary btn-sm">Post Notice</button>
               </div>
@@ -166,40 +143,22 @@ $hasNewNotice = isset($_SESSION['new_notice']) && $_SESSION['new_notice'];
           </div>
         </div>
 
-        <!-- Filter Section -->
-        <div class="card bg-transparent shadow-sm border-0 mb-4">
-          <div class="card-body d-flex justify-content-between align-items-center">
-            <h5 class="mb-0">Recent Notices</h5>
-            <form method="GET" action="" class="d-flex">
-              <select name="course_id" class="form-select me-2" onchange="this.form.submit()">
-                <option value="0">All Courses</option>
-                <?php foreach ($courses as $course): ?>
-                  <option value="<?= $course['c_id'] ?>" <?= ($selectedCourse == $course['c_id']) ? 'selected' : '' ?>>
-                    Course ID: <?= $course['c_id'] ?>
-                  </option>
-                <?php endforeach; ?>
-              </select>
-              <noscript><button type="submit" class="btn btn-primary">Filter</button></noscript>
-            </form>
-          </div>
-        </div>
-
         <!-- Recent Notices -->
         <div class="card bg-transparent shadow-sm border-0">
           <div class="card-body">
+            <h5>Recent Notices </h5>
             <div class="list-group" id="notificationList">
               <?php if (empty($notices)): ?>
                 <div class="list-group-item text-center text-muted">No notices found</div>
               <?php else: ?>
                 <?php foreach ($notices as $notice): ?>
-                  <div
-                    class="list-group-item d-flex justify-content-between align-items-center bg-transparent border border-dark mt-2">
+                  <div class="list-group-item d-flex justify-content-between align-items-center bg-transparent border border-dark mt-2">
                     <div>
-                      <h6 class="mb-1"><?= htmlspecialchars($notice['title']) ?> (Course: <?= $notice['c_id'] ?>)</h6>
+                      <h6 class="mb-1"><?= htmlspecialchars($notice['title']) ?></h6>
                       <p class="mb-1"><?= nl2br(htmlspecialchars($notice['message'])) ?></p>
                       <small class="text-muted">Posted on: <?= htmlspecialchars($notice['date']) ?></small>
                     </div>
-                    <a href="?delete=<?= $notice['n_id'] ?>" class="btn btn-danger btn-sm"
+                    <a href="?delete=<?= $notice['n_id'] ?>&c_id=<?= $c_id ?>" class="btn btn-danger btn-sm"
                       onclick="return confirm('Are you sure you want to delete this notice?');">Remove</a>
                   </div>
                 <?php endforeach; ?>
@@ -234,7 +193,6 @@ $hasNewNotice = isset($_SESSION['new_notice']) && $_SESSION['new_notice'];
       </div>
     </div>
   </div>
-
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

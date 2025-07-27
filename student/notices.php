@@ -2,64 +2,95 @@
 session_start();
 require_once '../auth/cnct.php';
 
-
-// Restrict access to students only
 if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'Student') {
-  $_SESSION['error'] = "Unauthorized access. Please log in as a student.";
-  header("Location: ../auth/login.php");
-  exit();
+    $_SESSION['error'] = "Unauthorized access. Please log in as a student.";
+    header("Location: ../auth/login.php");
+    exit();
 }
 
-// For testing without login (remove in production)
-if (!isset($_SESSION['user_type'])) {
-  $_SESSION['user_type'] = 'student';
-}
-
-$course_id = isset($_GET['c_id']) ? (int)$_GET['c_id'] : 0;
-
+$student_id = (int)$_SESSION['u_id'];
 $notices = [];
+$courses = [];
 
-if (!isset($_GET['c_id'])) {
-
-
-  // 1. Admin notices visible to students
-  $admin_query = "SELECT title, message, date, 'Admin' AS source FROM admin_notices 
-                WHERE audience IN ('student', 'everyone')";
-  $admin_result = $conn->query($admin_query);
-  if ($admin_result && $admin_result->num_rows > 0) {
-    while ($row = $admin_result->fetch_assoc()) {
-      $row['course_name'] = '';  // Admin notices not linked to any course
-      $notices[] = $row;
-    }
-  }
+/* ------------------------------------------------
+   1. Get student's enrolled course IDs
+------------------------------------------------ */
+$course_sql = "SELECT c_id FROM enrolls WHERE u_id = ?";
+$course_stmt = $conn->prepare($course_sql);
+if (!$course_stmt) {
+    die("Error preparing course query: " . $conn->error);
 }
+$course_stmt->bind_param("i", $student_id);
+$course_stmt->execute();
+$course_result = $course_stmt->get_result();
 
-// 2. Instructor notices for student's course with course name join
-$instructor_query = "
-    SELECT instructors_notices.*, 'Instructor' AS source, courses.title AS course_name 
-    FROM instructors_notices 
-    JOIN courses ON instructors_notices.c_id = courses.c_id
-    WHERE instructors_notices.c_id = $course_id
-";
-$instructor_result = $conn->query($instructor_query);
-if ($instructor_result && $instructor_result->num_rows > 0) {
-  while ($row = $instructor_result->fetch_assoc()) {
+while ($row = $course_result->fetch_assoc()) {
+    $courses[] = (int)$row['c_id'];
+}
+$course_stmt->close();
+
+/* ------------------------------------------------
+   2. Get admin notices for students
+------------------------------------------------ */
+$admin_sql = "SELECT title, message, date, 'Admin' AS source 
+              FROM admin_notices 
+              WHERE audience IN ('student', 'everyone') 
+              ORDER BY date DESC";
+$admin_stmt = $conn->prepare($admin_sql);
+if (!$admin_stmt) {
+    die("Error preparing admin notices query: " . $conn->error);
+}
+$admin_stmt->execute();
+$admin_result = $admin_stmt->get_result();
+
+while ($row = $admin_result->fetch_assoc()) {
+    $row['course_name'] = ''; 
     $notices[] = $row;
-  }
+}
+$admin_stmt->close();
+
+/* ------------------------------------------------
+   3. Get instructor notices for student's courses
+------------------------------------------------ */
+if (!empty($courses)) {
+    // Build placeholders for IN clause (e.g., ?, ?, ?)
+    $placeholders = implode(',', array_fill(0, count($courses), '?'));
+    $types = str_repeat('i', count($courses)); // all integers
+
+    $instructor_sql = "
+        SELECT n.title, n.message, n.date, 'Instructor' AS source, c.title AS course_name
+        FROM instructors_notices n
+        JOIN courses c ON n.c_id = c.c_id
+        WHERE n.c_id IN ($placeholders)
+        ORDER BY n.date DESC, n.n_id DESC";
+
+    $instructor_stmt = $conn->prepare($instructor_sql);
+    if (!$instructor_stmt) {
+        die("Error preparing instructor notices query: " . $conn->error);
+    }
+
+    $instructor_stmt->bind_param($types, ...$courses);
+    $instructor_stmt->execute();
+    $instructor_result = $instructor_stmt->get_result();
+
+    while ($row = $instructor_result->fetch_assoc()) {
+        $notices[] = $row;
+    }
+    $instructor_stmt->close();
 }
 
-// Sort all notices by date DESC
+/* ------------------------------------------------
+   4. Sort all notices by date DESC
+------------------------------------------------ */
 usort($notices, function ($a, $b) {
-  return strtotime($b['date']) <=> strtotime($a['date']);
+    return strtotime($b['date']) <=> strtotime($a['date']);
 });
 
-// Check for red dot notification
 $hasNewNotice = isset($_SESSION['new_notice']);
-unset($_SESSION['new_notice']); // Reset after viewing
+unset($_SESSION['new_notice']);
 ?>
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -70,7 +101,6 @@ unset($_SESSION['new_notice']); // Reset after viewing
 </head>
 
 <body>
-
   <nav class="navbar navbar-expand-lg navbar-blur sticky-top shadow-sm">
     <div class="container-fluid">
       <a class="navbar-brand fw-bold" href="#">SkillUp Academy</a>
@@ -78,21 +108,6 @@ unset($_SESSION['new_notice']); // Reset after viewing
         aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>
-
-<<<<<<< HEAD
-    <div class="collapse navbar-collapse" id="navbarNav">
-     <ul class="navbar-nav ms-auto">
-          <li class="nav-item">
-            <a class="nav-link" href="../index.php">Home</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link active" href="">Dashboard</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="../auth/logout.php">Logout</a>
-          </li>
-        </ul>
-=======
       <div class="collapse navbar-collapse" id="navbarNav">
         <ul class="navbar-nav ms-auto">
           <li class="nav-item"><a class="nav-link" href="dashboard.php">Dashboard</a></li>
@@ -111,17 +126,13 @@ unset($_SESSION['new_notice']); // Reset after viewing
           <li class="nav-item"><a class="nav-link" href="../auth/logout.php">Logout</a></li>
         </ul>
       </div>
->>>>>>> fa605e02d6adde23530be8ca38e3745691c2c5de
     </div>
   </nav>
 
   <div class="container mt-5 mb-5">
     <h1 class="text-center mb-4">Notices</h1>
-
     <?php if (empty($notices)): ?>
-      <div class="alert alert-info text-center">
-        No notices available at this time.
-      </div>
+      <div class="alert alert-info text-center">No notices available at this time.</div>
     <?php else: ?>
       <?php foreach ($notices as $notice): ?>
         <div class="card shadow bg-transparent mb-4">
@@ -129,9 +140,7 @@ unset($_SESSION['new_notice']); // Reset after viewing
             <h5 class="card-title"><?= htmlspecialchars($notice['title']) ?></h5>
             <p class="card-text"><?= nl2br(htmlspecialchars($notice['message'])) ?></p>
             <div class="d-flex justify-content-between align-items-center">
-              <small class="text-muted">
-                <?= date('F j, Y \a\t g:i A', strtotime($notice['date'])) ?>
-              </small>
+              <small class="text-muted"><?= date('F j, Y', strtotime($notice['date'])) ?></small>
               <?php if ($notice['source'] === 'Instructor'): ?>
                 <span class="badge bg-info text-dark"><?= htmlspecialchars($notice['course_name']) ?></span>
               <?php else: ?>
@@ -146,5 +155,4 @@ unset($_SESSION['new_notice']); // Reset after viewing
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
 </body>
-
 </html>

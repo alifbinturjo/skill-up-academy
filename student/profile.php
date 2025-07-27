@@ -1,7 +1,6 @@
 <?php
-session_start();
+session_start(); // Start the session to store user data
 include '../auth/cnct.php';
-
 
 // Check if user is logged in as a Student
 if (!isset($_SESSION['role']) || $_SESSION['role'] !== "Student") {
@@ -32,7 +31,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !isset($_POST['change_password'])) 
         $errors[] = "Invalid email format.";
     }
 
-    
     // If no errors, proceed to update the profile
     if (empty($errors)) {
         // Update user data in the `users` table
@@ -66,7 +64,6 @@ $stmt->close();
 
 $image = '../image-assets/common/Profile.webp';
 
-
 // Handle password change (POST)
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['change_password'])) {
     $current = $_POST['current_password'] ?? '';
@@ -99,7 +96,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['change_password'])) {
         }
     }
 }
-
 ?>
 
 <!DOCTYPE html>
@@ -127,23 +123,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['change_password'])) {
     <nav class="navbar navbar-expand-lg navbar-blur sticky-top shadow-sm">
         <div class="container-fluid">
             <a class="navbar-brand fw-bold" href="">SkillUp Academy</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
-                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
 
             <div class="collapse navbar-collapse" id="navbarNav">
-               <ul class="navbar-nav ms-auto">
-          <li class="nav-item">
-            <a class="nav-link" href="../index.php">Home</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="dashboard.php">Dashboard</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="../auth/logout.php">Logout</a>
-          </li>
-        </ul>
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link" href="../index.php">Home</a></li>
+                    <li class="nav-item"><a class="nav-link" href="dashboard.php">Dashboard</a></li>
+                    <li class="nav-item"><a class="nav-link" href="../auth/logout.php">Logout</a></li>
+                </ul>
             </div>
         </div>
     </nav>

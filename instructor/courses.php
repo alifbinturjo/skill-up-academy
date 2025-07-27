@@ -1,6 +1,6 @@
 <?php
-include '../auth/cnct.php';
 session_start();
+include '../auth/cnct.php';
 
 /* For Checking
 $_SESSION['role'] = "Instructor";

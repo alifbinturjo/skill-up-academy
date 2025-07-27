@@ -1,6 +1,6 @@
 <?php
-include '../auth/cnct.php';
 session_start();
+include '../auth/cnct.php';
 
 // Handle AJAX rating submission
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['rating'])) {

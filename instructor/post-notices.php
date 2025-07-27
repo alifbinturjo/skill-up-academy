@@ -146,7 +146,7 @@ $stmt->close();
         <!-- Recent Notices -->
         <div class="card bg-transparent shadow-sm border-0">
           <div class="card-body">
-            <h5>Recent Notices for Course ID: <?= $c_id ?></h5>
+            <h5>Recent Notices </h5>
             <div class="list-group" id="notificationList">
               <?php if (empty($notices)): ?>
                 <div class="list-group-item text-center text-muted">No notices found</div>

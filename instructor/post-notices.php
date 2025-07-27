@@ -2,7 +2,6 @@
 session_start();
 require_once '../auth/cnct.php';
 
-
 // -------------------------------
 // Instructor-only access restriction
 // -------------------------------
@@ -27,33 +26,35 @@ if ($result->num_rows === 0) {
 }
 $stmt->close();
 
-// Fetch distinct course IDs for filter dropdown
-$courses = [];
-$courseResult = $conn->query("SELECT DISTINCT c_id FROM instructors_notices ORDER BY c_id");
-if ($courseResult) {
-    $courses = $courseResult->fetch_all(MYSQLI_ASSOC);
+// --------------------------------
+// Get c_id from URL (mandatory)
+// --------------------------------
+$c_id = isset($_GET['c_id']) ? (int)$_GET['c_id'] : 0;
+if ($c_id === 0) {
+    $_SESSION['error'] = "Course ID not specified!";
+    header("Location: courses.php");
+    exit();
 }
 
-// Determine selected course filter
-$selectedCourse = isset($_GET['course_id']) ? (int)$_GET['course_id'] : 0;
+// Prepare the single course for dropdown
+$courses = [['c_id' => $c_id]];
 
 // Handle form submission - post new notice
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $title = $conn->real_escape_string($_POST['title'] ?? '');
     $message = $conn->real_escape_string($_POST['message'] ?? '');
-    $courseId = (int)($_POST['c_id'] ?? 1);
 
     $sql = "INSERT INTO instructors_notices (title, message, date, u_id, c_id) 
-            VALUES ('$title', '$message', CURDATE(), {$_SESSION['u_id']}, $courseId)";
+            VALUES ('$title', '$message', CURDATE(), {$_SESSION['u_id']}, $c_id)";
 
     if ($conn->query($sql)) {
         $_SESSION['success'] = "Notice posted successfully!";
         $_SESSION['new_notice'] = true;
-        header("Location: post-notices.php");
+        header("Location: post-notices.php?c_id=$c_id");
         exit;
     } else {
         $_SESSION['error'] = "Error: " . $conn->error;
-        header("Location: post-notices.php");
+        header("Location: post-notices.php?c_id=$c_id");
         exit;
     }
 }
@@ -61,29 +62,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 // Handle notice deletion
 if (isset($_GET['delete'])) {
     $id = (int)$_GET['delete'];
-    $sql = "DELETE FROM instructors_notices WHERE n_id = $id";
+    $sql = "DELETE FROM instructors_notices WHERE n_id = $id AND c_id = $c_id";
 
     if ($conn->query($sql)) {
         $_SESSION['success'] = "Notice deleted!";
     } else {
         $_SESSION['error'] = "Delete failed!";
     }
-    header("Location: post-notices.php");
+    header("Location: post-notices.php?c_id=$c_id");
     exit;
 }
 
-// Fetch notices (filtered by course if selected)
-$query = "SELECT * FROM instructors_notices";
-if ($selectedCourse > 0) {
-    $query .= " WHERE c_id = $selectedCourse";
-}
-$query .= " ORDER BY date DESC, n_id DESC";
+// Fetch notices for this c_id only
+$query = "SELECT * FROM instructors_notices WHERE c_id = $c_id ORDER BY date DESC, n_id DESC";
 $result = $conn->query($query);
 $notices = $result ? $result->fetch_all(MYSQLI_ASSOC) : [];
 
-// Check if new notice flag is set
 $hasNewNotice = isset($_SESSION['new_notice']) && $_SESSION['new_notice'];
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -164,11 +161,8 @@ $hasNewNotice = isset($_SESSION['new_notice']) && $_SESSION['new_notice'];
             <form method="GET" action="" class="d-flex">
               <select name="course_id" class="form-select me-2" onchange="this.form.submit()">
                 <option value="0">All Courses</option>
-                <?php foreach ($courses as $course): ?>
-                  <option value="<?= $course['c_id'] ?>" <?= ($selectedCourse == $course['c_id']) ? 'selected' : '' ?>>
-                    Course ID: <?= $course['c_id'] ?>
-                  </option>
-                <?php endforeach; ?>
+                <option value="<?= $c_id ?>" selected><?= 'Course ID: ' . $c_id ?></option>
+
               </select>
               <noscript><button type="submit" class="btn btn-primary">Filter</button></noscript>
             </form>

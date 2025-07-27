@@ -1,6 +1,7 @@
 <?php
-include'cnct.php';
 session_start();
+include'cnct.php';
+
 session_unset();
 session_destroy();
 ?>

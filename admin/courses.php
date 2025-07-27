@@ -38,8 +38,11 @@ if (isset($_POST['action']) && $_POST['action'] === 'add_course') {
         exit;
     }
 
-    $stmt = $conn->prepare("INSERT INTO courses (title, amount, description, domain, duration, u_id, status) VALUES (?, ?, ?, ?, ?, ?, ?)");
-    $stmt->bind_param("sissiis", $title, $amount, $description, $domain, $duration, $u_id, $status);
+    $start_date = $_POST['start_date'];
+
+$stmt = $conn->prepare("INSERT INTO courses (title, amount, description, domain, duration, u_id, start_date, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+$stmt->bind_param("sississs", $title, $amount, $description, $domain, $duration, $u_id, $start_date, $status);
+
     $executed = $stmt->execute();
     $_SESSION['message'] = $executed ? "Course added successfully!" : "Failed to add course.";
     $_SESSION['message_type'] = $executed ? "success" : "danger";
@@ -78,8 +81,10 @@ if (isset($_POST['action']) && $_POST['action'] === 'edit_course') {
         exit;
     }
 
-    $stmt = $conn->prepare("UPDATE courses SET title = ?, amount = ?, description = ?, domain = ?, duration = ?, u_id = ? WHERE c_id = ?");
-    $stmt->bind_param("sissiii", $title, $amount, $description, $domain, $duration, $u_id, $c_id);
+    $start_date = $_POST['start_date'];
+$stmt = $conn->prepare("UPDATE courses SET title = ?, amount = ?, description = ?, domain = ?, duration = ?, u_id = ?, start_date = ? WHERE c_id = ?");
+$stmt->bind_param("sissiiisi", $title, $amount, $description, $domain, $duration, $u_id, $start_date, $c_id);
+
     $executed = $stmt->execute();
     $_SESSION['message'] = $executed ? "Course updated successfully!" : "Failed to update course.";
     $_SESSION['message_type'] = $executed ? "success" : "danger";
@@ -89,7 +94,7 @@ if (isset($_POST['action']) && $_POST['action'] === 'edit_course') {
 }
 
 // Fetch Courses
-$sql = "SELECT c.c_id, c.title, c.amount, c.description, c.domain, c.duration, c.u_id, u.name as instructor_name 
+$sql = "SELECT c.c_id, c.title, c.amount, c.description, c.domain, c.duration, c.u_id, c.start_date, u.name as instructor_name 
         FROM courses c
         LEFT JOIN instructors i ON c.u_id = i.u_id
         LEFT JOIN users u ON i.u_id = u.u_id
@@ -247,6 +252,11 @@ $instructors = $instructor_result->fetch_all(MYSQLI_ASSOC);
               </select>
             </div>
             <div class="mb-2">
+  <label class="form-label">Start Date <span class="text-danger">*</span></label>
+  <input type="date" class="form-control border-dark" name="start_date" required>
+</div>
+
+            <div class="mb-2">
               <label class="form-label">Duration (weeks) <span class="text-danger">*</span></label>
               <select class="form-select border-dark" name="duration" required>
                 <option value="" selected disabled>Select duration</option>
@@ -311,6 +321,11 @@ $instructors = $instructor_result->fetch_all(MYSQLI_ASSOC);
                   <option value="ai" <?= $course['domain'] === 'ai' ? 'selected' : '' ?>>AI & ML</option>
                 </select>
               </div>
+              <div class="mb-2">
+                 <label class="form-label">Start Date</label>
+                    <input type="date" class="form-control border-dark" name="start_date" value="<?= $course['start_date'] ?>" required>
+                 </div>
+
               <div class="mb-2">
                 <label class="form-label">Duration (weeks)</label>
                 <select class="form-select border-dark" name="duration" required>

@@ -37,39 +37,31 @@ $instructors_notices = $conn->query("
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" />
   <link rel="stylesheet" href="../style.css" />
 </head>
-
 <body>
 
-  <!-- Navbar -->
-  <nav class="navbar navbar-expand-lg navbar-blur sticky-top shadow-sm">
-    <div class="container-fluid">
-      <a class="navbar-brand fw-bold" href="#">SkillUp Academy</a>
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
-        aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-      </button>
+<nav class="navbar navbar-expand-lg navbar-blur sticky-top shadow-sm"> 
+  <div class="container-fluid">
+    <a class="navbar-brand fw-bold" href="#">SkillUp Academy</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+      aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
 
-      <div class="collapse navbar-collapse" id="navbarNav">
-        <ul class="navbar-nav ms-auto">
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav ms-auto">
           <li class="nav-item">
-            <a class="nav-link" href="dashboard.php">Dashboard</a>
+            <a class="nav-link" href="../index.php">Home</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="courses.php">Courses</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link active" href="notices.php">Notices</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="profile.php">Profile</a>
+            <a class="nav-link active" href="">Dashboard</a>
           </li>
           <li class="nav-item">
             <a class="nav-link" href="../auth/logout.php">Logout</a>
           </li>
         </ul>
-      </div>
     </div>
-  </nav>
+  </div>
+</nav>
 
   <!-- Notices Section -->
   <div class="container mt-5 mb-5">

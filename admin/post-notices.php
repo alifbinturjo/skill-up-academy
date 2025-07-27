@@ -9,28 +9,29 @@ if (!isset($_SESSION['u_id']) || $_SESSION['role'] !== 'Admin') {
     exit();
 }
 
-      // Check if Admin
-            $admin_check = $conn->prepare("SELECT * FROM admins WHERE u_id = ?");
-            $admin_check->bind_param("i", $u_id);
-            $admin_check->execute();
-            $admin_res = $admin_check->get_result();
-            if ($admin_res->num_rows > 0) {
-                $role = 'Admin';
-                $_SESSION['role'] = $role;
-                header("Location: ../admin/post-notices.php");
-                exit();
-            }
+$u_id = $_SESSION['u_id']; // ✅ FIXED: Define before use
+
+// Optional: re-validate admin from DB
+$admin_check = $conn->prepare("SELECT * FROM admins WHERE u_id = ?");
+$admin_check->bind_param("i", $u_id);
+$admin_check->execute();
+$admin_res = $admin_check->get_result();
+if ($admin_res->num_rows === 0) {
+    $_SESSION['error'] = "Access denied.";
+    header("Location: ../auth/login.php");
+    exit();
+}
 
 // Handle new notice submission
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $title = $conn->real_escape_string($_POST['title'] ?? '');
     $message = $conn->real_escape_string($_POST['message'] ?? '');
-    $audience = $conn->real_escape_string($_POST['audience'] ?? 'all');
+    $audience = $conn->real_escape_string($_POST['audience'] ?? 'everyone'); // ✅ Consistent default
 
     try {
         $stmt = $conn->prepare("INSERT INTO admin_notices (title, message, date, u_id, audience) 
                                 VALUES (?, ?, CURDATE(), ?, ?)");
-        $stmt->bind_param("ssis", $title, $message, $_SESSION['u_id'], $audience);
+        $stmt->bind_param("ssis", $title, $message, $u_id, $audience);
 
         if ($stmt->execute()) {
             $_SESSION['success'] = "Notice posted successfully!";
@@ -41,21 +42,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $_SESSION['error'] = $e->getMessage();
     }
 
-    // Redirect to avoid form re-submission on refresh
     header("Location: post-notices.php");
     exit();
 }
 
-// Optional: Handle delete notice
+// Handle delete notice (restricted to authoring admin)
 if (isset($_GET['delete'])) {
     $id = (int)$_GET['delete'];
     try {
-        $stmt = $conn->prepare("DELETE FROM admin_notices WHERE n_id = ?");
-        $stmt->bind_param("i", $id);
-        if ($stmt->execute()) {
+        $stmt = $conn->prepare("DELETE FROM admin_notices WHERE n_id = ? AND u_id = ?");
+        $stmt->bind_param("ii", $id, $u_id);
+        if ($stmt->execute() && $stmt->affected_rows > 0) {
             $_SESSION['success'] = "Notice deleted successfully!";
         } else {
-            throw new Exception("Failed to delete: " . $stmt->error);
+            $_SESSION['error'] = "Failed to delete: Invalid or unauthorized request.";
         }
     } catch (Exception $e) {
         $_SESSION['error'] = $e->getMessage();
@@ -152,7 +152,7 @@ if ($res) {
                 <div class="mb-3">
                   <label class="form-label">Audience</label>
                   <select class="form-select" name="audience">
-                    <option value="all">Everyone</option>
+                    <option value="everyone">Everyone</option>
                     <option value="student">Students Only</option>
                     <option value="instructor">Instructors Only</option>
                     <option value="admin">Admins Only</option>
@@ -184,13 +184,14 @@ if ($res) {
                   <div class="list-group-item d-flex justify-content-between align-items-center mb-2">
                     <div class="flex-grow-1">
                       <h6 class="mb-1 fw-bold"><?= htmlspecialchars($notice['title']) ?></h6>
-                      <p class="mb-2"><?= htmlspecialchars($notice['message']) ?></p>
+                      <p class="mb-2"><?= nl2br(htmlspecialchars($notice['message'])) ?></p>
                       <small class="text-muted">
                         <i class="bi bi-calendar me-1"></i><?= date('F j, Y', strtotime($notice['date'])) ?>
                         | <i class="bi bi-people me-1"></i><?= ucfirst($notice['audience']) ?>
                         | <i class="bi bi-person me-1"></i>Admin #<?= htmlspecialchars($notice['u_id']) ?>
                       </small>
                     </div>
+                    <?php if ($notice['u_id'] == $u_id): ?>
                     <div class="ms-3">
                       <a href="post-notices.php?delete=<?= $notice['n_id'] ?>" 
                          class="btn btn-outline-danger btn-sm"
@@ -198,6 +199,7 @@ if ($res) {
                          <i class="bi bi-trash"></i>
                       </a>
                     </div>
+                    <?php endif; ?>
                   </div>
                   <?php endforeach; ?>
                 <?php endif; ?>
@@ -206,13 +208,12 @@ if ($res) {
           </div>
         </div>
       </div>
+
     </div>
   </div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
-
-
 
 </body>
 </html>

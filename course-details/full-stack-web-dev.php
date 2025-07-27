@@ -35,32 +35,27 @@ include '../auth/cnct.php';
     <div class="collapse navbar-collapse" id="navbarNav">
       <ul class="navbar-nav ms-auto">
         <li class="nav-item">
-          <a class="nav-link" href="../index.php">Home</a>
+          <a class="nav-link active" href="../index.php">Home</a>
         </li>
-        <li class="nav-item">
-          <a class="nav-link" href="../courses.php">Courses</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="../instructors.php">Instructors</a>
-        </li>
+        
         <?php
           if(isset($_SESSION['role'])){
             echo'<li class="nav-item">';
             if($_SESSION['role']==="Student")
-              echo '<a class="nav-link" href="student/dashboard.php">Dashboard</a> </li>';
+              echo '<a class="nav-link" href="../student/dashboard.php">Dashboard</a> </li>';
             else if($_SESSION['role']==="Instructor")
-              echo '<a class="nav-link" href="instructor/dashboard.php">Dashboard</a> </li>';
+              echo '<a class="nav-link" href="../instructor/dashboard.php">Dashboard</a> </li>';
             else
-              echo '<a class="nav-link" href="admin/dashboard.php">Dashboard</a> </li>';
+              echo '<a class="nav-link" href="../admin/dashboard.php">Dashboard</a> </li>';
 
             echo'<li class="nav-item">
-                  <a class="nav-link" href="auth/logout.php">Logout</a>
+                  <a class="nav-link" href="../auth/logout.php">Logout</a>
                   </li>';
           }
           else{
-            echo '<a class="nav-link" href="auth/login.php">Login</a> </li>
+            echo '<a class="nav-link" href="../auth/login.php">Login</a> </li>
                   <li class="nav-item">
-                  <a class="nav-link" href="auth/signup.php">Signup</a>
+                  <a class="nav-link" href="../auth/signup.php">Signup</a>
                   </li>';
           }
         ?>

@@ -1,13 +1,7 @@
 <?php
-<<<<<<< HEAD
 session_start(); 
 include 'cnct.php';  
  
-=======
-session_start();  
-include 'cnct.php';  
-
->>>>>>> 7b269fa1fee26125be4cf8acd6f791eb79cb7b9a
 // Handle the login form submission
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     // Collect form data

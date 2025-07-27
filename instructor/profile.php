@@ -309,34 +309,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['change_password'])) {
   </div>
 </div>
 
-<footer class="bg-dark text-white pt-5 pb-4">
-  <div class="container text-md-left">
-    <div class="row text-center text-md-left">
-      <div class="col-md-6 col-lg-6 col-xl-6 mx-auto mt-3">
-        <h5 class="mb-4 fw-bold">SkillUp Academy</h5>
-        <p>Empowering learners with the skills they need to succeed in the digital world.</p>
-        <a href="../policies.php" class="text-white text-decoration-none">Academy policies &rarr;</a>
-      </div>
-      <div class="col-md-3 col-lg-3 col-xl-3 mx-auto mt-3">
-        <h5 class="mb-4 fw-bold">Contact</h5>
-        <p><i class="bi bi-envelope me-2"></i> support@skillup.mynsu.xyz</p>
-        <p><i class="bi bi-phone me-2"></i> 01745630304</p>
-        <a href="../locate.php" class="text-white text-decoration-none"><i class="bi bi-geo-alt me-2"></i>Dhaka, Bangladesh &rarr;</a>
-      </div>
-      <div class="col-md-3 col-lg-3 col-xl-3 mx-auto mt-3">
-        <h5 class="mb-4 fw-bold">Follow Us</h5>
-        <a href="#" class="text-white me-3"><i class="bi bi-facebook"></i></a>
-        <a href="#" class="text-white me-3"><i class="bi bi-twitter"></i></a>
-        <a href="#" class="text-white me-3"><i class="bi bi-linkedin"></i></a>
-        <a href="#" class="text-white"><i class="bi bi-youtube"></i></a>
-      </div>
-    </div>
-    <hr class="my-3">
-    <div class="text-center">
-      <p class="mb-0">&copy; 2025 SkillUp Academy. All rights reserved.</p>
-    </div>
-  </div>
-</footer>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js" integrity="sha384-ndDqU0Gzau9qJ1lfW4pNLlhNTkCfHzAVBReH9diLvGRem5+R9g2FzA8ZGN954O5Q" crossorigin="anonymous"></script>
 </body>

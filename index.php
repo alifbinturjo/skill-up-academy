@@ -71,7 +71,7 @@ session_start();
     <div class="hero-text">
       <h1 class="fw-bold" id="hero-text"></h1>
       <p class="lead">Learn new skills and boost your career with us...</p>
-      <a href="auth/signup.html" class="btn btn-outline-dark">Get Started</a>
+      <a href="auth/signup.php" class="btn btn-outline-dark">Get Started</a>
       <span>Or</span>
       <a href="#explore" class="btn btn-outline-dark">Explore</a>
     </div>

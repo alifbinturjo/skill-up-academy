@@ -78,7 +78,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     }
 
     // Redirect to login page after processing
-    header('Location: auth/login.php'); 
+    header('Location: ../auth/login.php'); 
     exit();
 }
 ?>

@@ -339,13 +339,13 @@ try {
       <div class="col-md-6 col-lg-6 col-xl-6 mx-auto mt-3">
         <h5 class="mb-4 fw-bold">SkillUp Academy</h5>
         <p>Empowering learners with the skills they need to succeed in the digital world.</p>
-        <a href="policies.html" class="text-white text-decoration-none">Academy policies &rarr;</a>
+        <a href="policies.php" class="text-white text-decoration-none">Academy policies &rarr;</a>
       </div>
 
       <div class="col-md-3 col-lg-3 col-xl-3 mx-auto mt-3">
         <h5 class="mb-4 fw-bold">Contact</h5>
-        <p><i class="bi bi-envelope me-2"></i> support@skillup.com</p>
-        <p><i class="bi bi-phone me-2"></i> +880 1234-567890</p>
+        <p><i class="bi bi-envelope me-2"></i> support@skillup.mynsu.xyz</p>
+        <p><i class="bi bi-phone me-2"></i> 01745630304</p>
         <a href="locate.php" class="text-white text-decoration-none"><i class="bi bi-geo-alt me-2"></i>Dhaka, Bangladesh &rarr;</a>
       </div>
 

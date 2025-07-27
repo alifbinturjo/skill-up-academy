@@ -15,32 +15,29 @@ if (isset($_POST['check_email'])) {
     $email = $_POST['check_email'];
 
     // Check if email exists in users table
-    $stmt = $conn->prepare("SELECT u_id FROM users WHERE email = ?");
-    $stmt->bind_param("s", $email);
-    $stmt->execute();
-    $res = $stmt->get_result();
+  $stmt = $conn->prepare("
+    SELECT u.u_id, a.u_id AS is_admin
+    FROM users u
+    LEFT JOIN admins a ON u.u_id = a.u_id
+    WHERE u.email = ?
+");
+$stmt->bind_param("s", $email);
+$stmt->execute();
+$res = $stmt->get_result();
 
-    if ($res && $res->num_rows > 0) {
-        $user = $res->fetch_assoc();
-        $u_id = $user['u_id'];
-        $stmt->close();
-
-        // Check if already an admin
-        $stmt = $conn->prepare("SELECT * FROM admins WHERE u_id = ?");
-        $stmt->bind_param("i", $u_id);
-        $stmt->execute();
-        $admin_res = $stmt->get_result();
-
-        if ($admin_res && $admin_res->num_rows > 0) {
-            echo json_encode(["status" => "exists", "message" => "This user is already an admin."]);
-        } else {
-            echo json_encode(["status" => "valid", "message" => "User exists and can be added."]);
-        }
-        exit;
+if ($res && $res->num_rows > 0) {
+    $user = $res->fetch_assoc();
+    if ($user['is_admin']) {
+        echo json_encode(["status" => "exists", "message" => "This user is already an admin."]);
     } else {
-        echo json_encode(["status" => "not_found", "message" => "User email is not registered."]);
-        exit;
+        echo json_encode(["status" => "valid", "message" => "User exists and can be added."]);
     }
+    exit;
+} else {
+    echo json_encode(["status" => "not_found", "message" => "User email is not registered."]);
+    exit;
+}
+
 }
 
 // Initialize filter and sort variables for the listing

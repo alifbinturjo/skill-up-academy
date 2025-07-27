@@ -51,8 +51,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
         // Now send the temporary password to the user's email using PHPMailer
         $mail = new PHPMailer(true);  // Create PHPMailer instance
-        $mail->SMTPDebug = 2;  // Enable verbose debug output
-        $mail->Debugoutput = 'html';  // Output in HTML format (or 'text' for plain text)
+        $mail->SMTPDebug = 0;  // Enable verbose debug output
+        
 
         try {
     // Server settings

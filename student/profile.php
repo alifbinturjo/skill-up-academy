@@ -33,9 +33,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !isset($_POST['change_password'])) 
     }
 
     
-
-
-
     // If no errors, proceed to update the profile
     if (empty($errors)) {
         // Update user data in the `users` table

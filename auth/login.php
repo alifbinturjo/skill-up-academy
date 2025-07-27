@@ -1,7 +1,8 @@
 
 <?php
-include 'cnct.php';  
+
 session_start();  
+include 'cnct.php';  
 
 // Handle the login form submission
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {

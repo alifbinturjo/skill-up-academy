@@ -6,6 +6,11 @@ require 'vendor/autoload.php';  // Ensure PHPMailer is installed via Composer
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
+require 'path/to/PHPMailer/src/Exception.php';
+require 'path/to/PHPMailer/src/PHPMailer.php';
+require 'path/to/PHPMailer/src/SMTP.php';
+
+
 // Start session and handle POST request
 session_start();
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
@@ -50,29 +55,31 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $mail->Debugoutput = 'html';  // Output in HTML format (or 'text' for plain text)
 
         try {
-            // Set up PHPMailer to use SMTP
-            $mail->isSMTP();
-            $mail->Host = 'mail.skillup.mynsu.xyz';  // Gmail SMTP server
-            $mail->SMTPAuth = true;
-            $mail->Username = 'auth@skillup.mynsu.xyz';  // Replace with your Gmail email address
-            $mail->Password = ';*MZB-k]6D@z';     // Use the generated app password (if using 2FA)
-            $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;  // TLS encryption
-            $mail->Port = 587;  // SMTP port for TLS
+    // Server settings
+    $mail->isSMTP();
+    $mail->Host = 'mail.skillup.mynsu.xyz'; // Your mail server
+    $mail->SMTPAuth = true;
+    $mail->Username = 'auth@skillup.mynsu.xyz'; // Your email
+    $mail->Password = ';*MZB-k]6D@z';     // Use the real password
+    $mail->Port = 587; // From cPanel (SMTP Port)
 
-            // Set email sender and recipient
-            $mail->setFrom('auth@skillup.mynsu.xyz', 'SkillUp Academy');
-            $mail->addAddress($email);  // User's email
+    // Use TLS, since SSL is not required, but encryption is
+    $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
 
-            // Set email subject and body
-            $mail->Subject = 'Your Temporary Password';
-            $mail->Body = 'Your temporary password is: ' . $randomPassword;  // The temporary password generated
+    // Sender and recipient
+    $mail->setFrom('auth@skillup.mynsu.xyz', 'SkillUp Academy');
+    $mail->addAddress($email); // Recipient email
 
-            // Send the email
-            $mail->send();
-            $_SESSION['success'] = 'A temporary password has been sent to your email.';
-        } catch (Exception $e) {
-            $_SESSION['error'] = 'Failed to send reset email: ' . $mail->ErrorInfo;
-        }
+    // Content
+    $mail->isHTML(false); // Use true if you're sending HTML emails
+    $mail->Subject = 'Your Temporary Password';
+    $mail->Body = 'Your temporary password is: ' . $randomPassword;
+
+    $mail->send();
+    $_SESSION['success'] = 'A temporary password has been sent to your email.';
+} catch (Exception $e) {
+    $_SESSION['error'] = 'Mailer Error: ' . $mail->ErrorInfo;
+}
     } else {
         $_SESSION['error'] = 'Email not found in our system.';
     }

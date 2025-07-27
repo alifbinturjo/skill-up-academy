@@ -154,7 +154,7 @@ $result = $stmt->get_result();
             <?php endwhile; ?>
         </div>
 
-        <div class="row text-center mt-4">
+        <div class="row text-center mt-1 mb-4">
             <div class="col-md-12">
                 <a href="../courses.php" class="btn btn-success w-25">Buy Courses</a>
             </div>

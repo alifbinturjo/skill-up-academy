@@ -1,87 +1,109 @@
 <?php
-session_start();
+session_start(); // Start the session to store user data
 include '../auth/cnct.php';
 
-if (!isset($_SESSION['role']) || $_SESSION['role'] !== "Student") {
-    session_unset();
-    session_destroy();
-    $conn->close();
-    header("Location: ../index.php");
-    exit();
-}
+// Function to handle form submission
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    // Collect data from the form
+    $name = $_POST['name'];
+    $email = $_POST['email'];
+    $contact = $_POST['contact'];
+    $password = $_POST['password'];
+    $confirmPassword = $_POST['confirmPassword'];
+    $dob = $_POST['dob'];
+    $gender = $_POST['gender'];
 
-$u_id = $_SESSION['u_id'];
-$errors = [];
-$success = false;
-
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && !isset($_POST['change_password'])) {
-    $name = trim($_POST['name'] ?? '');
-    $email = trim($_POST['email'] ?? '');
-    $bio = trim($_POST['bio'] ?? '');
-    $contact = trim($_POST['contact'] ?? '');
-
-    $skills = implode(', ', array_filter([
-        $_POST['skill1'] ?? '',
-        $_POST['skill2'] ?? '',
-        $_POST['skill3'] ?? ''
-    ]));
-
-    if (empty($name)) $errors[] = "Name is required";
-    if (!filter_var($email, FILTER_VALIDATE_EMAIL)) $errors[] = "Invalid email format.";
-
-    if (empty($errors)) {
-        $stmt = $conn->prepare("UPDATE users SET name=?, email=?, contact=? WHERE u_id=?");
-        $stmt->bind_param("sssi", $name, $email, $contact, $u_id);
-        $stmt->execute();
-        $stmt->close();
-
-        $stmt = $conn->prepare("UPDATE students SET bio=?, skills=? WHERE u_id=?");
-        $stmt->bind_param("ssi", $bio, $skills, $u_id);
-        $stmt->execute();
-        $stmt->close();
-
-        $success = true;
+    // Validate the form data
+    if (empty($name) || empty($email) || empty($contact) || empty($password) || empty($confirmPassword) || empty($dob) || empty($gender)) {
+        $_SESSION['error'] = 'Please fill in all the fields.';
+        header('Location: signup.php');
+        exit();
     }
-}
 
-$sql = "SELECT u.name, u.email, u.contact, s.bio, s.skills FROM users u JOIN students s ON u.u_id = s.u_id WHERE u.u_id = ?";
-$stmt = $conn->prepare($sql);
-$stmt->bind_param("i", $u_id);
-$stmt->execute();
-$stmt->bind_result($name, $email, $contact, $bio, $skills);
-$stmt->fetch();
-$stmt->close();
+    if ($password !== $confirmPassword) {
+        $_SESSION['error'] = 'Passwords do not match.';
+        header('Location: signup.php');
+        exit();
+    }
 
-$image = '../image-assets/common/Profile.webp';
-$skillsArray = explode(',', $skills ?? '');
+    // Validate password strength (at least 8 characters, includes uppercase, lowercase, number, and special character)
+    if (!preg_match('/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/', $password)) {
+        $_SESSION['error'] = 'Password must be at least 8 characters long and include uppercase, lowercase, number, and special character.';
+        header('Location: signup.php');
+        exit();
+    }
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['change_password'])) {
-    $current = $_POST['current_password'] ?? '';
-    $new = $_POST['new_password'] ?? '';
-    $confirm = $_POST['confirm_password'] ?? '';
+    // Hash the password
+    $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
 
-    if (empty($current) || empty($new) || empty($confirm)) {
-        $errors[] = "All password fields are required.";
-    } elseif ($new !== $confirm) {
-        $errors[] = "New passwords do not match.";
-    } else {
-        $stmt = $conn->prepare("SELECT pass FROM credentials WHERE u_id = ?");
-        $stmt->bind_param("i", $u_id);
+    // Check if the email or contact number already exists
+    $emailCheckQuery = "SELECT * FROM users WHERE email = ?";
+
+    if ($stmt = $conn->prepare($emailCheckQuery)) {
+        $stmt->bind_param("s", $email);
         $stmt->execute();
-        $stmt->bind_result($hashed_password);
-        $stmt->fetch();
+        $emailResult = $stmt->get_result();
         $stmt->close();
 
-        if (!password_verify($current, $hashed_password)) {
-            $errors[] = "Current password is incorrect.";
-        } else {
-            $new_hashed = password_hash($new, PASSWORD_DEFAULT);
-            $stmt = $conn->prepare("UPDATE credentials SET pass = ? WHERE u_id = ?");
-            $stmt->bind_param("si", $new_hashed, $u_id);
-            $stmt->execute();
-            $stmt->close();
-            $success = true;
+        if ($emailResult->num_rows > 0) {
+            $_SESSION['error'] = 'This email is already registered.';
+            header('Location: signup.php');
+            exit();
         }
+    } else {
+        die("Error preparing email check query: " . $conn->error);
+    }
+
+    // Insert user data into the `users` table
+    $insertUserQuery = "INSERT INTO users (name, email, contact, dob, gender) VALUES (?, ?, ?, ?, ?)";
+
+    if ($stmt = $conn->prepare($insertUserQuery)) {
+        $stmt->bind_param("sssss", $name, $email, $contact, $dob, $gender);
+
+        if ($stmt->execute()) {
+            // Get the inserted user's ID
+            $userId = $stmt->insert_id;
+
+            // Insert credentials data into the `credentials` table
+            $insertCredentialsQuery = "INSERT INTO credentials (u_id, pass) VALUES (?, ?)";
+
+            if ($stmt = $conn->prepare($insertCredentialsQuery)) {
+                $stmt->bind_param("is", $userId, $hashedPassword);
+
+                if ($stmt->execute()) {
+                    // Insert student record into the `students` table
+                    $insertStudentQuery = "INSERT INTO students (u_id, bio) VALUES (?, '')"; // Set bio as empty for now
+
+                    if ($stmt = $conn->prepare($insertStudentQuery)) {
+                        $stmt->bind_param("i", $userId);
+
+                        if ($stmt->execute()) {
+                            $_SESSION['success'] = 'Registration successful!';
+                            header('Location: login.php'); // Redirect to login page after successful registration
+                            exit();
+                        } else {
+                            $_SESSION['error'] = 'Failed to insert student data.';
+                            header('Location: signup.php');
+                            exit();
+                        }
+                    } else {
+                        die("Error preparing student insertion query: " . $conn->error);
+                    }
+                } else {
+                    $_SESSION['error'] = 'Failed to insert credentials.';
+                    header('Location: signup.php');
+                    exit();
+                }
+            } else {
+                die("Error preparing credentials insertion query: " . $conn->error);
+            }
+        } else {
+            $_SESSION['error'] = 'Failed to register user.';
+            header('Location: signup.php');
+            exit();
+        }
+    } else {
+        die("Error preparing user insertion query: " . $conn->error);
     }
 }
 ?>
@@ -91,7 +113,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['change_password'])) {
 
 <head>
     <meta charset="UTF-8" />
-    <title>Student Profile</title>
+    <title>Signup - SkillUp Academy</title>
+    <!-- Preload Critical Resources -->
+    <link rel="preload" href="../style.css" as="style">
+
+    <!-- Minified Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet" />
     <link rel="stylesheet" href="../style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -110,143 +136,97 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['change_password'])) {
 
     <nav class="navbar navbar-expand-lg navbar-blur sticky-top shadow-sm">
         <div class="container-fluid">
-            <a class="navbar-brand fw-bold" href="">SkillUp Academy</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <a class="navbar-brand fw-bold" href="../index.php">SkillUp Academy</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
+
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
-                    <li class="nav-item"><a class="nav-link" href="../index.php">Home</a></li>
-                    <li class="nav-item"><a class="nav-link" href="dashboard.php">Dashboard</a></li>
-                    <li class="nav-item"><a class="nav-link" href="../auth/logout.php">Logout</a></li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="../index.php">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="signup.php">Signup</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="login.php">Login</a>
+                    </li>
                 </ul>
             </div>
         </div>
     </nav>
 
-    <div class="container mt-5">
-        <p class="text-center mb-4 fs-1">Student Profile</p>
+    <div class="container mt-4">
+        <p class="text-center mb-4 fs-1">Sign Up</p>
 
-        <?php if (!empty($errors)): ?>
-            <div class="alert alert-danger">
-                <?php foreach ($errors as $e): ?>
-                    <p class="mb-0"><?= htmlspecialchars($e) ?></p>
-                <?php endforeach; ?>
-            </div>
-        <?php elseif ($success): ?>
-            <div class="alert alert-success">Profile updated successfully.</div>
-        <?php endif; ?>
+        <?php
+        if (isset($_SESSION['error'])) {
+            echo '<div class="alert alert-danger">' . $_SESSION['error'] . '</div>';
+            unset($_SESSION['error']);
+        }
+        if (isset($_SESSION['success'])) {
+            echo '<div class="alert alert-success">' . $_SESSION['success'] . '</div>';
+            unset($_SESSION['success']);
+        }
+        ?>
 
-        <div class="row">
-            <div class="col-md-4 text-center mb-4">
-                <img src="<?= htmlspecialchars($image) ?>" class="rounded-circle shadow-sm" alt="Student Photo" style="width: 170px; height: 170px;">
-                <h4 class="mt-3"><?= htmlspecialchars($name) ?></h4>
-                <p class="text-muted">Student</p>
-            </div>
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <form action="signup.php" method="POST">
+                    <div class="mb-3">
+                        <label for="name" class="form-label fw-semibold">Full Name</label>
+                        <input type="text" class="form-control" id="name" name="name" placeholder="John Doe" required>
+                    </div>
 
-            <div class="col-md-8 mt-4">
-                <h5>Bio</h5>
-                <p><?= nl2br(htmlspecialchars($bio)) ?></p>
-                <hr class="divider my-2">
-                <h5>Skills</h5>
-                <ul class="list-inline">
-                    <?php foreach ($skillsArray as $skill): ?>
-                        <li class="list-inline-item badge bg-dark text-light p-2 m-1"><?= htmlspecialchars(trim($skill)) ?></li>
-                    <?php endforeach; ?>
-                </ul>
-                <hr class="divider my-2">
-                <div class="row">
-                    <div class="col-md-6">
-                        <h5>Contacts</h5>
-                        <div class="d-flex flex-column gap-3 mt-3">
-                            <div>
-                                <i class="fas fa-envelope me-2 text-muted"></i>
-                                <a href="mailto:<?= htmlspecialchars($email) ?>" class="text-decoration-none"><?= htmlspecialchars($email) ?></a>
-                            </div>
-                            <div>
-                                <i class="fas fa-phone me-2 text-muted"></i>
-                                <span>+880<?= htmlspecialchars($contact) ?></span>
-                            </div>
+                    <div class="mb-3">
+                        <label for="email" class="form-label fw-semibold">Email</label>
+                        <input type="email" class="form-control" id="email" name="email" placeholder="example@email.com" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="contact" class="form-label fw-semibold">Contact Number</label>
+                        <input type="text" class="form-control" id="contact" name="contact" placeholder="e.g., 01xxxxxxxxx" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="dob" class="form-label fw-semibold">Date of Birth</label>
+                        <input type="date" class="form-control" id="dob" name="dob" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Gender</label><br>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="gender" id="genderMale" value="Male" required>
+                            <label class="form-check-label" for="genderMale">Male</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="gender" id="genderFemale" value="Female" required>
+                            <label class="form-check-label" for="genderFemale">Female</label>
                         </div>
                     </div>
+
+                    <div class="mb-3">
+                        <label for="password" class="form-label fw-semibold">Password</label>
+                        <input type="password" class="form-control" id="password" name="password" placeholder="Create a password" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="confirmPassword" class="form-label fw-semibold">Confirm Password</label>
+                        <input type="password" class="form-control" id="confirmPassword" name="confirmPassword" placeholder="Re-enter password" required>
+                    </div>
+
+                    <button type="submit" class="btn btn-dark w-100">Register</button>
+                </form>
+
+                <div class="text-center mt-3 mb-5">
+                    <small>Already have an account? <a href="login.php">Login</a></small> <!-- Login link -->
                 </div>
             </div>
-
-            <div class="row text-center">
-                <div class="col-md-12 mt-3 mb-4">
-                    <button type="button" class="btn w-50 btn-outline-dark" data-bs-toggle="modal" data-bs-target="#editProfileModal">Edit Profile</button>
-                    <button type="button" class="btn w-50 btn-outline-danger mt-2" data-bs-toggle="modal" data-bs-target="#changePasswordModal">Change Password</button>
-                </div>
-            </div>
-
-            <!-- Edit Profile Modal -->
-            <div class="modal fade" id="editProfileModal" tabindex="-1">
-                <div class="modal-dialog modal-lg">
-                    <form class="modal-content" method="POST">
-                        <div class="modal-header">
-                            <h5 class="modal-title">Edit Profile</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                        </div>
-                        <div class="modal-body">
-                            <div class="mb-3"><label class="form-label">Name</label><input type="text" name="name" class="form-control" value="<?= htmlspecialchars($name) ?>"></div>
-                            <div class="mb-3"><label class="form-label">Email</label><input type="email" name="email" class="form-control" value="<?= htmlspecialchars($email) ?>"></div>
-                            <div class="mb-3">
-                                <label class="form-label">Phone Number (Starts with 1)</label>
-                                <input type="text" name="contact" class="form-control" value="<?= htmlspecialchars($contact) ?>" placeholder="e.g., 01xxxxxxxxx">
-                            </div>
-                            <div class="mb-3"><label class="form-label">Bio</label><textarea name="bio" class="form-control" rows="5"><?= htmlspecialchars($bio) ?></textarea></div>
-                            <div class="mb-3">
-                                <label class="form-label">Skills</label>
-                                <div class="row">
-                                    <?php for ($i = 0; $i < 3; $i++): ?>
-                                        <div class="col-md-4 mb-2">
-                                            <input type="text" class="form-control" name="skill<?= $i + 1 ?>" value="<?= htmlspecialchars($skillsArray[$i] ?? '') ?>">
-                                        </div>
-                                    <?php endfor; ?>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                            <button type="submit" class="btn btn-primary">Save Changes</button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-
-            <!-- Change Password Modal -->
-            <div class="modal fade" id="changePasswordModal" tabindex="-1">
-                <div class="modal-dialog">
-                    <form class="modal-content" method="POST">
-                        <div class="modal-header">
-                            <h5 class="modal-title">Change Password</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                        </div>
-                        <div class="modal-body">
-                            <div class="mb-3">
-                                <label class="form-label">Current Password</label>
-                                <input type="password" name="current_password" class="form-control" required>
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label">New Password</label>
-                                <input type="password" name="new_password" class="form-control" required>
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label">Confirm New Password</label>
-                                <input type="password" name="confirm_password" class="form-control" required>
-                            </div>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                            <button type="submit" name="change_password" class="btn btn-danger">Change Password</button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-
         </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
 </body>
+
 </html>

@@ -2,49 +2,51 @@
 session_start();
 require_once '../auth/cnct.php';
 
-
-// Restrict access to students only
 if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'Student') {
   $_SESSION['error'] = "Unauthorized access. Please log in as a student.";
   header("Location: ../auth/login.php");
   exit();
 }
 
-// For testing without login (remove in production)
-if (!isset($_SESSION['user_type'])) {
-  $_SESSION['user_type'] = 'student';
+$student_id = $_SESSION['u_id'];
+$notices = [];
+$courses = [];
+
+// 1. Get student's enrolled course IDs from student_courses table
+$course_query = $conn->prepare("SELECT c_id FROM student_courses WHERE u_id = ?");
+$course_query->bind_param("i", $student_id);
+$course_query->execute();
+$course_result = $course_query->get_result();
+
+while ($row = $course_result->fetch_assoc()) {
+  $courses[] = (int)$row['c_id'];
 }
 
-$course_id = isset($_GET['c_id']) ? (int)$_GET['c_id'] : 0;
-
-$notices = [];
-
-if (!isset($_GET['c_id'])) {
-
-
-  // 1. Admin notices visible to students
-  $admin_query = "SELECT title, message, date, 'Admin' AS source FROM admin_notices 
+// 2. Get admin notices for students
+$admin_query = "SELECT title, message, date, 'Admin' AS source FROM admin_notices 
                 WHERE audience IN ('student', 'everyone')";
-  $admin_result = $conn->query($admin_query);
-  if ($admin_result && $admin_result->num_rows > 0) {
-    while ($row = $admin_result->fetch_assoc()) {
-      $row['course_name'] = '';  // Admin notices not linked to any course
-      $notices[] = $row;
-    }
+$admin_result = $conn->query($admin_query);
+if ($admin_result && $admin_result->num_rows > 0) {
+  while ($row = $admin_result->fetch_assoc()) {
+    $row['course_name'] = ''; // Admin notices aren't tied to a course
+    $notices[] = $row;
   }
 }
 
-// 2. Instructor notices for student's course with course name join
-$instructor_query = "
-    SELECT instructors_notices.*, 'Instructor' AS source, courses.title AS course_name 
-    FROM instructors_notices 
-    JOIN courses ON instructors_notices.c_id = courses.c_id
-    WHERE instructors_notices.c_id = $course_id
-";
-$instructor_result = $conn->query($instructor_query);
-if ($instructor_result && $instructor_result->num_rows > 0) {
-  while ($row = $instructor_result->fetch_assoc()) {
-    $notices[] = $row;
+// 3. Get instructor notices for student's courses (if any)
+if (!empty($courses)) {
+  $in_clause = implode(",", array_map('intval', $courses)); // safe list of ids
+  $instructor_query = "
+      SELECT instructors_notices.*, 'Instructor' AS source, courses.title AS course_name 
+      FROM instructors_notices 
+      JOIN courses ON instructors_notices.c_id = courses.c_id
+      WHERE instructors_notices.c_id IN ($in_clause)";
+  $instructor_result = $conn->query($instructor_query);
+
+  if ($instructor_result && $instructor_result->num_rows > 0) {
+    while ($row = $instructor_result->fetch_assoc()) {
+      $notices[] = $row;
+    }
   }
 }
 
@@ -53,10 +55,11 @@ usort($notices, function ($a, $b) {
   return strtotime($b['date']) <=> strtotime($a['date']);
 });
 
-// Check for red dot notification
+// Red dot notification
 $hasNewNotice = isset($_SESSION['new_notice']);
-unset($_SESSION['new_notice']); // Reset after viewing
+unset($_SESSION['new_notice']);
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -79,20 +82,6 @@ unset($_SESSION['new_notice']); // Reset after viewing
         <span class="navbar-toggler-icon"></span>
       </button>
 
-<<<<<<< HEAD
-    <div class="collapse navbar-collapse" id="navbarNav">
-     <ul class="navbar-nav ms-auto">
-          <li class="nav-item">
-            <a class="nav-link" href="../index.php">Home</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link active" href="">Dashboard</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="../auth/logout.php">Logout</a>
-          </li>
-        </ul>
-=======
       <div class="collapse navbar-collapse" id="navbarNav">
         <ul class="navbar-nav ms-auto">
           <li class="nav-item"><a class="nav-link" href="dashboard.php">Dashboard</a></li>
@@ -111,7 +100,6 @@ unset($_SESSION['new_notice']); // Reset after viewing
           <li class="nav-item"><a class="nav-link" href="../auth/logout.php">Logout</a></li>
         </ul>
       </div>
->>>>>>> fa605e02d6adde23530be8ca38e3745691c2c5de
     </div>
   </nav>
 
@@ -130,7 +118,7 @@ unset($_SESSION['new_notice']); // Reset after viewing
             <p class="card-text"><?= nl2br(htmlspecialchars($notice['message'])) ?></p>
             <div class="d-flex justify-content-between align-items-center">
               <small class="text-muted">
-                <?= date('F j, Y \a\t g:i A', strtotime($notice['date'])) ?>
+                <?= date('F j, Y', strtotime($notice['date'])) ?>
               </small>
               <?php if ($notice['source'] === 'Instructor'): ?>
                 <span class="badge bg-info text-dark"><?= htmlspecialchars($notice['course_name']) ?></span>

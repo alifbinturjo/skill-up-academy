@@ -79,27 +79,28 @@ $image = $image ? ('../' . $image) : '../image-assets/Instructors/default.webp';
     <meta charset="UTF-8" />
     <title>Profile</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet" />
-    <link rel="stylesheet" href="../style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <link rel="preload" href="../style.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript>
+        <link rel="stylesheet" href="../style.css">
+    </noscript>
+
+    <link rel="prefetch" href="../image-assets/common/fav.webp" as="image">
+    <link rel="icon" href="../image-assets/common/fav.webp" type="image/webp">
 </head>
 
 <body>
+    <script>
+        window.addEventListener('pageshow', function(event) {
+            if (event.persisted) {
+                window.location.reload();
+            }
+        });
+    </script>
 
     <?php
-    $stmt_n = $conn->prepare("SELECT n_status FROM instructors WHERE u_id = ?");
-    $stmt_n->bind_param("i", $u_id);
-    try {
-        $stmt_n->execute();
-        $stmt_n->bind_result($n_status);
-        $stmt_n->fetch();
-        $stmt_n->close();
-    } catch (Exception $e) {
-        $stmt_n->close();
-        $conn->close();
-        header("Location: ../auth/logout.php");
-        exit();
-    }
-
+ 
     if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['change_password'])) {
         $current = $_POST['current_password'] ?? '';
         $new = $_POST['new_password'] ?? '';
@@ -146,7 +147,7 @@ $image = $image ? ('../' . $image) : '../image-assets/Instructors/default.webp';
                         <a class="nav-link" href="../index.php">Home</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link active" href="">Dashboard</a>
+                        <a class="nav-link" href="dashboard.php">Dashboard</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="../auth/logout.php">Logout</a>
@@ -172,16 +173,16 @@ $image = $image ? ('../' . $image) : '../image-assets/Instructors/default.webp';
         <div class="row">
             <div class="col-md-4 text-center mb-4">
                 <img src="<?= htmlspecialchars($image) ?>" loading="lazy" class="rounded-circle shadow-sm" alt="Instructor Photo" style="width: 170px; height: 170px;">
-                <h4 class="mt-3"><?= htmlspecialchars($name) ?></h4>
-                <p class="text-muted"><?= htmlspecialchars($title) ?></p>
+                <h2 class="mt-3"><?= htmlspecialchars($name) ?></h2>
+                <h5 class="text-muted"><?= htmlspecialchars($title) ?></h5>
                 <span class="badge bg-primary"><?= htmlspecialchars($domain) ?></span>
             </div>
 
             <div class="col-md-8 mt-4">
-                <h5>Bio</h5>
+                <h3>Bio</h3>
                 <p><?= nl2br(htmlspecialchars($bio)) ?></p>
                 <hr class="divider my-2">
-                <h5>Skills</h5>
+                <h3>Skills</h3>
                 <ul class="list-inline">
                     <?php foreach ($skillsArray as $skill): ?>
                         <li class="list-inline-item badge bg-dark text-light p-2 m-1"><?= htmlspecialchars($skill) ?></li>
@@ -190,7 +191,7 @@ $image = $image ? ('../' . $image) : '../image-assets/Instructors/default.webp';
                 <hr class="divider my-2">
                 <div class="row">
                     <div class="col-md-6">
-                        <h5>Contacts</h5>
+                        <h3>Contacts</h3>
                         <div class="d-flex flex-column gap-3 mt-3">
                             <div>
                                 <i class="fas fa-envelope me-2 text-muted"></i>
@@ -207,7 +208,7 @@ $image = $image ? ('../' . $image) : '../image-assets/Instructors/default.webp';
 
             <div class="row text-center">
                 <div class="col-md-12 mt-3 mb-4">
-                    <button type="button" class="btn w-50 btn-outline-dark" data-bs-toggle="modal" data-bs-target="#editProfileModal">
+                    <button type="button" class="btn w-50 btn-outline-primary mt-2" data-bs-toggle="modal" data-bs-target="#editProfileModal">
                         Edit Profile
                     </button>
                     <button type="button" class="btn w-50 btn-outline-danger mt-2" data-bs-toggle="modal" data-bs-target="#changePasswordModal">

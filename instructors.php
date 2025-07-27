@@ -80,10 +80,25 @@ $conn->close();
     <title>Instructors</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
-    <link rel="stylesheet" href="style.css" />
+    <link rel="preload" href="../style.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript>
+        <link rel="stylesheet" href="../style.css">
+    </noscript>
+    
+    <link rel="prefetch" href="../image-assets/common/fav.webp" as="image">
+    <link rel="icon" href="../image-assets/common/fav.webp" type="image/webp">
+
 </head>
 
 <body>
+    <script>
+        window.addEventListener('pageshow', function(event) {
+            if (event.persisted) {
+                window.location.reload();
+            }
+        });
+    </script>
+
     <nav class="navbar navbar-expand-lg navbar-blur sticky-top shadow-sm">
         <div class="container-fluid">
             <a class="navbar-brand fw-bold" href="index.php">SkillUp Academy</a>
@@ -123,7 +138,7 @@ $conn->close();
 
     <div class="container mt-5 mb-5 min-vh-100">
         <h1 class="text-center mb-4">Instructors</h1>
-        
+
         <!-- Filter -->
         <form method="get" class="mb-4">
             <div class="row justify-content-center">

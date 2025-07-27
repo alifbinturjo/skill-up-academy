@@ -2,13 +2,10 @@
 include '../auth/cnct.php';
 session_start();
 
-<<<<<<< HEAD
 /* For Checking
 $_SESSION['role'] = "Instructor";
 $_SESSION['u_id'] = 2; */
 
-=======
->>>>>>> af47096ca39b8220ea2132b48f35e5d33a836325
 if (!isset($_SESSION['role']) && $_SESSION['role'] !== "Instructor") {
     session_unset();
     session_destroy();
@@ -41,26 +38,26 @@ $stmt->close();
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Courses For Instructor</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="../style.css">
+
+    <link rel="preload" href="../style.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript>
+        <link rel="stylesheet" href="../style.css">
+    </noscript>
+    
+    <link rel="prefetch" href="../image-assets/common/fav.webp" as="image">
+    <link rel="icon" href="../image-assets/common/fav.webp" type="image/webp">
+
 </head>
 
 <body>
-    <?php
-    $stmt_n = $conn->prepare("SELECT n_status FROM instructors WHERE u_id = ?");
-    $stmt_n->bind_param("i", $u_id);
-
-    try {
-        $stmt_n->execute();
-        $stmt_n->bind_result($n_status);
-        $stmt_n->fetch();
-        $stmt_n->close();
-    } catch (Exception $e) {
-        $stmt_n->close();
-        $conn->close();
-        header("Location: ../auth/logout.php");
-        exit();
-    }
-    ?>
+    <script>
+        window.addEventListener('pageshow', function(event) {
+            if (event.persisted) {
+                window.location.reload();
+            }
+        });
+    </script>
+    
     <nav class="navbar navbar-expand-lg navbar-blur sticky-top shadow-sm">
         <div class="container-fluid">
             <a class="navbar-brand fw-bold" href="">SkillUp Academy</a>

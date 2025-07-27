@@ -8,9 +8,15 @@ session_start();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SkillUp Academy</title>
+    <link rel="prefetch" href="image-assets/common/fav.webp" as="image">
+    <link rel="icon" href="image-assets/common/fav.webp" type="image/webp">
+
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
-    <link rel="stylesheet" href="style.css">
+    
+<link rel="preload" href="style.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+<noscript><link rel="stylesheet" href="style.css"></noscript>
+
 </head>
 <body>
 <script>
@@ -267,7 +273,7 @@ try {
       <div class="col-md-4 mb-4">
         <div class="card card-h h-100 shadow-sm border-1 p-4" style="background-color: rgba(169, 169, 169, 0.356);">
           <div class="card-body text-center">
-            <img src="<?= htmlspecialchars($inst['image'] ?: 'default-teacher.png') ?>" class="rounded-circle mb-3" width="100" height="100" alt="<?= htmlspecialchars($inst['name']) ?>">
+            <img src="<?= htmlspecialchars($inst['image'] ?: 'default-teacher.png') ?>" class="rounded-circle mb-3" width="100" height="100" alt="<?= htmlspecialchars($inst['name']) ?> " loading="lazy">
             <h5 class="card-title"><?= htmlspecialchars($inst['name']) ?></h5>
             <p class="text-muted"><?= htmlspecialchars(ucwords(str_replace('-', ' ', $inst['domain']))) ?></p>
             <hr class="divider my-2">
@@ -319,7 +325,11 @@ try {
     </div>
 
 </section>
-    <script src="common/common.js"></script>
+    
+    <!-- Preload JS -->
+<link rel="preload" href="common/common.js" as="script">
+<script src="common/common.js" defer></script>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js" integrity="sha384-ndDqU0Gzau9qJ1lfW4pNLlhNTkCfHzAVBReH9diLvGRem5+R9g2FzA8ZGN954O5Q" crossorigin="anonymous"></script>
 </body>
 <footer class="bg-dark text-white pt-5 pb-4">

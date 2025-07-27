@@ -15,7 +15,7 @@ $courses = [];
 /* ------------------------------------------------
    1. Get student's enrolled course IDs
 ------------------------------------------------ */
-$course_sql = "SELECT c_id FROM student_courses WHERE u_id = ?";
+$course_sql = "SELECT c_id FROM enrolls WHERE u_id = ?";
 $course_stmt = $conn->prepare($course_sql);
 if (!$course_stmt) {
     die("Error preparing course query: " . $conn->error);

@@ -57,11 +57,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         try {
     // Server settings
     $mail->isSMTP();
-    $mail->Host = 'skillup.mynsu.xyz'; // Your mail server
+    $mail->Host = 'mail.mynsu.xyz'; // Your mail server
     $mail->SMTPAuth = true;
     $mail->Username = 'auth@skillup.mynsu.xyz'; // Your email
     $mail->Password = ';*MZB-k]6D@z';     // Use the real password
-    $mail->Port = 465; // From cPanel (SMTP Port)
+    $mail->Port = 587; // From cPanel (SMTP Port)
 
     // Use TLS, since SSL is not required, but encryption is
     $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;

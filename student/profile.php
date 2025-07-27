@@ -67,7 +67,7 @@ $stmt->bind_result($name, $email, $contact, $bio);
 $stmt->fetch();
 $stmt->close();
 
-$image = '../image-assets/common/profile.webp';
+$image = '../image-assets/common/Profile.webp';
 
 
 // Handle password change (POST)

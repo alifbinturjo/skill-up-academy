@@ -78,3 +78,80 @@ if (isset($_POST['search'])) {
     exit();
 }
 ?>
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Students</title>
+    <link rel="prefetch" href="../image-assets/common/fav.webp" as="image">
+    <link rel="icon" href="../image-assets/common/fav.webp" type="image/webp">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+    
+    <link rel="preload" href="../style.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+<noscript><link rel="stylesheet" href="../style.css"></noscript>
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg navbar-blur sticky-top shadow-sm">
+  <div class="container-fluid">
+    <a class="navbar-brand fw-bold" href="">SkillUp Academy</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+      aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+  
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav ms-auto">
+        <li class="nav-item">
+            <a class="nav-link" href="../index.php">Home</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link active" href="dashboard.php">Dashboard</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="../auth/logout.php">Logout</a>
+          </li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<div class="container">
+    <p class="fs-1 text-center">Students</p>
+
+    <div class="row shadow p-2">
+        <div class="col-md-12">
+            <input type="text" name="text" id="text" class="form-control" placeholder="Name or email...">
+<div id="result" class="mt-2"></div>
+
+        </div>
+    </div>
+</div>
+
+
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js" integrity="sha384-ndDqU0Gzau9qJ1lfW4pNLlhNTkCfHzAVBReH9diLvGRem5+R9g2FzA8ZGN954O5Q" crossorigin="anonymous"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+$(document).ready(function () {
+  $('#text').on('input', function () {
+    let query = $(this).val();
+    if (query.trim() === "") {
+      $('#result').html("");
+      return;
+    }
+
+    $.post("students.php", { search: query }, function (data) {
+      $('#result').html(data);
+    });
+  });
+});
+</script>
+
+  </body>
+</html>

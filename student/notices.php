@@ -1,6 +1,7 @@
 <?php
-require_once '../auth/cnct.php';
 session_start();
+require_once '../auth/cnct.php';
+
 
 // Restrict access to students only
 if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'Student') {
@@ -78,6 +79,20 @@ unset($_SESSION['new_notice']); // Reset after viewing
         <span class="navbar-toggler-icon"></span>
       </button>
 
+<<<<<<< HEAD
+    <div class="collapse navbar-collapse" id="navbarNav">
+     <ul class="navbar-nav ms-auto">
+          <li class="nav-item">
+            <a class="nav-link" href="../index.php">Home</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link active" href="">Dashboard</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="../auth/logout.php">Logout</a>
+          </li>
+        </ul>
+=======
       <div class="collapse navbar-collapse" id="navbarNav">
         <ul class="navbar-nav ms-auto">
           <li class="nav-item"><a class="nav-link" href="dashboard.php">Dashboard</a></li>
@@ -96,6 +111,7 @@ unset($_SESSION['new_notice']); // Reset after viewing
           <li class="nav-item"><a class="nav-link" href="../auth/logout.php">Logout</a></li>
         </ul>
       </div>
+>>>>>>> fa605e02d6adde23530be8ca38e3745691c2c5de
     </div>
   </nav>
 

@@ -2,10 +2,6 @@
 session_start();
 include '../auth/cnct.php';
 
-/*
-$_SESSION['role'] = "Instructor";
-$_SESSION['u_id'] = 2; */
-
 if (!isset($_SESSION['role']) || $_SESSION['role'] !== "Instructor") {
     session_unset();
     session_destroy();
@@ -38,8 +34,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !isset($_POST['change_password'])) 
     if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
         $errors[] = "Invalid email format.";
     }
-
-
 
     if (empty($errors)) {
         $stmt = $conn->prepare("UPDATE users SET name=?, email=?, contact=? WHERE u_id=?");
@@ -74,229 +68,276 @@ $image = $image ? ('../' . $image) : '../image-assets/Instructors/default.webp';
 ?>
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <meta charset="UTF-8" />
-    <title>Profile</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
-    <link rel="preload" href="../style.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
-    <noscript>
-        <link rel="stylesheet" href="../style.css">
-    </noscript>
-
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile | SkillUp Academy</title>
     <link rel="prefetch" href="../image-assets/common/fav.webp" as="image">
     <link rel="icon" href="../image-assets/common/fav.webp" type="image/webp">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+    
+    <link rel="preload" href="../style.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="../style.css"></noscript>
 </head>
-
 <body>
-    <script>
-        window.addEventListener('pageshow', function(event) {
-            if (event.persisted) {
-                window.location.reload();
-            }
-        });
-    </script>
+<script>
+    window.addEventListener('pageshow', function (event) {
+        if (event.persisted) {
+            window.location.reload();
+        }
+    });
+</script>
 
-    <?php
- 
-    if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['change_password'])) {
-        $current = $_POST['current_password'] ?? '';
-        $new = $_POST['new_password'] ?? '';
-        $confirm = $_POST['confirm_password'] ?? '';
+<?php
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['change_password'])) {
+    $current = $_POST['current_password'] ?? '';
+    $new = $_POST['new_password'] ?? '';
+    $confirm = $_POST['confirm_password'] ?? '';
 
-        if (empty($current) || empty($new) || empty($confirm)) {
-            $errors[] = "All password fields are required.";
-        } elseif ($new !== $confirm) {
-            $errors[] = "New passwords do not match.";
+    if (empty($current) || empty($new) || empty($confirm)) {
+        $errors[] = "All password fields are required.";
+    } elseif ($new !== $confirm) {
+        $errors[] = "New passwords do not match.";
+    } else {
+        // Check current password
+        $stmt = $conn->prepare("SELECT pass FROM credentials WHERE u_id = ?");
+        $stmt->bind_param("i", $u_id);
+        $stmt->execute();
+        $stmt->bind_result($hashed_password);
+        $stmt->fetch();
+        $stmt->close();
+
+        if (!password_verify($current, $hashed_password)) {
+            $errors[] = "Current password is incorrect.";
         } else {
-            // Check current password
-            $stmt = $conn->prepare("SELECT pass FROM credentials WHERE u_id = ?");
-            $stmt->bind_param("i", $u_id);
+            // Update password
+            $new_hashed = password_hash($new, PASSWORD_DEFAULT);
+            $stmt = $conn->prepare("UPDATE credentials SET pass = ? WHERE u_id = ?");
+            $stmt->bind_param("si", $new_hashed, $u_id);
             $stmt->execute();
-            $stmt->bind_result($hashed_password);
-            $stmt->fetch();
             $stmt->close();
-
-            if (!password_verify($current, $hashed_password)) {
-                $errors[] = "Current password is incorrect.";
-            } else {
-                // Update password
-                $new_hashed = password_hash($new, PASSWORD_DEFAULT);
-                $stmt = $conn->prepare("UPDATE credentials SET pass = ? WHERE u_id = ?");
-                $stmt->bind_param("si", $new_hashed, $u_id);
-                $stmt->execute();
-                $stmt->close();
-                $success = true;
-            }
+            $success = true;
         }
     }
+}
+?>
 
-    ?>
-
-    <nav class="navbar navbar-expand-lg navbar-blur sticky-top shadow-sm">
-        <div class="container-fluid">
-            <a class="navbar-brand fw-bold" href="">SkillUp Academy</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto">
-                    <li class="nav-item">
-                        <a class="nav-link" href="../index.php">Home</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="dashboard.php">Dashboard</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="../auth/logout.php">Logout</a>
-                    </li>
-                </ul>
-            </div>
-        </div>
-    </nav>
-
-    <div class="container mt-5">
-        <p class="text-center mb-4 fs-1">Profile</p>
-
-        <?php if (!empty($errors)): ?>
-            <div class="alert alert-danger alert-dismissible fade show">
-                <?php foreach ($errors as $e): ?>
-                    <p class="mb-0"><?= htmlspecialchars($e) ?></p>
-                <?php endforeach; ?>
-            </div>
-        <?php elseif ($success): ?>
-            <div class="alert alert-success alert-dismissible fade show">Profile updated successfully.</div>
-        <?php endif; ?>
-
-        <div class="row">
-            <div class="col-md-4 text-center mb-4">
-                <img src="<?= htmlspecialchars($image) ?>" loading="lazy" class="rounded-circle shadow-sm" alt="Instructor Photo" style="width: 170px; height: 170px;">
-                <h2 class="mt-3"><?= htmlspecialchars($name) ?></h2>
-                <h5 class="text-muted"><?= htmlspecialchars($title) ?></h5>
-                <span class="badge bg-primary"><?= htmlspecialchars($domain) ?></span>
-            </div>
-
-            <div class="col-md-8 mt-4">
-                <h3>Bio</h3>
-                <p><?= nl2br(htmlspecialchars($bio)) ?></p>
-                <hr class="divider my-2">
-                <h3>Skills</h3>
-                <ul class="list-inline">
-                    <?php foreach ($skillsArray as $skill): ?>
-                        <li class="list-inline-item badge bg-dark text-light p-2 m-1"><?= htmlspecialchars($skill) ?></li>
-                    <?php endforeach; ?>
-                </ul>
-                <hr class="divider my-2">
-                <div class="row">
-                    <div class="col-md-6">
-                        <h3>Contacts</h3>
-                        <div class="d-flex flex-column gap-3 mt-3">
-                            <div>
-                                <i class="fas fa-envelope me-2 text-muted"></i>
-                                <a href="mailto:<?= htmlspecialchars($email) ?>" class="text-decoration-none"><?= htmlspecialchars($email) ?></a>
-                            </div>
-                            <div>
-                                <i class="fas fa-phone me-2 text-muted"></i>
-                                <span>+880<?= htmlspecialchars(substr($contact, 0)) ?></span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="row text-center">
-                <div class="col-md-12 mt-3 mb-4">
-                    <button type="button" class="btn w-50 btn-outline-primary mt-2" data-bs-toggle="modal" data-bs-target="#editProfileModal">
-                        Edit Profile
-                    </button>
-                    <button type="button" class="btn w-50 btn-outline-danger mt-2" data-bs-toggle="modal" data-bs-target="#changePasswordModal">
-                        Change Password
-                    </button>
-
-                </div>
-            </div>
-
-            <!-- Edit Modal -->
-            <div class="modal fade" id="editProfileModal" tabindex="-1">
-                <div class="modal-dialog modal-lg">
-                    <form class="modal-content" method="POST">
-                        <div class="modal-header">
-                            <h5 class="modal-title">Edit Profile</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                        </div>
-                        <div class="modal-body">
-                            <div class="mb-3">
-                                <label class="form-label">Name</label>
-                                <input type="text" name="name" class="form-control" value="<?= htmlspecialchars($_POST['name'] ?? $name) ?>">
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label">Email</label>
-                                <input type="email" name="email" class="form-control" value="<?= htmlspecialchars($_POST['email'] ?? $email) ?>">
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label">Phone Number (Starts with 01)</label>
-                                <input type="text" name="contact" class="form-control" value="<?= htmlspecialchars($_POST['contact'] ?? $contact) ?>" placeholder="e.g., 017XXXXXXXX">
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label">Bio</label>
-                                <textarea name="bio" class="form-control" rows="5"><?= htmlspecialchars($_POST['bio'] ?? $bio) ?></textarea>
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label">Skills</label>
-                                <div class="row">
-                                    <?php for ($i = 0; $i < 3; $i++): ?>
-                                        <div class="col-md-4 mb-2">
-                                            <input type="text" class="form-control" name="skill<?= $i + 1 ?>" value="<?= htmlspecialchars($_POST["skill" . ($i + 1)] ?? $skillsArray[$i] ?? '') ?>">
-                                        </div>
-                                    <?php endfor; ?>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                            <button type="submit" class="btn btn-primary">Save Changes</button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-
-            <!-- Change Password Modal -->
-            <div class="modal fade" id="changePasswordModal" tabindex="-1">
-                <div class="modal-dialog">
-                    <form class="modal-content" method="POST">
-                        <div class="modal-header">
-                            <h5 class="modal-title">Change Password</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                        </div>
-                        <div class="modal-body">
-                            <div class="mb-3">
-                                <label class="form-label">Current Password</label>
-                                <input type="password" name="current_password" class="form-control" required>
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label">New Password</label>
-                                <input type="password" name="new_password" class="form-control" required>
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label">Confirm New Password</label>
-                                <input type="password" name="confirm_password" class="form-control" required>
-                            </div>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                            <button type="submit" name="change_password" class="btn btn-danger">Change Password</button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-
-
-        </div>
+<nav class="navbar navbar-expand-lg navbar-blur sticky-top shadow-sm">
+  <div class="container-fluid">
+    <a class="navbar-brand fw-bold" href="">SkillUp Academy</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+      aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav ms-auto">
+        <li class="nav-item">
+          <a class="nav-link" href="../index.php">Home</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="dashboard.php">Dashboard</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="../auth/logout.php">Logout</a>
+        </li>
+      </ul>
     </div>
+  </div>
+</nav>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
+<section class="py-5">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-lg-8">
+        <div class="card card-h shadow-lg border-0 rounded">
+          <div class="card-body p-5">
+            <div class="text-center mb-5">
+              <h1 class="fw-bold">Instructor Profile</h1>
+              <p class="lead text-muted">Manage your account information and settings</p>
+            </div>
+
+            <?php if (!empty($errors)): ?>
+              <div class="alert alert-danger alert-dismissible fade show mb-4">
+                <?php foreach ($errors as $e): ?>
+                  <p class="mb-0"><?= htmlspecialchars($e) ?></p>
+                <?php endforeach; ?>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+              </div>
+            <?php elseif ($success): ?>
+              <div class="alert alert-success alert-dismissible fade show mb-4">
+                Profile updated successfully.
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+              </div>
+            <?php endif; ?>
+
+            <div class="row align-items-center mb-5">
+              <div class="col-md-4 text-center">
+                <img src="<?= htmlspecialchars($image) ?>" loading="lazy" class="rounded-circle shadow mb-4" width="150" height="150" alt="Profile Image">
+                <h3 class="fw-bold"><?= htmlspecialchars($name) ?></h3>
+                <p class="text-muted"><?= htmlspecialchars($title) ?></p>
+                <span class="badge bg-primary"><?= htmlspecialchars($domain) ?></span>
+              </div>
+              <div class="col-md-8">
+                <div class="mb-4">
+                  <h4 class="fw-bold">About</h4>
+                  <p class="text-muted"><?= nl2br(htmlspecialchars($bio)) ?></p>
+                </div>
+                
+                <div class="mb-4">
+                  <h4 class="fw-bold">Skills</h4>
+                  <div class="d-flex flex-wrap gap-2">
+                    <?php foreach ($skillsArray as $skill): ?>
+                      <span class="badge bg-dark text-light p-2"><?= htmlspecialchars($skill) ?></span>
+                    <?php endforeach; ?>
+                  </div>
+                </div>
+                
+                <div class="mb-4">
+                  <h4 class="fw-bold">Contact Information</h4>
+                  <div class="d-flex flex-column gap-2">
+                    <div>
+                      <i class="bi bi-envelope me-2 text-muted"></i>
+                      <a href="mailto:<?= htmlspecialchars($email) ?>" class="text-decoration-none"><?= htmlspecialchars($email) ?></a>
+                    </div>
+                    <div>
+                      <i class="bi bi-telephone me-2 text-muted"></i>
+                      <span>+880<?= htmlspecialchars(substr($contact, 0)) ?></span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <div class="d-grid gap-3 d-md-flex justify-content-md-center mt-4">
+              <button type="button" class="btn btn-outline-dark" data-bs-toggle="modal" data-bs-target="#editProfileModal">
+                <i class="bi bi-pencil-square me-2"></i>Edit Profile
+              </button>
+              <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#changePasswordModal">
+                <i class="bi bi-key me-2"></i>Change Password
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Edit Profile Modal -->
+<div class="modal fade" id="editProfileModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <form method="POST">
+        <div class="modal-header">
+          <h5 class="modal-title fw-bold">Edit Profile</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label class="form-label">Name</label>
+              <input type="text" name="name" class="form-control" value="<?= htmlspecialchars($_POST['name'] ?? $name) ?>" required>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Email</label>
+              <input type="email" name="email" class="form-control" value="<?= htmlspecialchars($_POST['email'] ?? $email) ?>" required>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Phone Number</label>
+              <input type="text" name="contact" class="form-control" value="<?= htmlspecialchars($_POST['contact'] ?? $contact) ?>" placeholder="e.g., 017XXXXXXXX" required>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Domain</label>
+              <input type="text" class="form-control" value="<?= htmlspecialchars($domain) ?>" disabled>
+            </div>
+            <div class="col-12">
+              <label class="form-label">Bio</label>
+              <textarea name="bio" class="form-control" rows="4"><?= htmlspecialchars($_POST['bio'] ?? $bio) ?></textarea>
+            </div>
+            <div class="col-12">
+              <label class="form-label">Skills (Up to 3)</label>
+              <div class="row g-2">
+                <?php for ($i = 0; $i < 3; $i++): ?>
+                  <div class="col-md-4">
+                    <input type="text" class="form-control" name="skill<?= $i + 1 ?>" value="<?= htmlspecialchars($_POST["skill" . ($i + 1)] ?? $skillsArray[$i] ?? '') ?>" placeholder="Skill <?= $i + 1 ?>">
+                  </div>
+                <?php endfor; ?>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button type="submit" class="btn btn-primary">Save Changes</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Change Password Modal -->
+<div class="modal fade" id="changePasswordModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <form method="POST">
+        <div class="modal-header">
+          <h5 class="modal-title fw-bold">Change Password</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div class="mb-3">
+            <label class="form-label">Current Password</label>
+            <input type="password" name="current_password" class="form-control" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">New Password</label>
+            <input type="password" name="new_password" class="form-control" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Confirm New Password</label>
+            <input type="password" name="confirm_password" class="form-control" required>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button type="submit" name="change_password" class="btn btn-danger">Change Password</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<footer class="bg-dark text-white pt-5 pb-4">
+  <div class="container text-md-left">
+    <div class="row text-center text-md-left">
+      <div class="col-md-6 col-lg-6 col-xl-6 mx-auto mt-3">
+        <h5 class="mb-4 fw-bold">SkillUp Academy</h5>
+        <p>Empowering learners with the skills they need to succeed in the digital world.</p>
+        <a href="../policies.php" class="text-white text-decoration-none">Academy policies &rarr;</a>
+      </div>
+      <div class="col-md-3 col-lg-3 col-xl-3 mx-auto mt-3">
+        <h5 class="mb-4 fw-bold">Contact</h5>
+        <p><i class="bi bi-envelope me-2"></i> support@skillup.mynsu.xyz</p>
+        <p><i class="bi bi-phone me-2"></i> 01745630304</p>
+        <a href="../locate.php" class="text-white text-decoration-none"><i class="bi bi-geo-alt me-2"></i>Dhaka, Bangladesh &rarr;</a>
+      </div>
+      <div class="col-md-3 col-lg-3 col-xl-3 mx-auto mt-3">
+        <h5 class="mb-4 fw-bold">Follow Us</h5>
+        <a href="#" class="text-white me-3"><i class="bi bi-facebook"></i></a>
+        <a href="#" class="text-white me-3"><i class="bi bi-twitter"></i></a>
+        <a href="#" class="text-white me-3"><i class="bi bi-linkedin"></i></a>
+        <a href="#" class="text-white"><i class="bi bi-youtube"></i></a>
+      </div>
+    </div>
+    <hr class="my-3">
+    <div class="text-center">
+      <p class="mb-0">&copy; 2025 SkillUp Academy. All rights reserved.</p>
+    </div>
+  </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js" integrity="sha384-ndDqU0Gzau9qJ1lfW4pNLlhNTkCfHzAVBReH9diLvGRem5+R9g2FzA8ZGN954O5Q" crossorigin="anonymous"></script>
 </body>
-
 </html>

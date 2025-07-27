@@ -17,9 +17,13 @@ $u_id=$_SESSION['u_id'];
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard</title>
+    <link rel="prefetch" href="../image-assets/common/fav.webp" as="image">
+    <link rel="icon" href="../image-assets/common/fav.webp" type="image/webp">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
-    <link rel="stylesheet" href="../style.css">
+    
+    <link rel="preload" href="../style.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+<noscript><link rel="stylesheet" href="../style.css"></noscript>
     <style>
         .welcome-card {
             background: linear-gradient(135deg, #5e72e4 0%, #2d3b8b 100%);

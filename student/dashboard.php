@@ -19,10 +19,13 @@ $u_id=$_SESSION['u_id'];
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Dashboard</title>
+  <link rel="prefetch" href="../image-assets/common/fav.webp" as="image">
+    <link rel="icon" href="../image-assets/common/fav.webp" type="image/webp">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet"
     integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr" crossorigin="anonymous">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
-  <link rel="stylesheet" href="../style.css">
+  <link rel="preload" href="../style.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+<noscript><link rel="stylesheet" href="../style.css"></noscript>
   <style>
     .welcome-card {
       background: linear-gradient(135deg, #4e73df 0%, #224abe 100%);
@@ -57,23 +60,7 @@ $u_id=$_SESSION['u_id'];
             }
         });
 </script>
-<?php
-$stmt_n = $conn->prepare("SELECT n_status FROM students WHERE u_id = ?");
-$stmt_n->bind_param("i", $u_id);
 
-try{
-$stmt_n->execute();
-$stmt_n->bind_result($n_status);
-$stmt_n->fetch();
-$stmt_n->close();
-}
-catch(Exception $e){
-  $stmt_n->close();
-  $conn->close();
-  header("Location: ../auth/logout.php");
-  exit();
-}
-?>
   <nav class="navbar navbar-expand-lg navbar-blur sticky-top shadow-sm">
     <div class="container-fluid">
       <a class="navbar-brand fw-bold" href="">SkillUp Academy</a>
@@ -213,9 +200,7 @@ catch(Exception $e){
       <div>
         <h3 class="fw-bold text-secondary">
           <i class="bi bi-megaphone me-2"></i>Your Notices
-          <?php if ($n_status === "unread"): ?>
-            <span class="badge bg-danger ms-2">New</span>
-          <?php endif; ?>
+          
         </h3>
       </div>
       <a href="notices.php" class="btn btn-secondary arrow-btn rounded-circle">

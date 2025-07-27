@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jul 20, 2025 at 09:58 AM
+-- Generation Time: Jul 27, 2025 at 08:40 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -81,30 +81,31 @@ CREATE TABLE `courses` (
   `duration` smallint(6) NOT NULL,
   `u_id` int(11) NOT NULL,
   `start_date` date NOT NULL,
-  `status` varchar(7) NOT NULL
+  `status` varchar(7) NOT NULL,
+  `url` varchar(50) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `courses`
 --
 
-INSERT INTO `courses` (`c_id`, `title`, `amount`, `description`, `domain`, `duration`, `u_id`, `start_date`, `status`) VALUES
-(1, 'Full Stack Web Development', 1500, 'Learn front-end and back-end development.', 'web-development', 12, 1, '2024-09-01', 'offered'),
-(2, 'Data Science Bootcamp', 2000, 'Master data analysis and visualization.', 'data-science', 16, 2, '2024-10-01', 'offered'),
-(3, 'Android App Development', 1800, 'Build native Android applications.', 'android-development', 14, 6, '2024-11-01', 'offered'),
-(4, 'Introduction to Python', 1000, 'Basics of Python programming.', 'programming', 8, 1, '2024-09-15', 'offered'),
-(5, 'Introduction to Cybersecurity', 2200, 'Learn the basics of cybersecurity and protection techniques.', 'cybersecurity', 10, 7, '2024-09-20', 'offered'),
-(6, 'React for Beginners', 1600, 'Comprehensive course on ReactJS framework.', 'web-development', 8, 8, '2024-10-10', 'offered'),
-(7, 'Building Scalable APIs', 1800, 'Learn to build robust APIs using Node.js.', 'web-development', 12, 9, '2024-11-05', 'offered'),
-(8, 'iOS Development Fundamentals', 2100, 'Introduction to app development on iOS.', 'ios-development', 14, 10, '2024-12-01', 'offered'),
-(9, 'AI and Machine Learning Basics', 2500, 'Explore AI concepts and ML algorithms.', 'data-science', 15, 11, '2025-01-10', 'offered'),
-(10, 'UX/UI Design Principles', 1400, 'Learn key UX/UI design skills and tools.', 'design', 9, 12, '2024-11-15', 'offered'),
-(11, 'Data Analysis with Python', 2300, 'Learn how to analyze data using Python libraries.', 'data-science', 12, 13, '2025-04-01', 'offered'),
-(12, 'Laravel Framework Mastery', 2500, 'Master Laravel for robust web applications.', 'web-development', 14, 14, '2025-05-15', 'offered'),
-(13, 'Android App Development', 2100, 'Build real Android apps from scratch.', 'android-development', 10, 15, '2025-06-01', 'offered'),
-(14, 'Graphic Design Basics', 1800, 'Start your journey in creative graphic design.', 'design', 8, 16, '2025-04-20', 'offered'),
-(15, 'AWS Cloud Practitioner', 2700, 'Introduction to AWS cloud services and architecture.', 'cloud-computing', 12, 17, '2025-05-05', 'offered'),
-(16, 'Ethical Hacking 101', 2600, 'Basics of penetration testing and cybersecurity.', 'cybersecurity', 15, 18, '2025-06-15', 'offered');
+INSERT INTO `courses` (`c_id`, `title`, `amount`, `description`, `domain`, `duration`, `u_id`, `start_date`, `status`, `url`) VALUES
+(1, 'Full Stack Web Development', 1500, 'Learn front-end and back-end development.', 'web-development', 12, 1, '2024-09-01', 'offered', 'course-details/full-stack-web-dev.php'),
+(2, 'Data Science Bootcamp', 2000, 'Master data analysis and visualization.', 'data-science', 16, 2, '2024-10-01', 'offered', NULL),
+(3, 'Android App Development', 1800, 'Build native Android applications.', 'android-development', 14, 6, '2024-11-01', 'offered', NULL),
+(4, 'Introduction to Python', 1000, 'Basics of Python programming.', 'programming', 8, 1, '2024-09-15', 'offered', NULL),
+(5, 'Introduction to Cybersecurity', 2200, 'Learn the basics of cybersecurity and protection techniques.', 'cybersecurity', 10, 7, '2024-09-20', 'offered', NULL),
+(6, 'React for Beginners', 1600, 'Comprehensive course on ReactJS framework.', 'web-development', 8, 8, '2024-10-10', 'offered', NULL),
+(7, 'Building Scalable APIs', 1800, 'Learn to build robust APIs using Node.js.', 'web-development', 12, 9, '2024-11-05', 'offered', NULL),
+(8, 'iOS Development Fundamentals', 2100, 'Introduction to app development on iOS.', 'ios-development', 14, 10, '2024-12-01', 'offered', NULL),
+(9, 'AI and Machine Learning Basics', 2500, 'Explore AI concepts and ML algorithms.', 'data-science', 15, 11, '2025-01-10', 'offered', NULL),
+(10, 'UX/UI Design Principles', 1400, 'Learn key UX/UI design skills and tools.', 'design', 9, 12, '2024-11-15', 'offered', NULL),
+(11, 'Data Analysis with Python', 2300, 'Learn how to analyze data using Python libraries.', 'data-science', 12, 13, '2025-04-01', 'offered', NULL),
+(12, 'Laravel Framework Mastery', 2500, 'Master Laravel for robust web applications.', 'web-development', 14, 14, '2025-05-15', 'offered', NULL),
+(13, 'Android App Development', 2100, 'Build real Android apps from scratch.', 'android-development', 10, 15, '2025-06-01', 'offered', NULL),
+(14, 'Graphic Design Basics', 1800, 'Start your journey in creative graphic design.', 'design', 8, 16, '2025-04-20', 'offered', NULL),
+(15, 'AWS Cloud Practitioner', 2700, 'Introduction to AWS cloud services and architecture.', 'cloud-computing', 12, 17, '2025-05-05', 'offered', NULL),
+(16, 'Ethical Hacking 101', 2600, 'Basics of penetration testing and cybersecurity.', 'cybersecurity', 15, 18, '2025-06-15', 'offered', NULL);
 
 -- --------------------------------------------------------
 
@@ -160,7 +161,12 @@ CREATE TABLE `enrolls` (
 INSERT INTO `enrolls` (`u_id`, `c_id`, `rating`) VALUES
 (3, 1, 5),
 (3, 2, 4),
+(3, 3, NULL),
 (3, 5, 3),
+(3, 6, NULL),
+(3, 10, NULL),
+(3, 12, NULL),
+(3, 15, NULL),
 (5, 1, 4),
 (5, 3, NULL),
 (5, 4, 3),
@@ -178,30 +184,29 @@ CREATE TABLE `instructors` (
   `domain` varchar(50) NOT NULL,
   `title` varchar(10) NOT NULL,
   `skills` varchar(100) DEFAULT NULL,
-  `image` varchar(100) DEFAULT NULL,
-  `n_status` varchar(6) NOT NULL
+  `image` varchar(100) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `instructors`
 --
 
-INSERT INTO `instructors` (`u_id`, `bio`, `domain`, `title`, `skills`, `image`, `n_status`) VALUES
-(1, 'Expert in web technologies and programming.', 'web-development', 'instructor', 'HTML, CSS, JS, PHP', 'alice.jpg', 'unread'),
-(2, 'Data Science and Machine Learning specialist.', 'data-science', 'instructor', 'Python, R, SQL', 'bob.jpg', 'unread'),
-(6, 'Mobile development enthusiast.', 'android-development', 'instructor', 'Java, Kotlin, Flutter', 'eve.jpg', 'unread'),
-(7, 'Cybersecurity expert with 10 years experience.', 'cybersecurity', 'instructor', 'Network Security, Ethical Hacking', 'frank.jpg', 'unread'),
-(8, 'Front-end developer specializing in React.', 'web-development', 'instructor', 'React, JavaScript, CSS', 'grace.jpg', 'unread'),
-(9, 'Backend developer passionate about scalable APIs.', 'web-development', 'instructor', 'Node.js, Express, MongoDB', 'henry.jpg', 'unread'),
-(10, 'Mobile app developer expert in iOS.', 'ios-development', 'instructor', 'Swift, Objective-C', 'irene.jpg', 'unread'),
-(11, 'AI researcher and Python guru.', 'data-science', 'instructor', 'Python, TensorFlow, PyTorch', 'jack.jpg', 'unread'),
-(12, 'UX/UI designer focused on user-centered design.', 'design', 'instructor', 'Adobe XD, Figma, Sketch', 'kate.jpg', 'unread'),
-(13, 'Experienced data analyst and Python coder.', 'data-science', 'instructor', 'Python, Pandas, SQL', 'linda.jpg', 'unread'),
-(14, 'Full stack web developer and teacher.', 'web-development', 'instructor', 'PHP, MySQL, Laravel', 'mike.jpg', 'unread'),
-(15, 'Mobile developer specializing in Android apps.', 'android-development', 'instructor', 'Java, Kotlin, Android Studio', 'nancy.jpg', 'unread'),
-(16, 'Creative graphic designer and illustrator.', 'design', 'instructor', 'Photoshop, Illustrator, CorelDraw', 'oliver.jpg', 'unread'),
-(17, 'Cloud computing and DevOps specialist.', 'cloud-computing', 'instructor', 'AWS, Docker, Kubernetes', 'paula.jpg', 'unread'),
-(18, 'Cybersecurity analyst and penetration tester.', 'cybersecurity', 'instructor', 'Network Security, Ethical Hacking', 'quentin.jpg', 'unread');
+INSERT INTO `instructors` (`u_id`, `bio`, `domain`, `title`, `skills`, `image`) VALUES
+(1, 'Expert in web technologies and programming.', 'web-development', 'instructor', 'software dev', 'image-assets/Instructors/Alice-Johnson.webp'),
+(2, 'Data Science and Machine Learning specialist.', 'data-science', 'instructor', 'software dev', 'image-assets/Instructors/Bob-Smith.webp'),
+(6, 'Mobile development enthusiast.', 'android-development', 'instructor', 'software dev', 'image-assets/Instructors/Eve-Adams.webp'),
+(7, 'Cybersecurity expert with 10 years experience.', 'cybersecurity', 'instructor', 'software dev', 'image-assets/Instructors/Frank-Miller.webp'),
+(8, 'Front-end developer specializing in React.', 'web-development', 'instructor', 'software dev', 'image-assets/Instructors/Grace-Hopper.webp'),
+(9, 'Backend developer passionate about scalable APIs.', 'web-development', 'instructor', 'software dev', 'image-assets/Instructors/Henry-Ford.webp'),
+(10, 'Mobile app developer expert in iOS.', 'ios-development', 'instructor', 'software dev', 'image-assets/Instructors/Irene-Adler.webp'),
+(11, 'AI researcher and Python guru.', 'data-science', 'instructor', 'software dev', 'image-assets/Instructors/Jack-Ryan.webp'),
+(12, 'UX/UI designer focused on user-centered design.', 'design', 'instructor', 'software dev', 'image-assets/Instructors/Kate-Winslet.webp'),
+(13, 'Experienced data analyst and Python coder.', 'data-science', 'instructor', 'software dev', 'image-assets/Instructors/Linda-Smith.webp'),
+(14, 'Full stack web developer and teacher.', 'web-development', 'instructor', 'software dev', 'image-assets/Instructors/Mike-Jahnson.webp'),
+(15, 'Mobile developer specializing in Android apps.', 'android-development', 'instructor', 'software dev', 'image-assets/Instructors/Nancy-Drew.webp'),
+(16, 'Creative graphic designer and illustrator.', 'design', 'instructor', 'software dev', 'image-assets/Instructors/Oliver-Twist.webp'),
+(17, 'Cloud computing and DevOps specialist.', 'cloud-computing', 'instructor', 'software dev', 'image-assets/Instructors/Paula-Abdul.webp'),
+(18, 'Cybersecurity analyst and penetration tester.', 'cybersecurity', 'instructor', 'software dev', 'image-assets/Instructors/Quentin-Tarantino.webp');
 
 -- --------------------------------------------------------
 
@@ -238,17 +243,16 @@ INSERT INTO `instructors_notices` (`n_id`, `title`, `message`, `date`, `u_id`, `
 
 CREATE TABLE `students` (
   `u_id` int(11) NOT NULL,
-  `bio` varchar(500) DEFAULT NULL,
-  `n_status` varchar(6) NOT NULL
+  `bio` varchar(500) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `students`
 --
 
-INSERT INTO `students` (`u_id`, `bio`, `n_status`) VALUES
-(3, 'Computer science student.', 'unread'),
-(5, 'Aspiring web developer.', 'unread');
+INSERT INTO `students` (`u_id`, `bio`) VALUES
+(3, 'Computer science student.'),
+(5, 'Aspiring web developer.');
 
 -- --------------------------------------------------------
 

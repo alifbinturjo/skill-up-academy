@@ -1,6 +1,7 @@
 <?php
-include'../auth/cnct.php';
 session_start();
+include'../auth/cnct.php';
+
 
 if(!isset($_SESSION['role']) && $_SESSION['role']!=="Admin"){
   session_unset();

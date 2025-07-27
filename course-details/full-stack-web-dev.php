@@ -168,7 +168,7 @@ $stmt = $conn->prepare("
       <div class="d-flex align-items-center">
         <div>
           <p class="lead"><?php echo $instructorName ?></p>
-          <p class="text-muted"><?php echo $instructorTitle ?></p>
+          <p class="text-muted"><?php echo ucfirst($instructorTitle) ?></p>
         </div>
       </div>
     </div>

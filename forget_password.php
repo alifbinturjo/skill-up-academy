@@ -52,15 +52,15 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         try {
             // Set up PHPMailer to use SMTP
             $mail->isSMTP();
-            $mail->Host = 'smtp.gmail.com';  // Gmail SMTP server
+            $mail->Host = 'mail.skillup.mynsu.xyz';  // Gmail SMTP server
             $mail->SMTPAuth = true;
-            $mail->Username = 'mahfuzurrahman594@gmail.com';  // Replace with your Gmail email address
-            $mail->Password = 'jlgswapsmnbbvcng';     // Use the generated app password (if using 2FA)
+            $mail->Username = 'auth@skillup.mynsu.xyz';  // Replace with your Gmail email address
+            $mail->Password = ';*MZB-k]6D@z';     // Use the generated app password (if using 2FA)
             $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;  // TLS encryption
             $mail->Port = 587;  // SMTP port for TLS
 
             // Set email sender and recipient
-            $mail->setFrom('mahfuzurrahman594@gmail.com', 'SkillUp Academy');
+            $mail->setFrom('auth@skillup.mynsu.xyz', 'SkillUp Academy');
             $mail->addAddress($email);  // User's email
 
             // Set email subject and body

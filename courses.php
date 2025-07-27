@@ -1,14 +1,21 @@
 <?php
-include 'auth/cnct.php';
 session_start();
+include 'auth/cnct.php';
+
+// Connect to Redis
+$redis = new Redis();
+try {
+    $redis->connect('127.0.0.1', 6379);
+} catch (Exception $e) {
+    die("Redis connection failed: " . $e->getMessage());
+}
 
 // Handle Add to Cart
 if (isset($_GET['add_to_cart'])) {
     $c_id = (int) $_GET['add_to_cart'];
 
-    // Add course ID to cookie
     if (isset($_COOKIE['cart'])) {
-        $cart = explode(',', $_COOKIE['cart']);   //%2C is the URL-encoded form of a comma ,
+        $cart = explode(',', $_COOKIE['cart']);
         if (!in_array($c_id, $cart)) {
             $cart[] = $c_id;
         }
@@ -16,24 +23,19 @@ if (isset($_GET['add_to_cart'])) {
         $cart = [$c_id];
     }
 
-    setcookie('cart', implode(',', $cart), time() + (86400 * 7), "/"); // 7 days
+    setcookie('cart', implode(',', $cart), time() + (1800), "/");
     header("Location: courses.php");
     exit();
 }
 
-// Pagination setup
 $limit = 6;
 $page = isset($_GET['page']) && is_numeric($_GET['page']) ? max(1, (int)$_GET['page']) : 1;
 $offset = ($page - 1) * $limit;
-
-// Filter setup
 $filter = isset($_GET['domain']) ? $_GET['domain'] : "";
 
-// Total course count
 $count_sql = "SELECT COUNT(*) FROM courses";
 $params = [];
 $types = "";
-
 if (!empty($filter)) {
     $count_sql .= " WHERE domain = ?";
     $types .= "s";
@@ -44,56 +46,77 @@ $stmt = $conn->prepare($count_sql);
 if (!empty($filter)) {
     $stmt->bind_param($types, ...$params);
 }
-$stmt->execute();
-$stmt->bind_result($total);
-$stmt->fetch();
-$stmt->close();
+try {
+    $stmt->execute();
+    $stmt->bind_result($total);
+    $stmt->fetch();
+    $stmt->close();
+} catch (Exception $e) {
+    $stmt->close();
+    $conn->close();
+    header("Location: ops.php");
+    exit();
+}
 
 $total_pages = ceil($total / $limit);
 
-// Fetch course data with instructor name
+// Redis Cache for Courses
+$cacheKey = "courses:domain={$filter}:page={$page}";
 $courses = [];
-$sql = "SELECT c.c_id, c.title, c.description, c.amount, c.duration, c.domain, u.name
-        FROM courses c
-        JOIN instructors i ON c.u_id = i.u_id
-        JOIN users u ON u.u_id = i.u_id";
 
-if (!empty($filter)) {
-    $sql .= " WHERE c.domain = ?";
-}
-$sql .= " LIMIT ?, ?";
-
-$stmt = $conn->prepare($sql);
-if (!empty($filter)) {
-    $stmt->bind_param("sii", $filter, $offset, $limit);
+if ($redis->exists($cacheKey)) {
+    $courses = json_decode($redis->get($cacheKey), true);
 } else {
-    $stmt->bind_param("ii", $offset, $limit);
+    $sql = "SELECT c.c_id, c.title, c.description, c.amount, c.duration, c.domain, c.url, u.name
+            FROM courses c
+            JOIN instructors i ON c.u_id = i.u_id
+            JOIN users u ON u.u_id = i.u_id";
+
+    if (!empty($filter)) {
+        $sql .= " WHERE c.domain = ?";
+    }
+    $sql .= " LIMIT ?, ?";
+
+    $stmt = $conn->prepare($sql);
+    if (!empty($filter)) {
+        $stmt->bind_param("sii", $filter, $offset, $limit);
+    } else {
+        $stmt->bind_param("ii", $offset, $limit);
+    }
+
+    $stmt->execute();
+    $stmt->bind_result($c_id, $title, $desc, $amount, $duration, $domain, $url, $instructor);
+    while ($stmt->fetch()) {
+        $courses[] = [
+            'id' => $c_id,
+            'title' => $title,
+            'description' => $desc,
+            'amount' => $amount,
+            'duration' => $duration,
+            'domain' => $domain,
+            'url' => $url,
+            'instructor' => $instructor
+        ];
+    }
+    $stmt->close();
+
+    $redis->setex($cacheKey, 600, json_encode($courses));
 }
 
-$stmt->execute();
-$stmt->bind_result($c_id, $title, $desc, $amount, $duration, $domain, $instructor);
-while ($stmt->fetch()) {
-    $courses[] = [
-        'id' => $c_id,
-        'title' => $title,
-        'description' => $desc,
-        'amount' => $amount,
-        'duration' => $duration,
-        'domain' => $domain,
-        'instructor' => $instructor
-    ];
-}
-$stmt->close();
-
-// Fetch unique domains for filter dropdown
+// Redis Cache for Domains
 $domains = [];
-$result = $conn->query("SELECT DISTINCT domain FROM courses");
-while ($row = $result->fetch_assoc()) {
-    $domains[] = $row['domain'];
+if ($redis->exists("courses:domains")) {
+    $domains = json_decode($redis->get("courses:domains"), true);
+} else {
+    $result = $conn->query("SELECT DISTINCT domain FROM courses");
+    while ($row = $result->fetch_assoc()) {
+        $domains[] = $row['domain'];
+    }
+    $redis->setex("courses:domains", 1800, json_encode($domains));
 }
+
 $conn->close();
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
 
@@ -102,7 +125,13 @@ $conn->close();
     <title>Courses | SkillUp Academy</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet" />
-    <link rel="stylesheet" href="style.css" />
+    <link rel="preload" href="style.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript>
+        <link rel="stylesheet" href="style.css">
+    </noscript>
+
+    <link rel="prefetch" href="image-assets/common/fav.webp" as="image">
+    <link rel="icon" href="image-assets/common/fav.webp" type="image/webp">
 
     <style>
         .floating-cart {
@@ -115,6 +144,13 @@ $conn->close();
 </head>
 
 <body>
+    <script>
+        window.addEventListener('pageshow', function(event) {
+            if (event.persisted) {
+                window.location.reload();
+            }
+        });
+    </script>
 
     <nav class="navbar navbar-expand-lg navbar-blur sticky-top shadow-sm">
         <div class="container-fluid">
@@ -124,22 +160,28 @@ $conn->close();
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
-                    <li class="nav-item"><a class="nav-link" href="index.php">Home</a></li>
-                    <li class="nav-item"><a class="nav-link active" href="#">Courses</a></li>
-                    <li class="nav-item"><a class="nav-link" href="instructors.php">Instructors</a></li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="index.php">Home</a>
+                    </li>
+
                     <?php
                     if (isset($_SESSION['role'])) {
                         echo '<li class="nav-item">';
-                        if ($_SESSION['role'] === "student")
-                            echo '<a class="nav-link" href="student/dashboard.php">Dashboard</a></li>';
-                        else if ($_SESSION['role'] === "instructor")
-                            echo '<a class="nav-link" href="instructor/dashboard.php">Dashboard</a></li>';
+                        if ($_SESSION['role'] === "Student")
+                            echo '<a class="nav-link" href="student/dashboard.php">Dashboard</a> </li>';
+                        else if ($_SESSION['role'] === "Instructor")
+                            echo '<a class="nav-link" href="instructor/dashboard.php">Dashboard</a> </li>';
                         else
-                            echo '<a class="nav-link" href="admin/dashboard.php">Dashboard</a></li>';
-                        echo '<li class="nav-item"><a class="nav-link" href="auth/logout.php">Logout</a></li>';
+                            echo '<a class="nav-link" href="admin/dashboard.php">Dashboard</a> </li>';
+
+                        echo '<li class="nav-item">
+                  <a class="nav-link" href="auth/logout.php">Logout</a>
+                  </li>';
                     } else {
-                        echo '<li class="nav-item"><a class="nav-link" href="auth/login.php">Login</a></li>';
-                        echo '<li class="nav-item"><a class="nav-link" href="auth/signup.php">Signup</a></li>';
+                        echo '<a class="nav-link" href="auth/login.php">Login</a> </li>
+                  <li class="nav-item">
+                  <a class="nav-link" href="auth/signup.php">Signup</a>
+                  </li>';
                     }
                     ?>
                 </ul>
@@ -187,7 +229,7 @@ $conn->close();
                             <p class="card-text"><?= htmlspecialchars($course['description']) ?></p>
                             <p class="text-muted"><small>Instructor: <?= htmlspecialchars($course['instructor']) ?></small></p>
                             <div class="d-flex justify-content-between align-items-center">
-                                <a href="course-details/full-stack-web-dev.php" class="btn btn-md btn-outline-dark">View Details</a> 
+                                <a href="<?= htmlspecialchars($course['url']) ?>" class="btn btn-md btn-outline-dark">View Details</a>
                                 <a href="?add_to_cart=<?= $course['id'] ?>" class="btn btn-md btn-success">Add to Cart (৳<?= $course['amount'] ?>)</a>
                             </div>
 
@@ -214,12 +256,17 @@ $conn->close();
     <!-- Floating Cart -->
     <?php if (isset($_COOKIE['cart']) && !empty($_COOKIE['cart'])): ?>
         <div class="floating-cart">
-            <a href="auth/billing.php" class="btn btn-lg btn-dark shadow">
-                🛒 Checkout (<?= count(explode(',', $_COOKIE['cart'])) ?>)
-            </a>
+            <?php if (isset($_SESSION['role']) && $_SESSION['role'] == "Student"): ?>
+                <a href="auth/billing.php" class="btn btn-lg btn-dark shadow">
+                    🛒 Checkout <!-- (<?= count(explode(',', $_COOKIE['cart'])) ?>) -->
+                </a>
+            <?php else: ?>
+                <a href="auth/login.php" class="btn btn-lg btn-dark shadow" onclick="alert('Please login first to proceed to checkout!');">
+                    🛒 Checkout
+                </a>
+            <?php endif; ?>
         </div>
     <?php endif; ?>
-
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-ndDqU0Gzau9qJ1lfW4pNLlhNTkCfHzAVBReH9diLvGRem5+R9g2FzA8ZGN954O5Q" crossorigin="anonymous">
@@ -228,32 +275,39 @@ $conn->close();
 </body>
 
 <footer class="bg-dark text-white pt-5 pb-4">
-    <div class="container text-md-left">
-        <div class="row text-center text-md-left">
-            <div class="col-md-6 col-lg-6 col-xl-6 mx-auto mt-3">
-                <h5 class="mb-4 fw-bold">SkillUp Academy</h5>
-                <p>Empowering learners with the skills they need to succeed in the digital world.</p>
-                <a href="policies.html" class="text-white text-decoration-none">Academy policies &rarr;</a>
-            </div>
-            <div class="col-md-3 col-lg-3 col-xl-3 mx-auto mt-3">
-                <h5 class="mb-4 fw-bold">Contact</h5>
-                <p><i class="bi bi-envelope me-2"></i> support@skillup.com</p>
-                <p><i class="bi bi-phone me-2"></i> +880 1234-567890</p>
-                <p><i class="bi bi-geo-alt me-2"></i> Dhaka, Bangladesh</p>
-            </div>
-            <div class="col-md-3 col-lg-3 col-xl-3 mx-auto mt-3">
-                <h5 class="mb-4 fw-bold">Follow Us</h5>
-                <a href="#" class="text-white me-3"><i class="bi bi-facebook"></i></a>
-                <a href="#" class="text-white me-3"><i class="bi bi-twitter"></i></a>
-                <a href="#" class="text-white me-3"><i class="bi bi-linkedin"></i></a>
-                <a href="#" class="text-white"><i class="bi bi-youtube"></i></a>
-            </div>
-        </div>
-        <hr class="my-3">
-        <div class="text-center">
-            <p class="mb-0">&copy; 2025 SkillUp Academy. All rights reserved.</p>
-        </div>
+  <div class="container text-md-left">
+    <div class="row text-center text-md-left">
+
+      <div class="col-md-6 col-lg-6 col-xl-6 mx-auto mt-3">
+        <h5 class="mb-4 fw-bold">SkillUp Academy</h5>
+        <p>Empowering learners with the skills they need to succeed in the digital world.</p>
+        <a href="policies.php" class="text-white text-decoration-none">Academy policies &rarr;</a>
+      </div>
+
+      <div class="col-md-3 col-lg-3 col-xl-3 mx-auto mt-3">
+        <h5 class="mb-4 fw-bold">Contact</h5>
+        <p><i class="bi bi-envelope me-2"></i> support@skillup.mynsu.xyz</p>
+        <p><i class="bi bi-phone me-2"></i> 01745630304</p>
+        <a href="locate.php" class="text-white text-decoration-none"><i class="bi bi-geo-alt me-2"></i>Dhaka, Bangladesh &rarr;</a>
+      </div>
+
+      <div class="col-md-3 col-lg-3 col-xl-3 mx-auto mt-3">
+        <h5 class="mb-4 fw-bold">Follow Us</h5>
+        <a href="#" class="text-white me-3"><i class="bi bi-facebook"></i></a>
+        <a href="#" class="text-white me-3"><i class="bi bi-twitter"></i></a>
+        <a href="#" class="text-white me-3"><i class="bi bi-linkedin"></i></a>
+        <a href="#" class="text-white"><i class="bi bi-youtube"></i></a>
+      </div>
+
     </div>
+
+     <hr class="my-3">
+
+    <div class="text-center">
+      <p class="mb-0">&copy; 2025 SkillUp Academy. All rights reserved.</p>
+    </div>
+
+  </div>
 </footer>
 
 </html>

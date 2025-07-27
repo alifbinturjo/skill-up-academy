@@ -24,34 +24,34 @@ if (!empty($cart_ids)) {
     $stmt->close();
 }
 
-// Payment handling (simulated for now)
+// Payment status handling (after redirect from success.php)
 $statusMsg = '';
-if (isset($_POST['pay_now'])) {
-    if (!empty($courses) && $total > 0) {
-        // Simulate payment success or fail
-        $paymentSuccess = true; // Change this based on actual payment API response
+if (isset($_GET['status'])) {
+    if ($_GET['status'] === 'success') {
+        $u_id = $_SESSION['u_id'];
 
-        if ($paymentSuccess) {
-            $u_id = $_SESSION['u_id'] ?? 1;
+        if (!empty($cart_ids)) {
             $stmt = $conn->prepare("INSERT IGNORE INTO enrolls (u_id, c_id, rating) VALUES (?, ?, NULL)");
-
-            foreach ($courses as $course) {
-                $stmt->bind_param('ii', $u_id, $course['c_id']);
+            foreach ($cart_ids as $c_id) {
+                $stmt->bind_param('ii', $u_id, $c_id);
                 $stmt->execute();
             }
             $stmt->close();
-
-            // Clear cart cookie
-            setcookie('cart', '', time() - 3600, '/');
-            $statusMsg = "<div class='alert alert-success text-center'>Payment Successful! Courses have been enrolled.</div>";
-            $courses = [];
-            $total = 0;
-        } else {
-            $statusMsg = "<div class='alert alert-danger text-center'>Payment Failed! Please try again.</div>";
         }
+
+        // Clear cart after success
+        setcookie('cart', '', time() - 3600, '/');
+        $statusMsg = "<div class='alert alert-success text-center'>✅ Payment Successful! Courses have been enrolled.</div>";
+        $courses = [];
+        $total = 0;
+    } elseif ($_GET['status'] === 'fail') {
+        $statusMsg = "<div class='alert alert-danger text-center'>❌ Payment Failed! Please try again.</div>";
+    } elseif ($_GET['status'] === 'missing') {
+        $statusMsg = "<div class='alert alert-warning text-center'>⚠️ Payment response missing or invalid.</div>";
     }
 }
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -61,6 +61,45 @@ if (isset($_POST['pay_now'])) {
     <link rel="stylesheet" href="../style.css" />
 </head>
 <body>
+    <nav class="navbar navbar-expand-lg navbar-blur sticky-top shadow-sm">
+  <div class="container-fluid">
+    <a class="navbar-brand fw-bold" href="">SkillUp Academy</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+      aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+  
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav ms-auto">
+        <li class="nav-item">
+          <a class="nav-link active" href="../index.php">Home</a>
+        </li>
+        
+        <?php
+          if(isset($_SESSION['role'])){
+            echo'<li class="nav-item">';
+            if($_SESSION['role']==="Student")
+              echo '<a class="nav-link" href="../student/dashboard.php">Dashboard</a> </li>';
+            else if($_SESSION['role']==="Instructor")
+              echo '<a class="nav-link" href="../instructor/dashboard.php">Dashboard</a> </li>';
+            else
+              echo '<a class="nav-link" href="../admin/dashboard.php">Dashboard</a> </li>';
+
+            echo'<li class="nav-item">
+                  <a class="nav-link" href="logout.php">Logout</a>
+                  </li>';
+          }
+          else{
+            echo '<a class="nav-link" href="login.php">Login</a> </li>
+                  <li class="nav-item">
+                  <a class="nav-link" href="signup.php">Signup</a>
+                  </li>';
+          }
+        ?>
+      </ul>
+    </div>
+  </div>
+</nav>
 
 <div class="container mt-5">
     <h2 class="mb-4">Your Cart</h2>
@@ -95,9 +134,16 @@ if (isset($_POST['pay_now'])) {
             </tbody>
         </table>
 
-        <form method="POST" class="text-end">
-            <button class="btn btn-success" name="pay_now" type="submit">Proceed to Payment</button>
-        </form>
+        <form method="POST" action="pay/index.php" class="text-end">
+    <input type="hidden" name="amount" value="<?= $total ?>">
+    <input type="hidden" name="currency" value="BDT">
+    <input type="hidden" name="cus_name" value="<?= htmlspecialchars($_SESSION['u_id']) ?>">
+    <input type="hidden" name="cus_email" value="xyz@gmail.com">
+    <input type="hidden" name="cus_phone" value="00000000000">
+    
+    <button class="btn btn-success" name="pay_now" type="submit">Proceed to Payment</button>
+</form>
+
     <?php endif; ?>
 </div>
 

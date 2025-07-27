@@ -1,6 +1,10 @@
 <?php
-include '../auth/cnct.php';
 session_start();
+include '../auth/cnct.php';
+
+/* For Checking
+$_SESSION['role'] = "Instructor";
+$_SESSION['u_id'] = 2; */
 
 if (!isset($_SESSION['role']) && $_SESSION['role'] !== "Instructor") {
     session_unset();
@@ -34,26 +38,26 @@ $stmt->close();
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Courses For Instructor</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="../style.css">
+
+    <link rel="preload" href="../style.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript>
+        <link rel="stylesheet" href="../style.css">
+    </noscript>
+    
+    <link rel="prefetch" href="../image-assets/common/fav.webp" as="image">
+    <link rel="icon" href="../image-assets/common/fav.webp" type="image/webp">
+
 </head>
 
 <body>
-    <?php
-    $stmt_n = $conn->prepare("SELECT n_status FROM instructors WHERE u_id = ?");
-    $stmt_n->bind_param("i", $u_id);
-
-    try {
-        $stmt_n->execute();
-        $stmt_n->bind_result($n_status);
-        $stmt_n->fetch();
-        $stmt_n->close();
-    } catch (Exception $e) {
-        $stmt_n->close();
-        $conn->close();
-        header("Location: ../auth/logout.php");
-        exit();
-    }
-    ?>
+    <script>
+        window.addEventListener('pageshow', function(event) {
+            if (event.persisted) {
+                window.location.reload();
+            }
+        });
+    </script>
+    
     <nav class="navbar navbar-expand-lg navbar-blur sticky-top shadow-sm">
         <div class="container-fluid">
             <a class="navbar-brand fw-bold" href="">SkillUp Academy</a>
@@ -65,22 +69,10 @@ $stmt->close();
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
                     <li class="nav-item">
+                        <a class="nav-link" href="../index.php">Home</a>
+                    </li>
+                    <li class="nav-item">
                         <a class="nav-link" href="dashboard.php">Dashboard</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link active" href="#">Courses</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="notices.php">Notices
-                            <?php if ($n_status === "unread"): ?>
-                                <span class="position-absolute top-0 start-100 translate-middle p-1 bg-danger border border-light rounded-circle">
-                                    <span class="visually-hidden">New</span>
-                                </span>
-                            <?php endif; ?>
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="profile.php">Profile</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="../auth/logout.php">Logout</a>

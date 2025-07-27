@@ -115,6 +115,15 @@ $hasNewNotice = isset($_SESSION['new_notice']) && $_SESSION['new_notice'];
             <a class="nav-link active" href="">Dashboard</a>
           </li>
           <li class="nav-item">
+<<<<<<< HEAD
+=======
+            <a class="nav-link active" href="notices.php">Notices</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="profile.php">Profile</a>
+          </li>
+          <li class="nav-item">
+>>>>>>> fa605e02d6adde23530be8ca38e3745691c2c5de
             <a class="nav-link" href="../auth/logout.php">Logout</a>
           </li>
         </ul>

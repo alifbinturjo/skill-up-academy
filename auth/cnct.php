@@ -1,9 +1,9 @@
 <?php
 
 $host="localhost";
-$username="root";
-$password="";
-$dbname="skillup_academy";
+$username="mynsuxy1_admin";
+$password="n#,h#VxrB{cz";
+$dbname="mynsuxy1_main";
 
 try{
     $conn= new mysqli($host,$username,$password,$dbname);

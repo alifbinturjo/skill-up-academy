@@ -1,6 +1,7 @@
 <?php
-  include 'cnct.php';
-  session_start();// Start the session to store user data
+session_start(); // Start the session to store user data
+include 'cnct.php';
+  
 
   // Function to handle form submission
   if ($_SERVER['REQUEST_METHOD'] == 'POST') {
@@ -106,9 +107,21 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr" crossorigin="anonymous">
     <link rel="stylesheet" href="../style.css">
+
+    <!-- Bootstrap Icons for Eye Toggle -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+    <link rel="prefetch" href="../image-assets/common/fav.webp" as="image">
+    <link rel="icon" href="../image-assets/common/fav.webp" type="image/webp">
 </head>
 
 <body>
+    <script>
+        window.addEventListener('pageshow', function (event) {
+            if (event.persisted) {
+                window.location.reload();
+            }
+        });
+    </script>
     <!-- Navbar -->
     <nav class="navbar navbar-expand-lg navbar-blur sticky-top shadow-sm">
         <div class="container-fluid">
@@ -120,15 +133,21 @@
 
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
-                    <li class="nav-item">
-                        <a class="nav-link" href="../index.php">Home</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link active" href="signup.php">Signup</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="login.php">Login</a>
-                    </li>
+                    <li class="nav-item"><a class="nav-link" href="../index.php">Home</a></li>
+                    <?php
+                    if (isset($_SESSION['role'])) {
+                        echo '<li class="nav-item">';
+                        if ($_SESSION['role'] === "Student")
+                            echo '<a class="nav-link" href="student/dashboard.php">Dashboard</a> </li>';
+                        else if ($_SESSION['role'] === "Instructor")
+                            echo '<a class="nav-link" href="instructor/dashboard.php">Dashboard</a> </li>';
+                        else
+                            echo '<a class="nav-link" href="admin/dashboard.php">Dashboard</a> </li>';
+                        echo '<li class="nav-item"><a class="nav-link" href="auth/logout.php">Logout</a></li>';
+                    } else {
+                        echo '<a class="nav-link " href="login.php">Login</a> </li><li class="nav-item"><a class="nav-link active " href="signup.php">Signup</a></li>';
+                    }
+                    ?>
                 </ul>
             </div>
         </div>
@@ -242,44 +261,46 @@
             }
         });
     </script>
-<!-- Bootstrap JS and Popper.js -->
-<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js" defer></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.min.js" defer></script>
+
+    <!-- Bootstrap JS and Popper.js -->
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.min.js" defer></script>
 </body>
 
+
 <footer class="bg-dark text-white pt-5 pb-4">
-    <div class="container text-md-left">
-        <div class="row text-center text-md-left">
+  <div class="container text-md-left">
+    <div class="row text-center text-md-left">
 
-            <div class="col-md-6 col-lg-6 col-xl-6 mx-auto mt-3">
-                <h5 class="mb-4 fw-bold">SkillUp Academy</h5>
-                <p>Empowering learners with the skills they need to succeed in the digital world.</p>
-                <a href="policies.html" class="text-white text-decoration-none">Academy policies &rarr;</a>
-            </div>
+      <div class="col-md-6 col-lg-6 col-xl-6 mx-auto mt-3">
+        <h5 class="mb-4 fw-bold">SkillUp Academy</h5>
+        <p>Empowering learners with the skills they need to succeed in the digital world.</p>
+        <a href="../policies.php" class="text-white text-decoration-none">Academy policies &rarr;</a>
+      </div>
 
-            <div class="col-md-3 col-lg-3 col-xl-3 mx-auto mt-3">
-                <h5 class="mb-4 fw-bold">Contact</h5>
-                <p><i class="bi bi-envelope me-2"></i> support@skillup.com</p>
-                <p><i class="bi bi-phone me-2"></i> +880 1234-567890</p>
-                <p><i class="bi bi-geo-alt me-2"></i> Dhaka, Bangladesh</p>
-            </div>
+      <div class="col-md-3 col-lg-3 col-xl-3 mx-auto mt-3">
+        <h5 class="mb-4 fw-bold">Contact</h5>
+        <p><i class="bi bi-envelope me-2"></i> support@skillup.mynsu.xyz</p>
+        <p><i class="bi bi-phone me-2"></i> 01745630304</p>
+        <a href="../locate.php" class="text-white text-decoration-none"><i class="bi bi-geo-alt me-2"></i>Dhaka, Bangladesh &rarr;</a>
+      </div>
 
-            <div class="col-md-3 col-lg-3 col-xl-3 mx-auto mt-3">
-                <h5 class="mb-4 fw-bold">Follow Us</h5>
-                <a href="#" class="text-white me-3"><i class="bi bi-facebook"></i></a>
-                <a href="#" class="text-white me-3"><i class="bi bi-twitter"></i></a>
-                <a href="#" class="text-white me-3"><i class="bi bi-linkedin"></i></a>
-                <a href="#" class="text-white"><i class="bi bi-youtube"></i></a>
-            </div>
-
-        </div>
-
-        <hr class="my-3">
-
-        <div class="text-center">
-            <p class="mb-0">&copy; 2025 SkillUp Academy. All rights reserved.</p>
-        </div>
+      <div class="col-md-3 col-lg-3 col-xl-3 mx-auto mt-3">
+        <h5 class="mb-4 fw-bold">Follow Us</h5>
+        <a href="#" class="text-white me-3"><i class="bi bi-facebook"></i></a>
+        <a href="#" class="text-white me-3"><i class="bi bi-twitter"></i></a>
+        <a href="#" class="text-white me-3"><i class="bi bi-linkedin"></i></a>
+        <a href="#" class="text-white"><i class="bi bi-youtube"></i></a>
+      </div>
 
     </div>
+
+     <hr class="my-3">
+
+    <div class="text-center">
+      <p class="mb-0">&copy; 2025 SkillUp Academy. All rights reserved.</p>
+    </div>
+
+  </div>
 </footer>
 </html>

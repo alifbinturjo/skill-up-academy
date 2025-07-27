@@ -1,6 +1,7 @@
 <?php
-include 'auth/cnct.php';
 session_start();
+include 'auth/cnct.php';
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -8,9 +9,15 @@ session_start();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SkillUp Academy</title>
+    <link rel="prefetch" href="image-assets/common/fav.webp" as="image">
+    <link rel="icon" href="image-assets/common/fav.webp" type="image/webp">
+
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
-    <link rel="stylesheet" href="style.css">
+    
+<link rel="preload" href="style.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+<noscript><link rel="stylesheet" href="style.css"></noscript>
+
 </head>
 <body>
 <script>
@@ -32,12 +39,6 @@ session_start();
       <ul class="navbar-nav ms-auto">
         <li class="nav-item">
           <a class="nav-link active" href="">Home</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="courses.php">Courses</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="instructors.php">Instructors</a>
         </li>
         
         <?php
@@ -71,7 +72,7 @@ session_start();
     <div class="hero-text">
       <h1 class="fw-bold" id="hero-text"></h1>
       <p class="lead">Learn new skills and boost your career with us...</p>
-      <a href="auth/signup.html" class="btn btn-outline-dark">Get Started</a>
+      <a href="auth/signup.php" class="btn btn-outline-dark">Get Started</a>
       <span>Or</span>
       <a href="#explore" class="btn btn-outline-dark">Explore</a>
     </div>
@@ -123,20 +124,23 @@ catch(Exception $e){
   <div class="row justify-content-center text-center mb-5">
       <div class="col-md-4">
         <div class="card card-h h-100 shadow border-0 p-4 bg-transparent">
+          <p>More than</p>
           <h3 class="fw-bold counter" data-target="<?php echo $studentCount  ?>">0</h3>
-        <p>+ Students Trained</p>
+        <p>Students Trained</p>
         </div>
       </div>
       <div class="col-md-4">
         <div class="card card-h h-100 shadow border-0 p-4 bg-transparent">
+          <p>More than</p>
           <h3 class="fw-bold counter" data-target="<?php echo $instructorCount  ?>">0</h3>
-        <p>+ Expert Instructors</p>
+        <p>Expert Instructors</p>
         </div>
       </div>
       <div class="col-md-4">
         <div class="card card-h h-100 shadow border-0 p-4 bg-transparent">
+          <p>More than</p>
           <h3 class="fw-bold counter" data-target="<?php echo $domainCount  ?>">0</h3>
-        <p>+ Domains</p>
+        <p>Domains</p>
         </div>
       </div>
     </div>
@@ -162,18 +166,16 @@ $result = $stmt->get_result();
 
 <div class="mb-5">
   <h3 class="mb-3 text-center fw-bold">Featured Domains</h3>
-  <div class="row justify-content-center text-center mb-5">
+  <div class="d-flex flex-wrap justify-content-center gap-2">
     <?php while ($row = $result->fetch_assoc()) { ?>
-      <div class="col-md-3 mb-3">
-        <div class="card card-h h-100 shadow-sm border-1 p-4 bg-transparent">
-          <h5 class="fw-bold badge bg-primary fs-5"><?php echo htmlspecialchars($row['domain']); ?></h5>
-        </div>
-      </div>
+      <span class="card-h badge bg-primary fs-6 fw-semibold px-3 py-3 m-2">
+        <?php echo htmlspecialchars(ucfirst($row['domain'])); ?>
+      </span>
     <?php } ?>
-    <?php $stmt->close();
-    ?>
+    <?php $stmt->close(); ?>
   </div>
 </div>
+
 
 <?php
 
@@ -266,18 +268,18 @@ try {
 
 
 <div class="mb-5">
-  <h3 class="mb-3 text-center fw-bold">Top Rated Teachers</h3>
+  <h3 class="mb-3 text-center fw-bold">Top Rated Instructors</h3>
   <div class="row justify-content-center text-center mb-5">
     <?php foreach ($instructors as $inst): ?>
       <div class="col-md-4 mb-4">
         <div class="card card-h h-100 shadow-sm border-1 p-4" style="background-color: rgba(169, 169, 169, 0.356);">
           <div class="card-body text-center">
-            <img src="<?= htmlspecialchars($inst['image'] ?: 'default-teacher.png') ?>" class="rounded-circle mb-3" width="100" height="100" alt="<?= htmlspecialchars($inst['name']) ?>">
+            <img src="<?= htmlspecialchars($inst['image'] ?: 'default-teacher.png') ?>" class="rounded-circle mb-3" width="100" height="100" alt="<?= htmlspecialchars($inst['name']) ?> " loading="lazy">
             <h5 class="card-title"><?= htmlspecialchars($inst['name']) ?></h5>
             <p class="text-muted"><?= htmlspecialchars(ucwords(str_replace('-', ' ', $inst['domain']))) ?></p>
             <hr class="divider my-2">
             <p class="card-text"><?= htmlspecialchars($inst['bio'] ?: 'No bio available.') ?></p>
-            <p><strong>Average Rating:</strong> <?= number_format($inst['avg_rating'], 1) ?></p>
+            <p><strong>Average Rating:</strong> <?= number_format($inst['avg_rating'], 1) ?><span class="badge bg-warning mx-2 text-dark">Top rated</span></p>
           </div>
         </div>
       </div>
@@ -324,7 +326,11 @@ try {
     </div>
 
 </section>
-    <script src="common/common.js"></script>
+    
+    <!-- Preload JS -->
+<link rel="preload" href="common/common.js" as="script">
+<script src="common/common.js" defer></script>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js" integrity="sha384-ndDqU0Gzau9qJ1lfW4pNLlhNTkCfHzAVBReH9diLvGRem5+R9g2FzA8ZGN954O5Q" crossorigin="anonymous"></script>
 </body>
 <footer class="bg-dark text-white pt-5 pb-4">
@@ -334,14 +340,14 @@ try {
       <div class="col-md-6 col-lg-6 col-xl-6 mx-auto mt-3">
         <h5 class="mb-4 fw-bold">SkillUp Academy</h5>
         <p>Empowering learners with the skills they need to succeed in the digital world.</p>
-        <a href="policies.html" class="text-white text-decoration-none">Academy policies &rarr;</a>
+        <a href="policies.php" class="text-white text-decoration-none">Academy policies &rarr;</a>
       </div>
 
       <div class="col-md-3 col-lg-3 col-xl-3 mx-auto mt-3">
         <h5 class="mb-4 fw-bold">Contact</h5>
-        <p><i class="bi bi-envelope me-2"></i> support@skillup.com</p>
-        <p><i class="bi bi-phone me-2"></i> +880 1234-567890</p>
-        <p><i class="bi bi-geo-alt me-2"></i> Dhaka, Bangladesh</p>
+        <p><i class="bi bi-envelope me-2"></i> support@skillup.mynsu.xyz</p>
+        <p><i class="bi bi-phone me-2"></i> 01745630304</p>
+        <a href="locate.php" class="text-white text-decoration-none"><i class="bi bi-geo-alt me-2"></i>Dhaka, Bangladesh &rarr;</a>
       </div>
 
       <div class="col-md-3 col-lg-3 col-xl-3 mx-auto mt-3">

@@ -14,16 +14,11 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'Instructor') {
 $admin_notices = $conn->query("
   SELECT title, message, date 
   FROM admin_notices 
-  WHERE audience = 'everyone'
+  WHERE audience = 'everyone' or audience='instructor'
   ORDER BY date DESC
 ");
 
-// Fetch all instructor notices
-$instructors_notices = $conn->query("
-  SELECT title, message, date 
-  FROM instructors_notices 
-  ORDER BY date DESC
-");
+
 ?>
 
 <!DOCTYPE html>
@@ -82,25 +77,6 @@ $instructors_notices = $conn->query("
       }
     }
     ?>
-
-    <!-- Instructor Notices -->
-    <?php
-    if ($instructors_notices && $instructors_notices->num_rows > 0) {
-      while ($row = $instructors_notices->fetch_assoc()) {
-        echo '
-        <div class="card shadow bg-transparent card-h mb-4">
-          <div class="card-body">
-            <h5 class="card-title">' . htmlspecialchars($row["title"]) . ' <span class="badge bg-success">Instructor</span></h5>
-            <p class="card-text">' . htmlspecialchars($row["message"]) . '</p>
-            <p class="text-muted small">' . htmlspecialchars($row["date"]) . '</p>
-          </div>
-        </div>';
-      }
-    } else {
-      echo '<p class="text-center text-muted">No instructor notices found.</p>';
-    }
-    ?>
-
   </div>
 
   <!-- Bootstrap JS -->

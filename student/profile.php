@@ -32,14 +32,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !isset($_POST['change_password'])) 
         $errors[] = "Invalid email format.";
     }
 
-<<<<<<< HEAD
     
-
-
-
     // If no errors, proceed to update the profile
-=======
->>>>>>> fa605e02d6adde23530be8ca38e3745691c2c5de
     if (empty($errors)) {
         // Update user data in the `users` table
         $stmt = $conn->prepare("UPDATE users SET name=?, email=?, contact=? WHERE u_id=?");

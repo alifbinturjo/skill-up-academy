@@ -125,13 +125,13 @@ $conn->close();
     <title>Courses | SkillUp Academy</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet" />
-    <link rel="preload" href="../style.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <link rel="preload" href="style.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
     <noscript>
-        <link rel="stylesheet" href="../style.css">
+        <link rel="stylesheet" href="style.css">
     </noscript>
 
-    <link rel="prefetch" href="../image-assets/common/fav.webp" as="image">
-    <link rel="icon" href="../image-assets/common/fav.webp" type="image/webp">
+    <link rel="prefetch" href="image-assets/common/fav.webp" as="image">
+    <link rel="icon" href="image-assets/common/fav.webp" type="image/webp">
 
     <style>
         .floating-cart {

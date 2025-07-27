@@ -1,6 +1,7 @@
 <?php
-require_once '../auth/cnct.php';
 session_start();
+require_once '../auth/cnct.php';
+
 
 // Restrict access to students only
 if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'Student') {
@@ -74,22 +75,17 @@ unset($_SESSION['new_notice']); // Reset after viewing
     </button>
 
     <div class="collapse navbar-collapse" id="navbarNav">
-      <ul class="navbar-nav ms-auto">
-        <li class="nav-item"><a class="nav-link" href="dashboard.php">Dashboard</a></li>
-        <li class="nav-item"><a class="nav-link" href="courses.php">Courses</a></li>
-        <li class="nav-item">
-          <a class="nav-link active position-relative" href="notices.php">
-            Notices
-            <?php if ($hasNewNotice): ?>
-              <span class="position-absolute top-0 start-100 translate-middle p-1 bg-danger border border-light rounded-circle">
-                <span class="visually-hidden">New notice</span>
-              </span>
-            <?php endif; ?>
-          </a>
-        </li>
-        <li class="nav-item"><a class="nav-link" href="profile.php">Profile</a></li>
-        <li class="nav-item"><a class="nav-link" href="../auth/logout.php">Logout</a></li>
-      </ul>
+     <ul class="navbar-nav ms-auto">
+          <li class="nav-item">
+            <a class="nav-link" href="../index.php">Home</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link active" href="">Dashboard</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="../auth/logout.php">Logout</a>
+          </li>
+        </ul>
     </div>
   </div>
 </nav>

@@ -1,6 +1,7 @@
 <?php
-  include 'cnct.php';
-  session_start(); // Start the session to store user data
+session_start(); // Start the session to store user data
+include 'cnct.php';
+  
 
   // Function to handle form submission
   if ($_SERVER['REQUEST_METHOD'] == 'POST') {

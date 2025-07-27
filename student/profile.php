@@ -1,6 +1,7 @@
 <?php
-include '../auth/cnct.php';
 session_start();
+include '../auth/cnct.php';
+
 
 // Check if user is logged in as a Student
 if (!isset($_SESSION['role']) || $_SESSION['role'] !== "Student") {

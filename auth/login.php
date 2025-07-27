@@ -1,7 +1,7 @@
 <?php
-session_start();  
+session_start(); 
 include 'cnct.php';  
-
+ 
 // Handle the login form submission
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     // Collect form data
@@ -79,17 +79,17 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     // Redirect based on role
     if ($role == 'Student') {
-        header('Location:/skill-up-academy/student/dashboard.php');  
+        header('Location:../student/dashboard.php');  
         exit();
     } elseif ($role == 'Admin') {
-        header('Location: /skill-up-academy/admin/dashboard.php');    
+        header('Location: ../admin/dashboard.php');    
         exit();
     } elseif ($role == 'Instructor') {
-        header('Location:/skill-up-academy/instructor/dashboard.php'); 
+        header('Location:../instructor/dashboard.php'); 
         exit();
     } else {
         $_SESSION['error'] = 'User role is undefined.';
-        header('Location: /auth/login.php');  
+        header('Location:.. /auth/login.php');  
         exit();
     }
 }

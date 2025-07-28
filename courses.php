@@ -3,11 +3,14 @@ session_start();
 include 'auth/cnct.php';
 
 // Connect to Redis
+$useRedis = false;
 $redis = new Redis();
 try {
-    $redis->connect('127.0.0.1', 6379);
+    if ($redis->connect('127.0.0.1', 6379)) {
+        $useRedis = true;
+    }
 } catch (Exception $e) {
-    die("Redis connection failed: " . $e->getMessage());
+    $useRedis = false;
 }
 
 // Handle Add to Cart
@@ -64,7 +67,7 @@ $total_pages = ceil($total / $limit);
 $cacheKey = "courses:domain={$filter}:page={$page}";
 $courses = [];
 
-if ($redis->exists($cacheKey)) {
+if ($useRedis && $redis->exists($cacheKey)) {
     $courses = json_decode($redis->get($cacheKey), true);
 } else {
     $sql = "SELECT c.c_id, c.title, c.description, c.amount, c.duration, c.domain, c.url, u.name
@@ -100,19 +103,23 @@ if ($redis->exists($cacheKey)) {
     }
     $stmt->close();
 
-    $redis->setex($cacheKey, 600, json_encode($courses));
+    if ($useRedis) {
+        $redis->setex($cacheKey, 600, json_encode($courses));
+    }
 }
 
 // Redis Cache for Domains
 $domains = [];
-if ($redis->exists("courses:domains")) {
+if ($useRedis && $redis->exists("courses:domains")) {
     $domains = json_decode($redis->get("courses:domains"), true);
 } else {
     $result = $conn->query("SELECT DISTINCT domain FROM courses");
     while ($row = $result->fetch_assoc()) {
         $domains[] = $row['domain'];
     }
-    $redis->setex("courses:domains", 1800, json_encode($domains));
+    if ($useRedis) {
+        $redis->setex("courses:domains", 1800, json_encode($domains));
+    }
 }
 
 $conn->close();
@@ -232,7 +239,6 @@ $conn->close();
                                 <a href="<?= htmlspecialchars($course['url']) ?>" class="btn btn-md btn-outline-dark">View Details</a>
                                 <a href="?add_to_cart=<?= $course['id'] ?>" class="btn btn-md btn-success">Add to Cart (৳<?= $course['amount'] ?>)</a>
                             </div>
-
                         </div>
                     </div>
                 </div>
@@ -258,7 +264,7 @@ $conn->close();
         <div class="floating-cart">
             <?php if (isset($_SESSION['role']) && $_SESSION['role'] == "Student"): ?>
                 <a href="auth/billing.php" class="btn btn-lg btn-dark shadow">
-                    🛒 Checkout <!-- (<?= count(explode(',', $_COOKIE['cart'])) ?>) -->
+                    🛒 Checkout
                 </a>
             <?php else: ?>
                 <a href="auth/login.php" class="btn btn-lg btn-dark shadow" onclick="alert('Please login first to proceed to checkout!');">

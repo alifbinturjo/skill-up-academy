@@ -30,9 +30,9 @@ curl_setopt_array($curl, array(
   CURLOPT_POSTFIELDS =>'{
     "store_id": "'.$store_id.'",
     "tran_id": "'.$tran_id.'",
-    "success_url": "http://localhost/skill-up-academy/auth/pay/success.php",
-    "fail_url": "http://localhost/skill-up-academy/auth/pay/success.php",
-    "cancel_url": "http://localhost/skill-up-academy/auth/pay/success.php",
+    "success_url": "https://skillup.mynsu.xyz/auth/pay/success.php",
+    "fail_url": "https://skillup.mynsu.xyz/auth/pay/success.php",
+    "cancel_url": "https://skillup.mynsu.xyz/auth/pay/success.php",
     "amount": "'.$amount.'",
     "currency": "'.$currency.'",
     "signature_key": "'.$signature_key.'",

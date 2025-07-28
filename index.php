@@ -210,7 +210,7 @@ $stmt->close();
     <div class="row justify-content-center">
         <?php foreach ($courses as $course): ?>
             <div class="col-md-4 mb-4">
-                <div class="card card-h h-100 shadow-sm border-1 p-4" style="background-color: rgba(169, 169, 169, 0.356);">
+                <div class="card card-h h-100 shadow-sm border-1 p-4" style="background-color: white;">
                     <div class="card-body">
                         <h5 class="card-title"><?= htmlspecialchars($course['title']) ?></h5>
                         <div class="d-flex justify-content-between mb-2">
@@ -272,7 +272,7 @@ try {
   <div class="row justify-content-center text-center mb-5">
     <?php foreach ($instructors as $inst): ?>
       <div class="col-md-4 mb-4">
-        <div class="card card-h h-100 shadow-sm border-1 p-4" style="background-color: rgba(169, 169, 169, 0.356);">
+        <div class="card card-h h-100 shadow-sm border-1 p-4" style="background-color: white;">
           <div class="card-body text-center">
             <img src="<?= htmlspecialchars($inst['image'] ?: 'default-teacher.png') ?>" class="rounded-circle mb-3" width="100" height="100" alt="<?= htmlspecialchars($inst['name']) ?> " loading="lazy">
             <h5 class="card-title"><?= htmlspecialchars($inst['name']) ?></h5>

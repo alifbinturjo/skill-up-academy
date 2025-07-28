@@ -106,7 +106,7 @@ $result = $stmt->get_result();
         <div class="row">
             <?php while ($row = $result->fetch_assoc()): ?>
                 <div class="col-md-4 mb-4">
-                    <div class="card h-100 shadow-sm p-4" style="background-color: rgba(169, 169, 169, 0.2);">
+                    <div class="card h-100 shadow-sm p-4 bg-white" >
                         <div class="card-body">
                             <h5 class="card-title"><?= htmlspecialchars($row['title']) ?></h5>
                             <div class="d-flex justify-content-between mb-2">

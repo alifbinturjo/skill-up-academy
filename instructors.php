@@ -163,7 +163,7 @@ $conn->close();
             <?php endif; ?>
             <?php foreach ($instructors as $inst): ?>
                 <div class="col-md-4 mb-4">
-                    <div class="card card-h h-100 shadow-sm border-1 p-4" style="background-color: rgba(169, 169, 169, 0.356);">
+                    <div class="card card-h h-100 shadow-sm border-1 p-4 bg-white" >
                         <div class="card-body text-center">
                             <img src="<?= htmlspecialchars($inst['image']) ?>" class="rounded-circle mb-3"
                                 alt="<?= htmlspecialchars($inst['name']) ?>" loading="lazy">

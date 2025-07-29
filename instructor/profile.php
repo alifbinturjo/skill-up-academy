@@ -157,11 +157,11 @@ $image = $image ? ('../' . $image) : '../image-assets/Instructors/default.webp';
                 <div class="col-lg-8">
                     <div class="card card-h shadow-lg border-0 rounded">
                         <div class="card-body p-5">
-                            <div class="text-center mb-5">
+                            <div class="text-center mb-3">
                                 <h1 class="fw-bold">Profile</h1>
                                 <p class="lead text-muted">Manage your account information and settings</p>
                             </div>
-
+                            <hr class="divider mb-3">
                             <?php if (!empty($errors)): ?>
                                 <div class="alert alert-danger alert-dismissible fade show mb-4">
                                     <?php foreach ($errors as $e): ?>

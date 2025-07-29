@@ -146,7 +146,7 @@ $result = $stmt->get_result();
 
                             <!-- View announcements -->
                             <div class="mt-3">
-                                <a href="notices.php?c_id=<?= $row['c_id'] ?>" class="btn btn-sm btn-outline-dark">View Announcements</a>
+                                <a href="notices.php?c_id=<?= $row['c_id'] ?>" class="btn btn-sm btn-outline-info">View Announcements</a>
                             </div>
                         </div>
                     </div>

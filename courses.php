@@ -235,8 +235,8 @@ $conn->close();
                             <p class="card-text"><?= htmlspecialchars($course['description']) ?></p>
                             <p class="text-muted"><small>Instructor: <?= htmlspecialchars($course['instructor']) ?></small></p>
                             <div class="d-flex justify-content-between align-items-center">
-                                <a href="<?= htmlspecialchars($course['url']) ?>" class="btn btn-md btn-outline-dark">View Details</a>
-                                <a href="?add_to_cart=<?= $course['id'] ?>" class="btn btn-md btn-success">Add to Cart (৳<?= $course['amount'] ?>)</a>
+                                <a href="<?= htmlspecialchars($course['url']) ?>" class="btn btn-md btn-outline-primary">View Details</a>
+                                <a href="?add_to_cart=<?= $course['id'] ?>" class="btn btn-md btn-outline-success">Add to Cart (৳<?= $course['amount'] ?>)</a>
                             </div>
                         </div>
                     </div>

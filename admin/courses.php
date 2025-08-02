@@ -83,7 +83,7 @@ if (isset($_POST['action']) && $_POST['action'] === 'edit_course') {
 
     $start_date = $_POST['start_date'];
 $stmt = $conn->prepare("UPDATE courses SET title = ?, amount = ?, description = ?, domain = ?, duration = ?, u_id = ?, start_date = ? WHERE c_id = ?");
-$stmt->bind_param("sissiiisi", $title, $amount, $description, $domain, $duration, $u_id, $start_date, $c_id);
+$stmt->bind_param("sisssiss", $title, $amount, $description, $domain, $duration, $u_id, $start_date, $c_id);
 
     $executed = $stmt->execute();
     $_SESSION['message'] = $executed ? "Course updated successfully!" : "Failed to update course.";
@@ -167,17 +167,19 @@ $instructors = $instructor_result->fetch_all(MYSQLI_ASSOC);
     </div>
   </div>
 
-  <?php if (isset($_SESSION['message'])): ?>
-    <div class="position-fixed bottom-0 start-50 translate-middle-x mb-3" style="z-index: 1080;">
-      <div class="toast align-items-center text-bg-<?= $_SESSION['message_type'] ?> show" role="alert">
-        <div class="d-flex">
-          <div class="toast-body"><?= $_SESSION['message'] ?></div>
-          <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
-        </div>
+<?php if (isset($_SESSION['message'])): ?>
+  <div class="position-fixed bottom-0 start-50 translate-middle-x mb-3" style="z-index: 1080;">
+    <div class="toast align-items-center text-bg-<?= $_SESSION['message_type'] ?>" role="alert"
+         data-bs-delay="1000" data-bs-autohide="true" id="toastMessage">
+      <div class="d-flex">
+        <div class="toast-body"><?= $_SESSION['message'] ?></div>
+        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
       </div>
     </div>
-    <?php unset($_SESSION['message'], $_SESSION['message_type']); ?>
-  <?php endif; ?>
+  </div>
+  <?php unset($_SESSION['message'], $_SESSION['message_type']); ?>
+<?php endif; ?>
+
 
   <!-- Courses Table -->
   <div class="card bg-transparent shadow-lg border-0 mt-4">
@@ -371,5 +373,15 @@ $instructors = $instructor_result->fetch_all(MYSQLI_ASSOC);
       }
     }
   </script>
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const toastEl = document.getElementById("toastMessage");
+    if (toastEl) {
+      const toast = new bootstrap.Toast(toastEl);
+      toast.show();
+    }
+  });
+</script>
+
 </body>
 </html>

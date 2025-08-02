@@ -3,23 +3,32 @@ session_start();
 include 'cnct.php';
 
 // Get cart items from cookie
-$cart_ids = isset($_COOKIE['cart']) && $_COOKIE['cart'] !== '' ? explode(',', $_COOKIE['cart']) : [];
+$cart_ids = isset($_COOKIE['cart']) && $_COOKIE['cart'] !== '' ? array_map('intval', explode(',', $_COOKIE['cart'])) : [];
 $courses = [];
 $total = 0;
+$owned_courses = [];
 
-if (!empty($cart_ids)) {
+if (!empty($cart_ids) && isset($_SESSION['u_id'])) {
     $placeholders = implode(',', array_fill(0, count($cart_ids), '?'));
     $types = str_repeat('i', count($cart_ids));
 
-    $sql = "SELECT c_id, title, amount FROM courses WHERE c_id IN ($placeholders)";
+    $sql = "SELECT c.c_id, c.title, c.amount,
+            (SELECT COUNT(*) FROM enrolls e WHERE e.c_id = c.c_id AND e.u_id = ?) AS is_enrolled
+            FROM courses c WHERE c.c_id IN ($placeholders)";
+
     $stmt = $conn->prepare($sql);
-    $stmt->bind_param($types, ...$cart_ids);
+    $stmt->bind_param("i$types", $_SESSION['u_id'], ...$cart_ids);
     $stmt->execute();
     $result = $stmt->get_result();
 
     while ($row = $result->fetch_assoc()) {
+        $row['owned'] = $row['is_enrolled'] > 0;
         $courses[] = $row;
-        $total += $row['amount'];
+        if (!$row['owned']) {
+            $total += $row['amount'];
+        } else {
+            $owned_courses[] = $row['c_id'];
+        }
     }
     $stmt->close();
 }
@@ -32,9 +41,11 @@ if (isset($_GET['status'])) {
 
         if (!empty($cart_ids)) {
             $stmt = $conn->prepare("INSERT IGNORE INTO enrolls (u_id, c_id, rating) VALUES (?, ?, NULL)");
-            foreach ($cart_ids as $c_id) {
-                $stmt->bind_param('ii', $u_id, $c_id);
-                $stmt->execute();
+            foreach ($courses as $course) {
+                if (!$course['owned']) {
+                    $stmt->bind_param('ii', $u_id, $course['c_id']);
+                    $stmt->execute();
+                }
             }
             $stmt->close();
         }
@@ -61,20 +72,20 @@ if (isset($_GET['status'])) {
     <link rel="stylesheet" href="../style.css" />
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg navbar-blur sticky-top shadow-sm">
+<nav class="navbar navbar-expand-lg navbar-blur sticky-top shadow-sm">
   <div class="container-fluid">
     <a class="navbar-brand fw-bold" href="">SkillUp Academy</a>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
       aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
-  
+
     <div class="collapse navbar-collapse" id="navbarNav">
       <ul class="navbar-nav ms-auto">
         <li class="nav-item">
           <a class="nav-link active" href="../index.php">Home</a>
         </li>
-        
+
         <?php
           if(isset($_SESSION['role'])){
             echo'<li class="nav-item">';
@@ -120,7 +131,9 @@ if (isset($_GET['status'])) {
                 <?php foreach ($courses as $course): ?>
                     <tr data-id="<?= $course['c_id'] ?>">
                         <td><?= htmlspecialchars($course['title']) ?></td>
-                        <td class="course-price"><?= $course['amount'] ?></td>
+                        <td class="course-price">
+                            <?= $course['owned'] ? '<span class="text-success fw-bold">✅ Already Owned</span>' : $course['amount'] ?>
+                        </td>
                         <td>
                             <button type="button" class="btn btn-outline-danger btn-sm remove-btn" aria-label="Remove course">&times;</button>
                         </td>
@@ -128,22 +141,22 @@ if (isset($_GET['status'])) {
                 <?php endforeach; ?>
                 <tr class="table-dark fw-bold">
                     <td>Total</td>
-                    <td id="total-price">BDT<?= $total ?></td>
+                    <td id="total-price">BDT<?= number_format($total, 2) ?></td>
                     <td></td>
                 </tr>
             </tbody>
         </table>
 
+        <?php if ($total > 0): ?>
         <form method="POST" action="pay/index.php" class="text-end">
-    <input type="hidden" name="amount" value="<?= $total ?>">
-    <input type="hidden" name="currency" value="BDT">
-    <input type="hidden" name="cus_name" value="<?= htmlspecialchars($_SESSION['u_id']) ?>">
-    <input type="hidden" name="cus_email" value="xyz@gmail.com">
-    <input type="hidden" name="cus_phone" value="00000000000">
-    
-    <button class="btn btn-success" name="pay_now" type="submit">Proceed to Payment</button>
-</form>
-
+            <input type="hidden" name="amount" value="<?= $total ?>">
+            <input type="hidden" name="currency" value="BDT">
+            <input type="hidden" name="cus_name" value="<?= htmlspecialchars($_SESSION['u_id']) ?>">
+            <input type="hidden" name="cus_email" value="xyz@gmail.com">
+            <input type="hidden" name="cus_phone" value="00000000000">
+            <button class="btn btn-success" name="pay_now" type="submit">Proceed to Payment</button>
+        </form>
+        <?php endif; ?>
     <?php endif; ?>
 </div>
 
@@ -158,17 +171,17 @@ document.addEventListener('DOMContentLoaded', () => {
         button.addEventListener('click', (e) => {
             const row = e.target.closest('tr');
             const priceEl = row.querySelector('.course-price');
-            const price = parseFloat(priceEl.textContent);
-
-            // Remove this course row
+            const priceText = priceEl.textContent.trim();
+            let price = 0;
+            if (!priceText.includes('Already Owned')) {
+                price = parseFloat(priceText);
+            }
             row.remove();
 
-            // Update total price
             let currentTotal = parseFloat(totalPriceEl.textContent.replace(/[^\d.]/g, ''));
             currentTotal -= price;
             totalPriceEl.textContent = 'BDT' + currentTotal.toFixed(2);
 
-            // Update cookie cart
             const removedId = row.getAttribute('data-id');
             let cart = getCookie('cart');
             if (cart) {
@@ -177,10 +190,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 setCookie('cart', cartArr.join(','), 7);
             }
 
-            // If no courses left, show empty message
             if (cartBody.querySelectorAll('tr').length === 1) {
                 cartBody.innerHTML = '<tr><td colspan="3" class="text-center text-muted">Your cart is empty.</td></tr>';
-                document.querySelector('form').style.display = 'none';
+                const form = document.querySelector('form');
+                if (form) form.style.display = 'none';
             }
         });
     });

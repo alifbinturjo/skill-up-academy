@@ -2,6 +2,13 @@
 session_start();
 include 'cnct.php';
 
+// ✅ Handle AJAX cart update without new file
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_cart'])) {
+    setcookie('cart', $_POST['update_cart'], time() + (86400 * 7), '/'); // 7 days
+    echo 'success';
+    exit;
+}
+
 // Get cart items from cookie
 $cart_ids = isset($_COOKIE['cart']) && $_COOKIE['cart'] !== '' ? array_map('intval', explode(',', $_COOKIE['cart'])) : [];
 $courses = [];
@@ -33,12 +40,11 @@ if (!empty($cart_ids) && isset($_SESSION['u_id'])) {
     $stmt->close();
 }
 
-// Payment status handling (after redirect from success.php)
+// Payment status handling
 $statusMsg = '';
 if (isset($_GET['status'])) {
     if ($_GET['status'] === 'success') {
         $u_id = $_SESSION['u_id'];
-
         if (!empty($cart_ids)) {
             $stmt = $conn->prepare("INSERT IGNORE INTO enrolls (u_id, c_id, rating) VALUES (?, ?, NULL)");
             foreach ($courses as $course) {
@@ -50,8 +56,7 @@ if (isset($_GET['status'])) {
             $stmt->close();
         }
 
-        // Clear cart after success
-        setcookie('cart', '', time() - 3600, '/');
+        setcookie('cart', '', time() - 3600, '/'); // Clear cart
         $statusMsg = "<div class='alert alert-success text-center'>✅ Payment Successful! Courses have been enrolled.</div>";
         $courses = [];
         $total = 0;
@@ -85,7 +90,6 @@ if (isset($_GET['status'])) {
         <li class="nav-item">
           <a class="nav-link active" href="../index.php">Home</a>
         </li>
-
         <?php
           if(isset($_SESSION['role'])){
             echo'<li class="nav-item">';
@@ -99,8 +103,7 @@ if (isset($_GET['status'])) {
             echo'<li class="nav-item">
                   <a class="nav-link" href="logout.php">Logout</a>
                   </li>';
-          }
-          else{
+          } else {
             echo '<a class="nav-link" href="login.php">Login</a> </li>
                   <li class="nav-item">
                   <a class="nav-link" href="signup.php">Signup</a>
@@ -187,7 +190,9 @@ document.addEventListener('DOMContentLoaded', () => {
             if (cart) {
                 let cartArr = cart.split(',');
                 cartArr = cartArr.filter(id => id !== removedId);
-                setCookie('cart', cartArr.join(','), 7);
+                const updatedCart = cartArr.join(',');
+                setCookie('cart', updatedCart, 7);
+                updateServerCookie(updatedCart);
             }
 
             if (cartBody.querySelectorAll('tr').length === 1) {
@@ -203,11 +208,22 @@ document.addEventListener('DOMContentLoaded', () => {
         const parts = value.split(`; ${name}=`);
         if (parts.length === 2) return parts.pop().split(';').shift();
     }
+
     function setCookie(name, value, days) {
         const d = new Date();
         d.setTime(d.getTime() + (days*24*60*60*1000));
         const expires = "expires="+ d.toUTCString();
         document.cookie = name + "=" + value + ";" + expires + ";path=/";
+    }
+
+    function updateServerCookie(value) {
+        fetch(window.location.href, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: 'update_cart=' + encodeURIComponent(value)
+        });
     }
 });
 </script>

@@ -221,7 +221,7 @@ $stmt->close();
                         <p class="card-text"><?= htmlspecialchars($course['description']) ?></p>
                         <p class="text-muted"><small>Instructor: <?= htmlspecialchars($course['instructor']) ?></small></p>
                         <div class="d-flex justify-content-between align-items-center">
-                            <a href="course-details/full-stack-web-dev.php" class="btn btn-md btn-outline-dark">View Details</a>
+                            <a href="<?= htmlspecialchars($course['url']) ?>" class="btn btn-md btn-outline-dark">View Details</a>
                             <span class="badge bg-success">Offered</span>
                         </div>
                     </div>

@@ -64,7 +64,7 @@ include '../auth/cnct.php';
   </div>
 </nav>
 <?php
-$c_id = 5;
+$c_id = 6;
 
 $stmt = $conn->prepare("
     SELECT 

@@ -7,6 +7,9 @@ include 'auth/cnct.php';
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="keywords" content="SkillUp, akillup academy, skill development, online courses">
+    <meta name="robots" content="index, follow">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SkillUp Academy</title>
     <link rel="prefetch" href="image-assets/common/fav.webp" as="image">

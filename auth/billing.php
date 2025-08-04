@@ -2,26 +2,20 @@
 session_start();
 include 'cnct.php';
 
-
 //  Handle AJAX cart updates via POST (from JavaScript)
-
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_cart'])) {
     setcookie('cart', $_POST['update_cart'], time() + (86400 * 7), '/'); // update cart cookie for 7 days
     echo 'success';
     exit;
 }
 
-
 //  Load cart items from cookie
-
 $cart_ids = isset($_COOKIE['cart']) && $_COOKIE['cart'] !== '' ? array_map('intval', explode(',', $_COOKIE['cart'])) : [];
 $courses = [];
 $total = 0;
 $owned_courses = [];
 
-
 //  Fetch course details from DB if cart and session exist
-
 if (!empty($cart_ids) && isset($_SESSION['u_id'])) {
     $placeholders = implode(',', array_fill(0, count($cart_ids), '?'));
     $types = str_repeat('i', count($cart_ids));
@@ -48,11 +42,9 @@ if (!empty($cart_ids) && isset($_SESSION['u_id'])) {
 }
 
 //  Handle payment result response
-
 $statusMsg = '';
 if (isset($_GET['status'])) {
     if ($_GET['status'] === 'success') {
-        //  Insert enrollments for unpaid courses
         $u_id = $_SESSION['u_id'];
         if (!empty($cart_ids)) {
             $stmt = $conn->prepare("INSERT IGNORE INTO enrolls (u_id, c_id, rating) VALUES (?, ?, NULL)");
@@ -65,7 +57,6 @@ if (isset($_GET['status'])) {
             $stmt->close();
         }
 
-        //  Clear cart cookie from browser and PHP runtime
         setcookie('cart', '', time() - 3600, '/');
         unset($_COOKIE['cart']);
 
@@ -90,7 +81,7 @@ if (isset($_GET['status'])) {
 </head>
 <body>
 
-<!--  Navbar Section -->
+<!-- Navbar -->
 <nav class="navbar navbar-expand-lg navbar-blur sticky-top shadow-sm">
   <div class="container-fluid">
     <a class="navbar-brand fw-bold" href="">SkillUp Academy</a>
@@ -99,12 +90,9 @@ if (isset($_GET['status'])) {
       <span class="navbar-toggler-icon"></span>
     </button>
 
-    <!--  Conditional Links Based on User Role -->
     <div class="collapse navbar-collapse" id="navbarNav">
       <ul class="navbar-nav ms-auto">
-        <li class="nav-item">
-          <a class="nav-link active" href="../index.php">Home</a>
-        </li>
+        <li class="nav-item"><a class="nav-link active" href="../index.php">Home</a></li>
         <?php
           if(isset($_SESSION['role'])){
             echo'<li class="nav-item">';
@@ -115,14 +103,10 @@ if (isset($_GET['status'])) {
             else
               echo '<a class="nav-link" href="../admin/dashboard.php">Dashboard</a> </li>';
 
-            echo'<li class="nav-item">
-                  <a class="nav-link" href="logout.php">Logout</a>
-                  </li>';
+            echo'<li class="nav-item"><a class="nav-link" href="logout.php">Logout</a></li>';
           } else {
-            echo '<a class="nav-link" href="login.php">Login</a> </li>
-                  <li class="nav-item">
-                  <a class="nav-link" href="signup.php">Signup</a>
-                  </li>';
+            echo '<li class="nav-item"><a class="nav-link" href="login.php">Login</a></li>
+                  <li class="nav-item"><a class="nav-link" href="signup.php">Signup</a></li>';
           }
         ?>
       </ul>
@@ -130,7 +114,7 @@ if (isset($_GET['status'])) {
   </div>
 </nav>
 
-<!--  Cart Section -->
+<!-- Cart -->
 <div class="container mt-5">
     <h2 class="mb-4">Your Cart</h2>
     <?= $statusMsg ?>
@@ -166,7 +150,7 @@ if (isset($_GET['status'])) {
             </tbody>
         </table>
 
-        <!--  Payment Form -->
+        <!-- Payment -->
         <?php if ($total > 0): ?>
         <form method="POST" action="pay/index.php" class="text-end">
             <input type="hidden" name="amount" value="<?= $total ?>">
@@ -180,7 +164,7 @@ if (isset($_GET['status'])) {
     <?php endif; ?>
 </div>
 
- <!-- Scripts -->
+<!-- JS -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js" defer></script>
 <script defer>
 document.addEventListener('DOMContentLoaded', () => {
@@ -188,7 +172,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const totalPriceEl = document.getElementById('total-price');
     const cartBody = document.getElementById('cart-table-body');
 
-    //  When clicking the remove (×) button for a course
     removeButtons.forEach(button => {
         button.addEventListener('click', (e) => {
             const row = e.target.closest('tr');
@@ -210,29 +193,27 @@ document.addEventListener('DOMContentLoaded', () => {
                 let cartArr = cart.split(',');
                 cartArr = cartArr.filter(id => id !== removedId);
                 const updatedCart = cartArr.join(',');
-                setCookie('cart', updatedCart, 7);
-                updateServerCookie(updatedCart);
-            }
 
-            //  If cart becomes empty, update UI and delete cookie
-            if (cartBody.querySelectorAll('tr').length === 1) {
-                cartBody.innerHTML = '<tr><td colspan="3" class="text-center text-muted">Your cart is empty.</td></tr>';
-                const form = document.querySelector('form');
-                if (form) form.style.display = 'none';
-                deleteCookie('cart');
-                updateServerCookie('');
+                setCookie('cart', updatedCart, 7);
+
+                if (cartArr.length === 0) {
+                    cartBody.innerHTML = '<tr><td colspan="3" class="text-center text-muted">Your cart is empty.</td></tr>';
+                    const form = document.querySelector('form');
+                    if (form) form.style.display = 'none';
+                    deleteCookie('cart');
+                }
+
+                updateServerCookie(updatedCart);  // reload page only after cookie sync
             }
         });
     });
 
-    // Helper: get a cookie by name
     function getCookie(name) {
         const value = `; ${document.cookie}`;
         const parts = value.split(`; ${name}=`);
         if (parts.length === 2) return parts.pop().split(';').shift();
     }
 
-    //  Helper: set a cookie
     function setCookie(name, value, days) {
         const d = new Date();
         d.setTime(d.getTime() + (days*24*60*60*1000));
@@ -240,12 +221,10 @@ document.addEventListener('DOMContentLoaded', () => {
         document.cookie = name + "=" + value + ";" + expires + ";path=/";
     }
 
-    //  Helper: delete a cookie
     function deleteCookie(name) {
         document.cookie = name + "=; Max-Age=0; path=/;";
     }
 
-    //  Helper: sync cookie changes with server
     function updateServerCookie(value) {
         fetch(window.location.href, {
             method: 'POST',
@@ -253,7 +232,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 'Content-Type': 'application/x-www-form-urlencoded',
             },
             body: 'update_cart=' + encodeURIComponent(value)
-        });
+        }).then(response => response.text())
+          .then(data => {
+              if (data.trim() === 'success') {
+                  location.reload();  // reload after cookie sync
+              }
+          });
     }
 });
 </script>

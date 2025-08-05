@@ -2,19 +2,20 @@
 session_start();
 include 'cnct.php';
 
-// ✅ Handle AJAX cart update without new file
+//  Handle AJAX cart updates via POST (from JavaScript)
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_cart'])) {
-    setcookie('cart', $_POST['update_cart'], time() + (86400 * 7), '/'); // 7 days
+    setcookie('cart', $_POST['update_cart'], time() + (86400 * 7), '/'); // update cart cookie for 7 days
     echo 'success';
     exit;
 }
 
-// Get cart items from cookie
+//  Load cart items from cookie
 $cart_ids = isset($_COOKIE['cart']) && $_COOKIE['cart'] !== '' ? array_map('intval', explode(',', $_COOKIE['cart'])) : [];
 $courses = [];
 $total = 0;
 $owned_courses = [];
 
+//  Fetch course details from DB if cart and session exist
 if (!empty($cart_ids) && isset($_SESSION['u_id'])) {
     $placeholders = implode(',', array_fill(0, count($cart_ids), '?'));
     $types = str_repeat('i', count($cart_ids));
@@ -40,7 +41,7 @@ if (!empty($cart_ids) && isset($_SESSION['u_id'])) {
     $stmt->close();
 }
 
-// Payment status handling
+//  Handle payment result response
 $statusMsg = '';
 if (isset($_GET['status'])) {
     if ($_GET['status'] === 'success') {
@@ -56,7 +57,9 @@ if (isset($_GET['status'])) {
             $stmt->close();
         }
 
-        setcookie('cart', '', time() - 3600, '/'); // Clear cart
+        setcookie('cart', '', time() - 3600, '/');
+        unset($_COOKIE['cart']);
+
         $statusMsg = "<div class='alert alert-success text-center'>✅ Payment Successful! Courses have been enrolled.</div>";
         $courses = [];
         $total = 0;
@@ -77,6 +80,8 @@ if (isset($_GET['status'])) {
     <link rel="stylesheet" href="../style.css" />
 </head>
 <body>
+
+<!-- Navbar -->
 <nav class="navbar navbar-expand-lg navbar-blur sticky-top shadow-sm">
   <div class="container-fluid">
     <a class="navbar-brand fw-bold" href="">SkillUp Academy</a>
@@ -87,9 +92,7 @@ if (isset($_GET['status'])) {
 
     <div class="collapse navbar-collapse" id="navbarNav">
       <ul class="navbar-nav ms-auto">
-        <li class="nav-item">
-          <a class="nav-link active" href="../index.php">Home</a>
-        </li>
+        <li class="nav-item"><a class="nav-link active" href="../index.php">Home</a></li>
         <?php
           if(isset($_SESSION['role'])){
             echo'<li class="nav-item">';
@@ -100,14 +103,10 @@ if (isset($_GET['status'])) {
             else
               echo '<a class="nav-link" href="../admin/dashboard.php">Dashboard</a> </li>';
 
-            echo'<li class="nav-item">
-                  <a class="nav-link" href="logout.php">Logout</a>
-                  </li>';
+            echo'<li class="nav-item"><a class="nav-link" href="logout.php">Logout</a></li>';
           } else {
-            echo '<a class="nav-link" href="login.php">Login</a> </li>
-                  <li class="nav-item">
-                  <a class="nav-link" href="signup.php">Signup</a>
-                  </li>';
+            echo '<li class="nav-item"><a class="nav-link" href="login.php">Login</a></li>
+                  <li class="nav-item"><a class="nav-link" href="signup.php">Signup</a></li>';
           }
         ?>
       </ul>
@@ -115,6 +114,7 @@ if (isset($_GET['status'])) {
   </div>
 </nav>
 
+<!-- Cart -->
 <div class="container mt-5">
     <h2 class="mb-4">Your Cart</h2>
     <?= $statusMsg ?>
@@ -150,6 +150,7 @@ if (isset($_GET['status'])) {
             </tbody>
         </table>
 
+        <!-- Payment -->
         <?php if ($total > 0): ?>
         <form method="POST" action="pay/index.php" class="text-end">
             <input type="hidden" name="amount" value="<?= $total ?>">
@@ -163,6 +164,7 @@ if (isset($_GET['status'])) {
     <?php endif; ?>
 </div>
 
+<!-- JS -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js" defer></script>
 <script defer>
 document.addEventListener('DOMContentLoaded', () => {
@@ -191,14 +193,17 @@ document.addEventListener('DOMContentLoaded', () => {
                 let cartArr = cart.split(',');
                 cartArr = cartArr.filter(id => id !== removedId);
                 const updatedCart = cartArr.join(',');
-                setCookie('cart', updatedCart, 7);
-                updateServerCookie(updatedCart);
-            }
 
-            if (cartBody.querySelectorAll('tr').length === 1) {
-                cartBody.innerHTML = '<tr><td colspan="3" class="text-center text-muted">Your cart is empty.</td></tr>';
-                const form = document.querySelector('form');
-                if (form) form.style.display = 'none';
+                setCookie('cart', updatedCart, 7);
+
+                if (cartArr.length === 0) {
+                    cartBody.innerHTML = '<tr><td colspan="3" class="text-center text-muted">Your cart is empty.</td></tr>';
+                    const form = document.querySelector('form');
+                    if (form) form.style.display = 'none';
+                    deleteCookie('cart');
+                }
+
+                updateServerCookie(updatedCart);  // reload page only after cookie sync
             }
         });
     });
@@ -216,6 +221,10 @@ document.addEventListener('DOMContentLoaded', () => {
         document.cookie = name + "=" + value + ";" + expires + ";path=/";
     }
 
+    function deleteCookie(name) {
+        document.cookie = name + "=; Max-Age=0; path=/;";
+    }
+
     function updateServerCookie(value) {
         fetch(window.location.href, {
             method: 'POST',
@@ -223,7 +232,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 'Content-Type': 'application/x-www-form-urlencoded',
             },
             body: 'update_cart=' + encodeURIComponent(value)
-        });
+        }).then(response => response.text())
+          .then(data => {
+              if (data.trim() === 'success') {
+                  location.reload();  // reload after cookie sync
+              }
+          });
     }
 });
 </script>

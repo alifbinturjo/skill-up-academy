@@ -2,73 +2,131 @@
 session_start();
 include 'cnct.php';
 
-//  Handle AJAX cart updates via POST (from JavaScript)
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_cart'])) {
-    setcookie('cart', $_POST['update_cart'], time() + (86400 * 7), '/'); // update cart cookie for 7 days
-    echo 'success';
-    exit;
+$statusMsg = "";
+$u_id = $_SESSION['u_id'] ?? 0;
+
+// Retrieve and validate cart items from cookie
+$cart_items = [];
+if (isset($_COOKIE['cart']) && $_COOKIE['cart'] !== '') {
+    $cart_items = array_unique(array_filter(array_map('intval', explode(',', $_COOKIE['cart']))));
 }
 
-//  Load cart items from cookie
-$cart_ids = isset($_COOKIE['cart']) && $_COOKIE['cart'] !== '' ? array_map('intval', explode(',', $_COOKIE['cart'])) : [];
-$courses = [];
-$total = 0;
+// Get all courses owned by user (for price adjustment)
 $owned_courses = [];
-
-//  Fetch course details from DB if cart and session exist
-if (!empty($cart_ids) && isset($_SESSION['u_id'])) {
-    $placeholders = implode(',', array_fill(0, count($cart_ids), '?'));
-    $types = str_repeat('i', count($cart_ids));
-
-    $sql = "SELECT c.c_id, c.title, c.amount,
-            (SELECT COUNT(*) FROM enrolls e WHERE e.c_id = c.c_id AND e.u_id = ?) AS is_enrolled
-            FROM courses c WHERE c.c_id IN ($placeholders)";
-
-    $stmt = $conn->prepare($sql);
-    $stmt->bind_param("i$types", $_SESSION['u_id'], ...$cart_ids);
+if ($u_id) {
+    $stmt = $conn->prepare("SELECT c_id FROM enrolls WHERE u_id = ?");
+    $stmt->bind_param('i', $u_id);
     $stmt->execute();
     $result = $stmt->get_result();
-
     while ($row = $result->fetch_assoc()) {
-        $row['owned'] = $row['is_enrolled'] > 0;
-        $courses[] = $row;
-        if (!$row['owned']) {
-            $total += $row['amount'];
-        } else {
-            $owned_courses[] = $row['c_id'];
-        }
+        $owned_courses[] = $row['c_id'];
     }
     $stmt->close();
 }
 
-//  Handle payment result response
-$statusMsg = '';
+// If user is logged in, remove owned courses from cart
+if ($u_id && !empty($cart_items)) {
+    $placeholders = implode(',', array_fill(0, count($cart_items), '?'));
+    $stmt = $conn->prepare("SELECT c_id FROM enrolls WHERE u_id = ? AND c_id IN ($placeholders)");
+    $types = str_repeat('i', count($cart_items));
+    $stmt->bind_param('i' . $types, $u_id, ...$cart_items);
+    $stmt->execute();
+    $result = $stmt->get_result();
+
+    $already_owned = [];
+    while ($row = $result->fetch_assoc()) {
+        $already_owned[] = $row['c_id'];
+    }
+    $stmt->close();
+
+    // Filter out owned courses
+    if (!empty($already_owned)) {
+        $cart_items = array_diff($cart_items, $already_owned);
+        if (count($already_owned) > 0) {
+            if (empty($cart_items)) {
+                setcookie('cart', '', time() - 3600, '/', '', false, true);
+                unset($_COOKIE['cart']);
+            } else {
+                setcookie('cart', implode(',', $cart_items), time() + (7 * 24 * 60 * 60), '/', '', false, true);
+                $_COOKIE['cart'] = implode(',', $cart_items);
+            }
+        }
+    }
+}
+
+//   Handle item removal and delete cookie if cart is empty
+if (isset($_GET['remove'])) {
+    $remove_id = (int)$_GET['remove'];
+    if (($key = array_search($remove_id, $cart_items)) !== false) {
+        unset($cart_items[$key]);
+        $cart_items = array_values($cart_items); // Reindex array
+
+        if (empty($cart_items)) {
+            setcookie('cart', '', time() - 3600, '/', '', false, true);
+            unset($_COOKIE['cart']);
+        } else {
+            setcookie('cart', implode(',', $cart_items), time() + (7 * 24 * 60 * 60), '/', '', false, true);
+            $_COOKIE['cart'] = implode(',', $cart_items);
+        }
+
+        header("Location: billing.php");
+        exit();
+    }
+}
+
+// Fetch course details for items in cart
+$courses = [];
+$total = 0;
+
+if (!empty($cart_items)) {
+    $placeholders = implode(',', array_fill(0, count($cart_items), '?'));
+    $stmt = $conn->prepare("SELECT c_id, title, amount FROM courses WHERE c_id IN ($placeholders)");
+    $types = str_repeat('i', count($cart_items));
+    $stmt->bind_param($types, ...$cart_items);
+    $stmt->execute();
+    $result = $stmt->get_result();
+
+    while ($row = $result->fetch_assoc()) {
+        $is_owned = in_array($row['c_id'], $owned_courses);
+        $courses[] = [
+            'c_id' => $row['c_id'],
+            'title' => $row['title'],
+            'amount' => $is_owned ? 0 : $row['amount'],
+            'is_owned' => $is_owned
+        ];
+        $total += $is_owned ? 0 : $row['amount'];
+    }
+    $stmt->close();
+}
+
+// Handle payment status messages
 if (isset($_GET['status'])) {
     if ($_GET['status'] === 'success') {
-        $u_id = $_SESSION['u_id'];
-        if (!empty($cart_ids)) {
+        if (!empty($cart_items) && $u_id) {
             $stmt = $conn->prepare("INSERT IGNORE INTO enrolls (u_id, c_id, rating) VALUES (?, ?, NULL)");
-            foreach ($courses as $course) {
-                if (!$course['owned']) {
-                    $stmt->bind_param('ii', $u_id, $course['c_id']);
-                    $stmt->execute();
-                }
+            foreach ($cart_items as $c_id) {
+                $stmt->bind_param('ii', $u_id, $c_id);
+                $stmt->execute();
             }
             $stmt->close();
         }
 
-        setcookie('cart', '', time() - 3600, '/');
+        // Clear cart after successful payment
+        setcookie('cart', '', time() - 3600, '/', '', false, true);
         unset($_COOKIE['cart']);
 
         $statusMsg = "<div class='alert alert-success text-center'>✅ Payment Successful! Courses have been enrolled.</div>";
         $courses = [];
         $total = 0;
+        $cart_items = [];
     } elseif ($_GET['status'] === 'fail') {
         $statusMsg = "<div class='alert alert-danger text-center'>❌ Payment Failed! Please try again.</div>";
     } elseif ($_GET['status'] === 'missing') {
         $statusMsg = "<div class='alert alert-warning text-center'>⚠️ Payment response missing or invalid.</div>";
     }
 }
+
+$conn->close();
 ?>
 
 <!DOCTYPE html>
@@ -80,8 +138,6 @@ if (isset($_GET['status'])) {
     <link rel="stylesheet" href="../style.css" />
 </head>
 <body>
-
-<!-- Navbar -->
 <nav class="navbar navbar-expand-lg navbar-blur sticky-top shadow-sm">
   <div class="container-fluid">
     <a class="navbar-brand fw-bold" href="">SkillUp Academy</a>
@@ -89,10 +145,12 @@ if (isset($_GET['status'])) {
       aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
-
+  
     <div class="collapse navbar-collapse" id="navbarNav">
       <ul class="navbar-nav ms-auto">
-        <li class="nav-item"><a class="nav-link active" href="../index.php">Home</a></li>
+        <li class="nav-item">
+          <a class="nav-link active" href="../index.php">Home</a>
+        </li>
         <?php
           if(isset($_SESSION['role'])){
             echo'<li class="nav-item">';
@@ -103,10 +161,15 @@ if (isset($_GET['status'])) {
             else
               echo '<a class="nav-link" href="../admin/dashboard.php">Dashboard</a> </li>';
 
-            echo'<li class="nav-item"><a class="nav-link" href="logout.php">Logout</a></li>';
-          } else {
-            echo '<li class="nav-item"><a class="nav-link" href="login.php">Login</a></li>
-                  <li class="nav-item"><a class="nav-link" href="signup.php">Signup</a></li>';
+            echo'<li class="nav-item">
+                  <a class="nav-link" href="logout.php">Logout</a>
+                  </li>';
+          }
+          else{
+            echo '<a class="nav-link" href="login.php">Login</a> </li>
+                  <li class="nav-item">
+                  <a class="nav-link" href="signup.php">Signup</a>
+                  </li>';
           }
         ?>
       </ul>
@@ -114,7 +177,6 @@ if (isset($_GET['status'])) {
   </div>
 </nav>
 
-<!-- Cart -->
 <div class="container mt-5">
     <h2 class="mb-4">Your Cart</h2>
     <?= $statusMsg ?>
@@ -127,119 +189,41 @@ if (isset($_GET['status'])) {
                 <tr>
                     <th>Course Title</th>
                     <th>Price (BDT)</th>
+                    <th>Status</th>
                     <th></th>
                 </tr>
             </thead>
             <tbody id="cart-table-body">
                 <?php foreach ($courses as $course): ?>
-                    <tr data-id="<?= $course['c_id'] ?>">
+                    <tr>
                         <td><?= htmlspecialchars($course['title']) ?></td>
-                        <td class="course-price">
-                            <?= $course['owned'] ? '<span class="text-success fw-bold">✅ Already Owned</span>' : $course['amount'] ?>
-                        </td>
+                        <td class="course-price"><?= $course['is_owned'] ? '0.00 (Owned)' : $course['amount'] ?></td>
+                        <td><?= $course['is_owned'] ? '<span class="badge bg-info">Already Owned</span>' : '<span class="badge bg-success">New Purchase</span>' ?></td>
                         <td>
-                            <button type="button" class="btn btn-outline-danger btn-sm remove-btn" aria-label="Remove course">&times;</button>
+                            <a href="billing.php?remove=<?= $course['c_id'] ?>" class="btn btn-outline-danger btn-sm" aria-label="Remove course">&times;</a>
                         </td>
                     </tr>
                 <?php endforeach; ?>
                 <tr class="table-dark fw-bold">
                     <td>Total</td>
                     <td id="total-price">BDT<?= number_format($total, 2) ?></td>
-                    <td></td>
+                    <td colspan="2"></td>
                 </tr>
             </tbody>
         </table>
 
-        <!-- Payment -->
-        <?php if ($total > 0): ?>
-        <form method="POST" action="pay/index.php" class="text-end">
+        <form method="POST" action="pay/index.php" class="text-end" id="payment-form">
             <input type="hidden" name="amount" value="<?= $total ?>">
             <input type="hidden" name="currency" value="BDT">
-            <input type="hidden" name="cus_name" value="<?= htmlspecialchars($_SESSION['u_id']) ?>">
+            <input type="hidden" name="cus_name" value="<?= htmlspecialchars($_SESSION['u_id'] ?? '') ?>">
             <input type="hidden" name="cus_email" value="xyz@gmail.com">
             <input type="hidden" name="cus_phone" value="00000000000">
-            <button class="btn btn-success" name="pay_now" type="submit">Proceed to Payment</button>
+            
+            <button class="btn btn-success" name="pay_now" type="submit" <?= $total == 0 ? 'disabled' : '' ?>>Proceed to Payment</button>
         </form>
-        <?php endif; ?>
     <?php endif; ?>
 </div>
 
-<!-- JS -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js" defer></script>
-<script defer>
-document.addEventListener('DOMContentLoaded', () => {
-    const removeButtons = document.querySelectorAll('.remove-btn');
-    const totalPriceEl = document.getElementById('total-price');
-    const cartBody = document.getElementById('cart-table-body');
-
-    removeButtons.forEach(button => {
-        button.addEventListener('click', (e) => {
-            const row = e.target.closest('tr');
-            const priceEl = row.querySelector('.course-price');
-            const priceText = priceEl.textContent.trim();
-            let price = 0;
-            if (!priceText.includes('Already Owned')) {
-                price = parseFloat(priceText);
-            }
-            row.remove();
-
-            let currentTotal = parseFloat(totalPriceEl.textContent.replace(/[^\d.]/g, ''));
-            currentTotal -= price;
-            totalPriceEl.textContent = 'BDT' + currentTotal.toFixed(2);
-
-            const removedId = row.getAttribute('data-id');
-            let cart = getCookie('cart');
-            if (cart) {
-                let cartArr = cart.split(',');
-                cartArr = cartArr.filter(id => id !== removedId);
-                const updatedCart = cartArr.join(',');
-
-                setCookie('cart', updatedCart, 7);
-
-                if (cartArr.length === 0) {
-                    cartBody.innerHTML = '<tr><td colspan="3" class="text-center text-muted">Your cart is empty.</td></tr>';
-                    const form = document.querySelector('form');
-                    if (form) form.style.display = 'none';
-                    deleteCookie('cart');
-                }
-
-                updateServerCookie(updatedCart);  // reload page only after cookie sync
-            }
-        });
-    });
-
-    function getCookie(name) {
-        const value = `; ${document.cookie}`;
-        const parts = value.split(`; ${name}=`);
-        if (parts.length === 2) return parts.pop().split(';').shift();
-    }
-
-    function setCookie(name, value, days) {
-        const d = new Date();
-        d.setTime(d.getTime() + (days*24*60*60*1000));
-        const expires = "expires="+ d.toUTCString();
-        document.cookie = name + "=" + value + ";" + expires + ";path=/";
-    }
-
-    function deleteCookie(name) {
-        document.cookie = name + "=; Max-Age=0; path=/;";
-    }
-
-    function updateServerCookie(value) {
-        fetch(window.location.href, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-            },
-            body: 'update_cart=' + encodeURIComponent(value)
-        }).then(response => response.text())
-          .then(data => {
-              if (data.trim() === 'success') {
-                  location.reload();  // reload after cookie sync
-              }
-          });
-    }
-});
-</script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

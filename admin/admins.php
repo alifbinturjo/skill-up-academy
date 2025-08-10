@@ -75,6 +75,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $stmt = $conn->prepare("INSERT INTO admins (u_id, level) VALUES (?, ?)");
                 $stmt->bind_param("ii", $u_id, $level);
                 if ($stmt->execute()) {
+
                     // Remove user from students table when promoted to admin
                     $stmt_delete = $conn->prepare("DELETE FROM students WHERE u_id = ?");
                     $stmt_delete->bind_param("i", $u_id);
@@ -97,6 +98,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         header("Location: admins.php");
         exit();
+
+        
     } elseif (isset($_POST['update_admin'])) {
         $u_id = (int)$_POST['u_id'];
         $level = (int)$_POST['level'];
@@ -193,6 +196,9 @@ $stmt->close();
   <title>Admins - SkillUp Academy</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet" />
   <link rel="stylesheet" href="../style.css" />
+<link rel="prefetch" href="../image-assets/common/fav.webp" as="image">
+    <link rel="icon" href="../mage-assets/common/fav.webp" type="image/webp">
+
 </head>
 <body>
 

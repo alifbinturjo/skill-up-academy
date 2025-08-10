@@ -64,7 +64,7 @@ include '../auth/cnct.php';
   </div>
 </nav>
 <?php
-$c_id = 1;
+$c_id = 2;
 
 $stmt = $conn->prepare("
     SELECT 
@@ -106,7 +106,7 @@ $stmt = $conn->prepare("
         <span class="ms-3 text-muted">Duration: <?php echo $duration ?> weeks</span>
 
         <div class="mt-3 text-center">
-          <img src="../image-assets/course-images/full-stack-web-dev.webp" alt="Full stack web development" class="img-fluid rounded shadow">
+          <img src="../image-assets/course-images/data-science.webp" alt="Data science" class="img-fluid rounded shadow">
         </div>
     </div>
 
@@ -130,12 +130,12 @@ $stmt = $conn->prepare("
         <div class="accordion-item bg-transparent">
           <h2 class="accordion-header " id="headingOne">
             <button class="accordion-button bg-transparent lead" type="button" data-bs-toggle="collapse" data-bs-target="#module1">
-              Module 1: Introduction to Web Development
+              Module 1: Introduction to Data science
             </button>
           </h2>
           <div id="module1" class="accordion-collapse collapse show" data-bs-parent="#courseOutline">
             <div class="accordion-body">
-              Learn the basics of how websites work and how they are built.
+              Learn the basics of data science.
             </div>
           </div>
         </div>
@@ -143,12 +143,12 @@ $stmt = $conn->prepare("
         <div class="accordion-item bg-transparent">
           <h2 class="accordion-header" id="headingTwo">
             <button class="accordion-button collapsed bg-transparent lead" type="button" data-bs-toggle="collapse" data-bs-target="#module2">
-              Module 2: HTML & CSS Basics
+              Module 2: Datasets
             </button>
           </h2>
           <div id="module2" class="accordion-collapse collapse" data-bs-parent="#courseOutline">
             <div class="accordion-body">
-              Build beautiful web pages using HTML and CSS.
+              Intro to datasets.
             </div>
           </div>
         </div>
@@ -184,7 +184,7 @@ $stmt = $conn->prepare("
       <div class="col-md-6 col-lg-6 col-xl-6 mx-auto mt-3">
         <h5 class="mb-4 fw-bold">SkillUp Academy</h5>
         <p>Empowering learners with the skills they need to succeed in the digital world.</p>
-        <a href="policies.html" class="text-white text-decoration-none">Academy policies &rarr;</a>
+        <a href="policies.php" class="text-white text-decoration-none">Academy policies &rarr;</a>
       </div>
 
       <div class="col-md-3 col-lg-3 col-xl-3 mx-auto mt-3">

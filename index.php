@@ -7,6 +7,9 @@ include 'auth/cnct.php';
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="keywords" content="SkillUp, akillup academy, skill development, online courses">
+    <meta name="robots" content="index, follow">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SkillUp Academy</title>
     <link rel="prefetch" href="image-assets/common/fav.webp" as="image">
@@ -221,7 +224,7 @@ $stmt->close();
                         <p class="card-text"><?= htmlspecialchars($course['description']) ?></p>
                         <p class="text-muted"><small>Instructor: <?= htmlspecialchars($course['instructor']) ?></small></p>
                         <div class="d-flex justify-content-between align-items-center">
-                            <a href="course-details/full-stack-web-dev.php" class="btn btn-md btn-outline-dark">View Details</a>
+                            <a href="<?= htmlspecialchars($course['url']) ?>" class="btn btn-md btn-outline-dark">View Details</a>
                             <span class="badge bg-success">Offered</span>
                         </div>
                     </div>

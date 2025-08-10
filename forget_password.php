@@ -57,7 +57,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         try {
     // Server settings
     $mail->isSMTP();
-    $mail->Host = 'mail.skillup.mynsu.xyz'; // Your mail server
+    $mail->Host = 'mail.mynsu.xyz'; // Your mail server
     $mail->SMTPAuth = true;
     $mail->Username = 'auth@skillup.mynsu.xyz'; // Your email
     $mail->Password = ';*MZB-k]6D@z';     // Use the real password

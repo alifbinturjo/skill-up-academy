@@ -197,7 +197,7 @@ $stmt->close();
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet" />
   <link rel="stylesheet" href="../style.css" />
 <link rel="prefetch" href="../image-assets/common/fav.webp" as="image">
-    <link rel="icon" href="../mage-assets/common/fav.webp" type="image/webp">
+    <link rel="icon" href="../image-assets/common/fav.webp" type="image/webp">
 
 </head>
 <body>

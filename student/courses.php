@@ -73,7 +73,7 @@ $result = $stmt->get_result();
     </noscript>
   
     <link rel="prefetch" href="../image-assets/common/fav.webp" as="image">
-    <link rel="icon" href="../mage-assets/common/fav.webp" type="image/webp">
+    <link rel="icon" href="../image-assets/common/fav.webp" type="image/webp">
 
     <style>
         .rating-box button {

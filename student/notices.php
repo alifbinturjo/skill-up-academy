@@ -99,7 +99,7 @@ unset($_SESSION['new_notice']);
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" />
   <link rel="stylesheet" href="../style.css" />
 <link rel="prefetch" href="../image-assets/common/fav.webp" as="image">
-    <link rel="icon" href="../mage-assets/common/fav.webp" type="image/webp">
+    <link rel="icon" href="../image-assets/common/fav.webp" type="image/webp">
 
 </head>
 

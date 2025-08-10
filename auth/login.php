@@ -149,7 +149,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
               echo '<a class="nav-link" href="admin/dashboard.php">Dashboard</a> </li>';
 
             echo'<li class="nav-item">
-                  <a class="nav-link" href="auth/logout.php">Logout</a>
+                  <a class="nav-link" href="logout.php">Logout</a>
                   </li>';
           }
           else{

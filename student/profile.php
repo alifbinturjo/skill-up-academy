@@ -47,7 +47,7 @@ $stmt->bind_result($name, $email, $contact, $bio);
 $stmt->fetch();
 $stmt->close();
 
-$image = "../uploads/instructor_profile.png"; // from uploaded image
+
 
 // Handle password change
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['change_password'])) {

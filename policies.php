@@ -12,8 +12,8 @@ include 'auth/cnct.php';
   <title>Policies </title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
-    <link rel="prefetch" href="../image-assets/common/fav.webp" as="image">
-    <link rel="icon" href="../image-assets/common/fav.webp" type="image/webp">
+  <link rel="prefetch" href="image-assets/common/fav.webp" as="image">
+    <link rel="icon" href="image-assets/common/fav.webp" type="image/webp">
 </head>
 <body>
   <script>
@@ -25,7 +25,7 @@ include 'auth/cnct.php';
   </script>
 
   <!-- Navbar -->
-  <nav class="navbar navbar-expand-lg navbar-blur sticky-top shadow-sm">
+<nav class="navbar navbar-expand-lg navbar-blur sticky-top shadow-sm">
   <div class="container-fluid">
     <a class="navbar-brand fw-bold" href="">SkillUp Academy</a>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
@@ -34,11 +34,12 @@ include 'auth/cnct.php';
     </button>
   
     <div class="collapse navbar-collapse" id="navbarNav">
-    <ul class="navbar-nav ms-auto">
+      <ul class="navbar-nav ms-auto">
         <li class="nav-item">
-          <a class="nav-link active" href="">Home</a>
+          <a class="nav-link active" href="index.php">Home</a>
         </li>
-
+        
+        
         <?php
           if(isset($_SESSION['role'])){
             echo'<li class="nav-item">';

@@ -35,6 +35,9 @@ $u_id=$_SESSION['u_id'];
   <link rel="preload" href="../style.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
 <noscript><link rel="stylesheet" href="../style.css"></noscript>
 
+<link rel="prefetch" href="../image-assets/common/fav.webp" as="image">
+    <link rel="icon" href="../image-assets/common/fav.webp" type="image/webp">
+
 </head>
 
 <body>

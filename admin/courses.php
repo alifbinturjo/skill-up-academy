@@ -122,7 +122,7 @@ $instructors = $instructor_result->fetch_all(MYSQLI_ASSOC);
   <link rel="stylesheet" href="../style.css">
 
 <link rel="prefetch" href="../image-assets/common/fav.webp" as="image">
-    <link rel="icon" href="../mage-assets/common/fav.webp" type="image/webp">
+    <link rel="icon" href="../image-assets/common/fav.webp" type="image/webp">
 
 </head>
 

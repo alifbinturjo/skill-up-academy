@@ -83,6 +83,9 @@ $image = $image ? ('../' . $image) : '../image-assets/Instructors/default.webp';
     <noscript>
         <link rel="stylesheet" href="../style.css">
     </noscript>
+<link rel="prefetch" href="../image-assets/common/fav.webp" as="image">
+    <link rel="icon" href="../image-assets/common/fav.webp" type="image/webp">
+
 </head>
 
 <body>

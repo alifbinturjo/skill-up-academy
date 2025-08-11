@@ -14,7 +14,9 @@ include 'auth/cnct.php';
     <title>SkillUp Academy</title>
     <link rel="prefetch" href="image-assets/common/fav.webp" as="image">
     <link rel="icon" href="image-assets/common/fav.webp" type="image/webp">
-
+        <!-- Preload JS -->
+<link rel="preload" href="common/common.js" as="script">
+<script src="common/common.js" defer></script>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
     
@@ -330,9 +332,7 @@ try {
 
 </section>
     
-    <!-- Preload JS -->
-<link rel="preload" href="common/common.js" as="script">
-<script src="common/common.js" defer></script>
+
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js" integrity="sha384-ndDqU0Gzau9qJ1lfW4pNLlhNTkCfHzAVBReH9diLvGRem5+R9g2FzA8ZGN954O5Q" crossorigin="anonymous"></script>
 </body>
